@@ -144,7 +144,13 @@ input,select{font:inherit;color:inherit}
 .row.active{background:var(--accent-bg);color:var(--accent)}
 .row .ico{opacity:.6;flex:none;font-size:12px}
 .row .name{overflow:hidden;text-overflow:ellipsis}
+.row,.card{-webkit-touch-callout:none}
 .row .ficon{flex:none;font-size:14px;line-height:1;margin-right:2px}
+#icon-tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);padding-bottom:4px}
+#icon-tabs button{flex:none;font-size:18px;line-height:1;padding:6px 7px;border-radius:8px;background:none;border:1px solid transparent;cursor:pointer}
+#icon-tabs button.on{background:var(--accent-bg);border-color:var(--accent)}
+#icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:2px;height:240px;overflow:auto;margin:0 0 12px;align-content:start}
+dialog:has(#icon-grid){width:min(460px,calc(100vw - 32px))}
 .icon-pick{font-size:20px;line-height:1;padding:6px 0;border:1px solid transparent;border-radius:8px;background:none;cursor:pointer}
 .icon-pick:hover,.icon-pick.on{background:var(--accent-bg);border-color:var(--accent)}
 #side-bottom{padding:8px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--fg2);display:flex;justify-content:space-between;align-items:center}
@@ -329,8 +335,8 @@ input,select{font:inherit;color:inherit}
 dialog{border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px;background:var(--card);color:var(--fg);max-width:420px;width:calc(100% - 40px)}
 dialog::backdrop{background:rgba(0,0,0,.25)}
 dialog h3{margin:0 0 10px;font-size:16px}
-dialog input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);margin:6px 0 14px;outline:none}
-dialog input[type=text]:focus{border-color:var(--accent)}
+dialog input[type=text],dialog input[type=search]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);margin:6px 0 14px;outline:none}
+dialog input[type=text]:focus,dialog input[type=search]:focus{border-color:var(--accent)}
 dialog .btns{display:flex;justify-content:flex-end;gap:6px}
 .exp-opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
 .exp-opt:has(input:checked){border-color:var(--accent);background:var(--accent-bg)}
@@ -343,6 +349,87 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:1px 5px
 #gd-reauth button{flex:none}
 .gd-vault{display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:14px;cursor:pointer}
 .gd-vault:hover{border-color:var(--accent);background:var(--accent-bg)}
+/* ---------- ホーム ---------- */
+#btn-home{font-size:17px;line-height:1;padding:4px 8px}
+#btn-home.on{color:var(--accent)}
+#home{padding:28px 28px 80px;max-width:1080px;margin:0 auto}
+.home-head h1{font-size:calc(28px * var(--fs));margin:0 0 14px;color:var(--fg)}
+.home-search{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:0 12px;max-width:620px}
+.home-search svg{width:18px;height:18px;color:var(--fg3);flex:none}
+.home-search input{flex:1;border:none;background:none;padding:11px 0;font-size:15px;color:var(--fg);outline:none}
+.home-sec{margin-top:26px}
+.home-sec h2{font-size:13px;color:var(--fg2);font-weight:600;margin:0 0 10px;letter-spacing:.02em}
+.home-empty{color:var(--fg3);font-size:13px;margin:4px 2px}
+.home-recent{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity}
+.home-card{flex:none;width:210px;scroll-snap-align:start}
+.home-card .hm{font-size:11px;color:var(--fg3);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px}
+.home-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.home-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border:none;border-bottom:1px solid var(--line);background:none;text-align:left;cursor:pointer;color:var(--fg);font-size:calc(14.5px * var(--fs));width:100%}
+.home-item:last-child{border-bottom:none}
+.home-item:hover{background:var(--bg2)}
+.hi-ic{flex:none;width:22px;text-align:center;font-size:17px}
+.hi-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.hi-m{flex:none;color:var(--fg3);font-size:12px;text-align:right;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.home-btns button{border:1px solid var(--line);border-radius:100px;padding:5px 12px;font-size:12.5px;background:var(--card);cursor:pointer;color:var(--fg)}
+.home-btns button:hover{border-color:var(--accent);color:var(--accent)}
+.cal-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.cal-head h2{margin:0;font-size:15px;color:var(--fg);min-width:96px;text-align:center}
+.cal-head button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:3px 10px;cursor:pointer;color:var(--fg2);font-size:13px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.cal-wd{font-size:11px;text-align:center;padding:5px 0;color:var(--fg3);border-bottom:1px solid var(--line)}
+.cal-wd.sun,.cal-day.sun .n{color:#d24a4a}.cal-wd.sat,.cal-day.sat .n{color:#3b6cf0}
+.cal-day{min-height:76px;border:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:none;padding:4px 3px 6px;text-align:left;display:flex;flex-direction:column;gap:2px;cursor:pointer;position:relative;overflow:hidden;color:var(--fg)}
+.cal-day:nth-child(7n){border-right:none}
+.cal-day:hover{background:var(--bg2)}
+.cal-day.out{opacity:.38}
+.cal-day .n{font-size:12px;font-weight:600;line-height:18px;width:20px;height:20px;text-align:center;border-radius:50%}
+.cal-day.today .n{background:var(--accent);color:#fff!important}
+.cal-day .hol{font-size:9.5px;color:#d24a4a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-chip{font-size:10.5px;line-height:1.35;padding:1px 4px;border-radius:4px;background:color-mix(in srgb,var(--c,#3b6cf0) 16%,transparent);color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid var(--c,#3b6cf0)}
+.cal-chip.bd{background:color-mix(in srgb,#e0882f 14%,transparent);border-left-color:#e0882f}
+.cal-more{font-size:10px;color:var(--fg3)}
+.cal-day.per:after{content:"";position:absolute;left:3px;right:3px;bottom:2px;height:3px;border-radius:2px;background:#e86a8a;opacity:.8}
+.up-row{display:flex;gap:12px;align-items:flex-start;width:100%;border:none;border-bottom:1px solid var(--line);background:none;padding:9px 2px;text-align:left;cursor:pointer;color:var(--fg)}
+.up-row:hover{background:var(--bg2)}
+.up-d{flex:none;width:76px;font-size:12.5px;font-weight:600}.up-d small{display:block;font-weight:400;color:var(--fg3);font-size:11px}
+.up-t{flex:1;min-width:0;font-size:calc(14px * var(--fs))}.up-t small{display:block;color:var(--fg3);font-size:11.5px}
+.wareki{display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--fg2)}
+.wareki div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wareki input,.wareki select{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--bg);color:var(--fg);font-size:13.5px}
+.wareki span{color:var(--fg);font-weight:600}
+dialog .fl{display:block;font-size:12.5px;color:var(--fg2);margin-bottom:2px}
+dialog input[type=date],dialog input[type=time]{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);margin:2px 0 12px}
+.it-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.it-colors{display:flex;gap:6px;margin:6px 0 12px}
+.it-colors input{display:none}.it-colors span{display:block;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+.it-colors input:checked+span{border-color:var(--fg);box-shadow:0 0 0 2px var(--bg) inset}
+/* 和暦⇔西暦の一覧 */
+.wk-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.wk-top h1{font-size:calc(22px * var(--fs));margin:0}
+.wk-top button,.wk-tools button{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:5px 12px;cursor:pointer;color:var(--fg);font-size:13px}
+.wk-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;font-size:13px;color:var(--fg2)}
+.wk-list{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.wk-era-h{position:sticky;top:0;z-index:2;background:color-mix(in srgb,#e9c58a 30%,var(--bg2));color:var(--fg);font-size:13.5px;font-weight:600;padding:6px 14px;border-bottom:1px solid var(--line)}
+.wk-row{padding:10px 14px 10px;border-bottom:1px solid var(--line);cursor:pointer;text-align:center}
+.wk-row:hover{background:var(--bg2)}
+.wk-row.has{background:color-mix(in srgb,#ffe98a 26%,var(--card))}
+.wk-row.now{box-shadow:inset 3px 0 0 var(--accent)}
+.wk-main{display:flex;justify-content:center;align-items:baseline;gap:14px;font-size:calc(19px * var(--fs))}
+.wk-eq{color:var(--fg3);font-size:.85em}
+.wk-sub{display:flex;justify-content:center;gap:28px;color:var(--fg3);font-size:13px;margin-top:2px}
+.wk-item{display:block;width:100%;border:none;background:none;cursor:pointer;color:var(--accent);font-size:calc(15px * var(--fs));font-weight:600;padding:5px 0 2px;line-height:1.5}
+.wk-item b{font-weight:700}
+.wk-item small{display:block;color:var(--fg2);font-weight:400;font-size:12.5px}
+.wk-item .wk-memo{color:var(--accent);font-weight:600}
+@media (max-width:900px){.home-grid{grid-template-columns:1fr}}
+@media (max-width:760px){
+  #home{padding:18px 14px 80px}
+  .cal-day{min-height:58px}
+  .cal-chip{font-size:9.5px;padding:0 2px}
+  .home-card{width:170px}
+}
 @media (max-width:760px){
   #app,#app.side-hidden,#app.compact{grid-template-columns:1fr}
   #side{position:fixed;inset:0 auto 0 0;width:82%;z-index:40;box-shadow:var(--shadow)}
@@ -433,6 +520,7 @@ body.presenting #app{visibility:hidden}
   <main id="main">
     <div id="topbar">
       <button id="btn-side-show" title="サイドバー" style="display:none">☰</button>
+      <button id="btn-home" title="ホーム">⌂</button>
       <span id="crumb"></span>
       <span id="status"></span>
       <button id="btn-present" title="発表モード (⌘⇧P)" style="display:none">▶ 発表</button>
@@ -450,6 +538,7 @@ body.presenting #app{visibility:hidden}
         <p class="note">Google ドライブに置くと、PC とスマホで同じノートを開けます（https の URL で開いたとき）。<br>PC のフォルダは Chrome / Edge で使えます。保存は <kbd>⌘S</kbd>、または自動保存。</p>
       </div>
       <div id="gallery" style="display:none"></div>
+      <div id="home" style="display:none"></div>
       <div id="doc" style="display:none">
         <div id="doc-tools">
           <button data-cmd="formatBlock" data-val="p" title="本文（普通の段落）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6h14M12 6v13M9 19h6"/></svg><span>本文</span></button>
@@ -2150,14 +2239,14 @@ async function openFolderInner(handle) {
   await rememberRecent(handle);
   S.scope = localStorage.getItem('notes:scope:' + handle.name) || '';
   await loadVaultData(); S._themeStore = null; installCustomThemes(); saveThemeStore(); // 保管庫とブラウザの見た目を合成して両方に書き戻す
+  await calLoad(); HOME.q = ''; HOME.mode = 'home';
   await scanDir(handle, '');
   S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
   $('#vault-count').textContent = `${S.notes.length} ノート`;
   $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`;
   if (S.scope && !S.dirs.has(S.scope)) S.scope = '';
   renderTree(); updateInboxBadge();
-  const last = localStorage.getItem('notes:last:' + handle.name);
-  if (last && S.byPath.has(last)) openNote(S.byPath.get(last)); else showGallery();
+  showHome(); // 開いたらまずホーム
   if (handle.isDrive) { const n = gdFindDups(handle.id).length; if (n) setTimeout(() => toast(`同じ名前のファイルが ${n} 組あります。「開く」→「重複したファイルを片付ける…」で整理できます`, 6000), 1500); }
 }
 
@@ -2279,20 +2368,422 @@ function remapFolderIcons(from, to) {
   const m = S.vaultData.folderIcons; if (!m) return; let changed = false;
   for (const k of Object.keys(m)) if (k === from || k.startsWith(from + '/')) { const v = m[k]; delete m[k]; if (to !== null) m[to + k.slice(from.length)] = v; changed = true; }
   if (changed) saveVaultData();
+  remapFav(from, to, true);
 }
+// ---------- ホーム（最近・お気に入り・カレンダー・フォルダ） ----------
+// 予定・誕生日・月のものの記録は保管庫の _calendar.json に入れる（PC とスマホで同じものが見える）
+const HOME = { ym: null, q: '' };
+const pad2 = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const parseYmd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+const todayYmd = () => ymd(new Date());
+const WD = ['日', '月', '火', '水', '木', '金', '土'];
+const fmtMD = s => { const d = parseYmd(s); return `${d.getMonth() + 1}/${d.getDate()}（${WD[d.getDay()]}）`; };
+const daysBetween = (a, b) => Math.round((parseYmd(b) - parseYmd(a)) / 86400e3);
+
+// ---- 和暦 ----
+const ERAS = [['令和', '2019-05-01'], ['平成', '1989-01-08'], ['昭和', '1926-12-25'], ['大正', '1912-07-30'], ['明治', '1868-10-23']];
+function wareki(s, withDate = true) {
+  if (!s) return '';
+  for (const [name, start] of ERAS) {
+    if (s >= start) {
+      const y = +s.slice(0, 4) - +start.slice(0, 4) + 1; const d = parseYmd(s);
+      return `${name}${y === 1 ? '元' : y}年` + (withDate ? `${d.getMonth() + 1}月${d.getDate()}日` : '');
+    }
+  }
+  return '';
+}
+const warekiYear = y => { for (const [name, start] of ERAS) { if (`${y}-12-31` >= start) { const n = y - +start.slice(0, 4) + 1; return `${name}${n === 1 ? '元' : n}年`; } } return ''; };
+const eraToYear = (era, n) => { const e = ERAS.find(x => x[0] === era); return e ? +e[1].slice(0, 4) + n - 1 : null; };
+const ageOn = (birth, on) => { const b = parseYmd(birth), d = parseYmd(on); let a = d.getFullYear() - b.getFullYear(); if (d.getMonth() < b.getMonth() || (d.getMonth() === b.getMonth() && d.getDate() < b.getDate())) a--; return a; };
+
+// ---- 干支・星座 ----
+const ETO = [['子','ね','🐭'],['丑','うし','🐮'],['寅','とら','🐯'],['卯','う','🐰'],['辰','たつ','🐲'],['巳','み','🐍'],['午','うま','🐴'],['未','ひつじ','🐑'],['申','さる','🐵'],['酉','とり','🐔'],['戌','いぬ','🐶'],['亥','い','🐗']];
+const etoOf = y => ETO[((y - 4) % 12 + 12) % 12];
+const SEIZA = [[119,'やぎ座','♑'],[218,'みずがめ座','♒'],[320,'うお座','♓'],[419,'おひつじ座','♈'],[520,'おうし座','♉'],[621,'ふたご座','♊'],[722,'かに座','♋'],[822,'しし座','♌'],[922,'おとめ座','♍'],[1023,'てんびん座','♎'],[1122,'さそり座','♏'],[1221,'いて座','♐'],[1231,'やぎ座','♑']];
+const seizaOf = s => { const k = +s.slice(5, 7) * 100 + +s.slice(8, 10); const z = SEIZA.find(x => k <= x[0]); return z ? z[2] + ' ' + z[1] : ''; };
+// 毎年くり返すもの（誕生日・記念日）
+const isYearly = x => x.type === 'birthday' || x.type === 'anniv';
+const yIcon = x => x.type === 'birthday' ? '🎂' : '🎉';
+const hasYear = x => x.date && !x.date.startsWith('0000');
+const yearsAt = (x, on) => hasYear(x) ? ageOn(x.date, on) : null; // 誕生日なら年齢、記念日なら何年たったか
+const yearlyNote = (x, on, future = true) => { const n = yearsAt(x, on); if (n === null) return ''; return x.type === 'birthday' ? `${n}歳${future ? 'になる' : ''}` : (n >= 1 ? `${n}周年` : 'はじまりの日'); };
+
+// ---- 日本の祝日（2000〜2099 年。振替休日・国民の休日を含む） ----
+const HOLI = new Map();
+function holidaysOf(y) {
+  if (HOLI.has(y)) return HOLI.get(y);
+  const h = new Map(); const set = (m, d, n) => h.set(`${y}-${pad2(m)}-${pad2(d)}`, n);
+  const nthMon = (m, k) => { const first = new Date(y, m - 1, 1).getDay(); return 1 + ((8 - first) % 7) + (k - 1) * 7; };
+  set(1, 1, '元日'); set(1, nthMon(1, 2), '成人の日'); set(2, 11, '建国記念の日'); if (y >= 2020) set(2, 23, '天皇誕生日');
+  set(3, Math.floor(20.8431 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), '春分の日');
+  set(4, 29, '昭和の日'); set(5, 3, '憲法記念日'); set(5, 4, 'みどりの日'); set(5, 5, 'こどもの日');
+  if (y === 2020) set(7, 23, '海の日'); else if (y === 2021) set(7, 22, '海の日'); else set(7, nthMon(7, 3), '海の日');
+  if (y === 2020) set(8, 10, '山の日'); else if (y === 2021) set(8, 8, '山の日'); else if (y >= 2016) set(8, 11, '山の日');
+  set(9, nthMon(9, 3), '敬老の日'); set(9, Math.floor(23.2488 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), '秋分の日');
+  if (y === 2020) set(7, 24, 'スポーツの日'); else if (y === 2021) set(7, 23, 'スポーツの日'); else set(10, nthMon(10, 2), y >= 2020 ? 'スポーツの日' : '体育の日');
+  set(11, 3, '文化の日'); set(11, 23, '勤労感謝の日'); if (y <= 2018) set(12, 23, '天皇誕生日');
+  if (y === 2019) { set(4, 30, '国民の休日'); set(5, 1, '天皇の即位の日'); set(5, 2, '国民の休日'); set(10, 22, '即位礼正殿の儀'); }
+  // 国民の休日（祝日に挟まれた平日）
+  for (const k of [...h.keys()]) { const n2 = addDays(k, 2); if (h.has(n2) && !h.has(addDays(k, 1)) && parseYmd(addDays(k, 1)).getDay() !== 0) h.set(addDays(k, 1), '国民の休日'); }
+  // 振替休日（日曜の祝日 → 次の祝日でない日）
+  for (const k of [...h.keys()].sort()) { if (parseYmd(k).getDay() === 0) { let n = addDays(k, 1); while (h.has(n)) n = addDays(n, 1); h.set(n, '振替休日'); } }
+  HOLI.set(y, h); return h;
+}
+const holidayName = s => holidaysOf(+s.slice(0, 4)).get(s) || '';
+
+// ---- カレンダーのデータ ----
+S.cal = { items: [] };
+const CAL_FILE = '_calendar.json';
+const calId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const calLive = () => S.cal.items.filter(x => !x.deleted);
+async function calReadFile() {
+  try {
+    const fh = await S.root.getFileHandle(CAL_FILE);
+    let text;
+    if (fh.isDrive && fh.id) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
+    else text = await (await fh.getFile()).text();
+    const d = JSON.parse(text); return Array.isArray(d.items) ? d.items : [];
+  } catch { return []; }
+}
+async function calLoad() { S.cal = { items: S.root ? await calReadFile() : [] }; }
+// 保存は「ドライブの最新と混ぜてから」書く（PC とスマホで同時に足しても消えない）
+const calMerge = (a, b) => { const m = new Map(); for (const x of [...a, ...b]) { const o = m.get(x.id); if (!o || (x.updatedAt || 0) >= (o.updatedAt || 0)) m.set(x.id, x); } return [...m.values()]; };
+let calSaving = Promise.resolve();
+function calSave() {
+  calSaving = calSaving.then(async () => {
+    const remote = await calReadFile();
+    S.cal.items = calMerge(remote, S.cal.items);
+    const fh = await S.root.getFileHandle(CAL_FILE, { create: true }); fh.force = true;
+    const w = await fh.createWritable(); await w.write(JSON.stringify({ version: 1, items: S.cal.items }, null, 1)); await w.close();
+  }).catch(e => { console.error(e); toast('予定を保存できませんでした: ' + e.message, 4000); });
+  return calSaving;
+}
+function calUpsert(item) { item.updatedAt = Date.now(); const i = S.cal.items.findIndex(x => x.id === item.id); if (i >= 0) S.cal.items[i] = item; else S.cal.items.push(item); return calSave(); }
+function calRemove(item) { return calUpsert({ id: item.id, deleted: true }); }
+// その日にかかるもの
+function calOn(s) {
+  const out = []; const today = todayYmd();
+  for (const x of calLive()) {
+    if (isYearly(x)) { if (x.date && x.date.slice(5) === s.slice(5) && (x.date.startsWith('0000') || x.date <= s)) out.push(x); continue; }
+    if (!x.start) continue;
+    const end = x.end || (x.type === 'period' ? (today > x.start ? today : x.start) : x.start); // 月のもので終わりが未記入なら今日まで
+    if (x.start <= s && s <= end) out.push(x);
+  }
+  return out;
+}
+const showPeriod = () => localStorage.getItem('notes:showPeriod') !== '0';
+const COLORS = [['blue', '#3b6cf0'], ['green', '#2f9e6b'], ['orange', '#e0882f'], ['purple', '#8a5cf0'], ['gray', '#8a8f98']];
+const colorOf = k => (COLORS.find(c => c[0] === k) || COLORS[0])[1];
+
+// ---- お気に入り（_notes.json の favorites に [{type, path}]） ----
+const favList = () => (S.vaultData.favorites = S.vaultData.favorites || []);
+const isFav = (type, path) => favList().some(f => f.type === type && f.path === path);
+function toggleFav(type, path) {
+  const l = favList(); const i = l.findIndex(f => f.type === type && f.path === path);
+  if (i >= 0) { l.splice(i, 1); toast('お気に入りから外しました'); } else { l.push({ type, path }); toast('お気に入りに入れました'); }
+  saveVaultData(); if (S.view === 'home') showHome();
+}
+function remapFav(from, to, isDir) {
+  const l = S.vaultData.favorites; if (!l) return; let ch = false;
+  for (const f of l) {
+    if (!isDir && f.type === 'note' && f.path === from) { f.path = to; ch = true; }
+    if (isDir && (f.path === from || f.path.startsWith(from + '/'))) { if (to === null) f.gone = true; else { f.path = to + f.path.slice(from.length); ch = true; } }
+  }
+  if (l.some(f => f.gone)) { S.vaultData.favorites = l.filter(f => !f.gone); ch = true; }
+  if (ch) saveVaultData();
+}
+
+// ---- 最近さわったノート（編集日時と、この端末で開いた日時の新しい方） ----
+const openedKey = () => 'notes:opened:' + (S.root ? (S.root.isDrive ? 'gd:' + S.root.id : S.root.name) : '');
+function markOpened(n) { try { const m = JSON.parse(localStorage.getItem(openedKey()) || '{}'); m[n.path] = Date.now(); const keep = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 200); localStorage.setItem(openedKey(), JSON.stringify(Object.fromEntries(keep))); } catch {} }
+function recentNotes(limit = 12) {
+  let m = {}; try { m = JSON.parse(localStorage.getItem(openedKey()) || '{}'); } catch {}
+  return S.notes.map(n => [n, Math.max(n.mtime || 0, m[n.path] || 0)]).sort((a, b) => b[1] - a[1]).slice(0, limit).map(x => x[0]);
+}
+const fmtAgo = ms => { const s = (Date.now() - ms) / 1000; if (s < 60) return 'たった今'; if (s < 3600) return `${Math.floor(s / 60)}分前`; if (s < 86400) return `${Math.floor(s / 3600)}時間前`; if (s < 86400 * 7) return `${Math.floor(s / 86400)}日前`; const d = new Date(ms); return `${d.getMonth() + 1}/${d.getDate()}`; };
+
+// ---- 画面 ----
+async function showHome() {
+  if (!S.root) return;
+  await flushSave();
+  S.current = null; markActiveRow();
+  if (matchMedia('(max-width:760px)').matches && !$('#app').classList.contains('side-hidden')) $('#btn-side-hide').click();
+  setView('home'); $('#crumb').textContent = (S.root.isDrive ? '☁ ' : '') + S.root.name; $('#status').textContent = '';
+  const h = $('#home');
+  if (HOME.mode === 'wareki') { drawWarekiList(true); return; }
+  if (!HOME.ym) { const t = new Date(); HOME.ym = [t.getFullYear(), t.getMonth()]; }
+  const recent = recentNotes(12);
+  const favs = favList().filter(f => f.type === 'dir' ? S.dirs.has(f.path) : S.byPath.has(f.path));
+  const tops = [...S.dirs.keys()].filter(d => d && !d.includes('/')).sort((a, b) => a.localeCompare(b, 'ja'));
+  const countIn = d => S.notes.filter(n => n.dir === d || n.dir.startsWith(d + '/')).length;
+  h.innerHTML = `
+    <div class="home-head"><h1>${esc(S.root.name)}</h1>
+      <div class="home-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="home-q" type="search" placeholder="${esc(S.root.name)} で検索" value="${esc(HOME.q)}"></div></div>
+    <div id="home-results"></div>
+    <section class="home-sec"><h2>最近</h2>${recent.length ? '<div class="home-recent"></div>' : '<p class="home-empty">まだノートがありません</p>'}</section>
+    <div class="home-grid">
+      <section class="home-sec"><div class="cal-head"><button class="cal-nav" data-d="-1" title="前の月">‹</button><h2 class="cal-title"></h2><button class="cal-nav" data-d="1" title="次の月">›</button><button class="cal-today">今日</button><span style="flex:1"></span><button class="cal-menu" title="カレンダーの設定">⋯</button></div><div class="cal-grid"></div></section>
+      <section class="home-sec"><h2>これから</h2><div class="home-upcoming"></div>
+        <div class="home-btns"><button data-a="event">＋ 予定</button><button data-a="birthday">＋ 誕生日</button><button data-a="anniv">＋ 記念日</button><button data-a="period">＋ 月のもの</button></div>
+        <h2 style="margin-top:22px">和暦変換</h2><div class="wareki">
+          <div><input type="date" id="wk-date" value="${todayYmd()}"><span id="wk-out"></span></div>
+          <div><select id="wk-era">${ERAS.map(([e]) => `<option>${e}</option>`).join('')}</select><input type="number" id="wk-y" min="1" max="99" value="${+todayYmd().slice(0, 4) - 2018}" style="width:70px">年 → <span id="wk-out2"></span></div>
+        </div>
+        <div class="home-btns"><button class="open-wk">和暦⇔西暦の一覧・誕生日と記念日 ›</button></div></section>
+    </div>
+    ${favs.length ? `<section class="home-sec"><h2>お気に入り</h2><div class="home-list">${favs.map(f => f.type === 'dir'
+      ? `<button class="home-item" data-dir="${esc(f.path)}"><span class="hi-ic">${esc(folderIcon(f.path) || '📁')}</span><span class="hi-t">${esc(baseOf(f.path))}</span><span class="hi-m">${countIn(f.path)}</span></button>`
+      : `<button class="home-item" data-note="${esc(f.path)}"><span class="hi-ic">📄</span><span class="hi-t">${esc(S.byPath.get(f.path).fmTitle || S.byPath.get(f.path).title)}</span><span class="hi-m">${esc(S.byPath.get(f.path).dir ? crumbOf(S.byPath.get(f.path).dir) : '')}</span></button>`).join('')}</div></section>` : ''}
+    <section class="home-sec"><h2>フォルダ</h2><div class="home-list">${tops.map(d => `<button class="home-item" data-dir="${esc(d)}"><span class="hi-ic">${esc(folderIcon(d) || '📁')}</span><span class="hi-t">${esc(d)}</span><span class="hi-m">${countIn(d)}</span></button>`).join('') || '<p class="home-empty">フォルダはまだありません</p>'}
+      ${S.notes.some(n => !n.dir) ? `<button class="home-item" data-dir=""><span class="hi-ic">🗒️</span><span class="hi-t">すべてのノート</span><span class="hi-m">${S.notes.length}</span></button>` : ''}</div></section>`;
+  // 最近
+  const rw = h.querySelector('.home-recent');
+  if (rw) for (const n of recent) {
+    const c = document.createElement('div'); c.className = 'card home-card'; const img = firstImageOf(n);
+    let op = 0; try { op = JSON.parse(localStorage.getItem(openedKey()) || '{}')[n.path] || 0; } catch {}
+    c.innerHTML = `<div class="thumb ${img ? '' : 'empty'}">${img ? '' : '✎'}</div><div class="body"><div class="t">${esc(n.fmTitle || n.title)}</div><div class="ex">${esc(excerptOf(n.body))}</div><div class="hm">${esc(n.dir ? crumbOf(n.dir) : '')}${n.dir ? ' · ' : ''}${fmtAgo(Math.max(n.mtime || 0, op))}</div></div>`;
+    c.onclick = () => openNote(n); c.oncontextmenu = e => { e.preventDefault(); noteMenu(e, n); }; onLongPress(c, e => noteMenu(e, n));
+    if (img) urlFor(img).then(u => { if (u) c.querySelector('.thumb').style.backgroundImage = `url("${u}")`; else c.querySelector('.thumb').classList.add('empty'); });
+    rw.appendChild(c);
+  }
+  h.querySelectorAll('.home-item').forEach(b => {
+    if (b.dataset.note !== undefined) { const n = S.byPath.get(b.dataset.note); b.onclick = () => openNote(n); b.oncontextmenu = e => { e.preventDefault(); noteMenu(e, n); }; onLongPress(b, e => noteMenu(e, n)); }
+    else { const d = b.dataset.dir; b.onclick = () => showGallery(d); if (d) { b.oncontextmenu = e => { e.preventDefault(); folderMenu(e, d); }; onLongPress(b, e => folderMenu(e, d)); } }
+  });
+  // 検索
+  const q = $('#home-q'); const drawResults = () => {
+    HOME.q = q.value; const t = q.value.trim().toLowerCase(); const box = $('#home-results');
+    if (!t) { box.innerHTML = ''; return; }
+    const hits = S.notes.filter(n => (n.fmTitle || n.title).toLowerCase().includes(t) || n.body.toLowerCase().includes(t)).slice(0, 40);
+    box.innerHTML = `<section class="home-sec"><h2>「${esc(q.value.trim())}」${hits.length >= 40 ? '40 件以上' : hits.length + ' 件'}</h2><div class="home-list">${hits.map(n => `<button class="home-item" data-p="${esc(n.path)}"><span class="hi-ic">📄</span><span class="hi-t">${esc(n.fmTitle || n.title)}</span><span class="hi-m">${esc(n.dir ? crumbOf(n.dir) : '')}</span></button>`).join('') || '<p class="home-empty">見つかりませんでした</p>'}</div></section>`;
+    box.querySelectorAll('[data-p]').forEach(b => b.onclick = () => openNote(S.byPath.get(b.dataset.p)));
+  };
+  q.oninput = drawResults; drawResults();
+  q.onkeydown = e => { if (e.key === 'Enter') { const f = $('#home-results [data-p]'); if (f) f.click(); } };
+  // カレンダー
+  h.querySelectorAll('.cal-nav').forEach(b => b.onclick = () => { let [y, m] = HOME.ym; m += +b.dataset.d; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } HOME.ym = [y, m]; drawCal(); });
+  h.querySelector('.cal-today').onclick = () => { const t = new Date(); HOME.ym = [t.getFullYear(), t.getMonth()]; drawCal(); };
+  h.querySelector('.cal-menu').onclick = e => showMenu(e, [
+    { label: (showPeriod() ? '✓ ' : '　') + '月のものをカレンダーに出す', run: () => { localStorage.setItem('notes:showPeriod', showPeriod() ? '0' : '1'); drawCal(); drawUpcoming(); } },
+    { label: '誕生日・記念日の一覧…', run: birthdayList },
+    { label: '和暦⇔西暦の一覧', run: () => { HOME.mode = 'wareki'; showHome(); } },
+    { label: '月のものの記録一覧…', run: periodList },
+  ]);
+  h.querySelectorAll('.home-btns button[data-a]').forEach(b => b.onclick = () => itemDialog(b.dataset.a, null, todayYmd()));
+  h.querySelector('.open-wk').onclick = () => { HOME.mode = 'wareki'; showHome(); };
+  // 和暦
+  const wk = () => { const v = $('#wk-date').value; $('#wk-out').textContent = v ? `→ ${wareki(v)}` + (holidayName(v) ? `（${holidayName(v)}）` : '') : ''; const y = eraToYear($('#wk-era').value, +$('#wk-y').value || 1); $('#wk-out2').textContent = y ? `西暦 ${y} 年` : ''; };
+  ['#wk-date', '#wk-era', '#wk-y'].forEach(s => $(s).oninput = wk); wk();
+  drawCal(); drawUpcoming();
+}
+function chipsOf(s) {
+  return calOn(s).filter(x => x.type !== 'period' || showPeriod()).sort((a, b) => (a.type === 'period') - (b.type === 'period') || (a.time || '').localeCompare(b.time || ''));
+}
+function drawCal() {
+  const g = $('#home .cal-grid'); if (!g) return;
+  const [y, m] = HOME.ym; $('#home .cal-title').textContent = `${y}年${m + 1}月`; $('#home .cal-title').title = warekiYear(y);
+  const first = new Date(y, m, 1); const start = new Date(y, m, 1 - first.getDay()); const today = todayYmd();
+  let html = WD.map((w, i) => `<div class="cal-wd${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${w}</div>`).join('');
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i); const s = ymd(d); const hol = holidayName(s);
+    const items = chipsOf(s); const per = items.some(x => x.type === 'period');
+    const chips = items.filter(x => x.type !== 'period').slice(0, 3).map(x => isYearly(x) ? `<span class="cal-chip bd">${yIcon(x)} ${esc(x.title)}</span>` : `<span class="cal-chip" style="--c:${colorOf(x.color)}">${x.time ? esc(x.time) + ' ' : ''}${esc(x.title)}</span>`).join('');
+    const more = items.filter(x => x.type !== 'period').length - 3;
+    html += `<button class="cal-day${d.getMonth() !== m ? ' out' : ''}${s === today ? ' today' : ''}${d.getDay() === 0 || hol ? ' sun' : d.getDay() === 6 ? ' sat' : ''}${per ? ' per' : ''}" data-d="${s}" title="${esc(hol)}"><span class="n">${d.getDate()}</span>${hol ? `<span class="hol">${esc(hol)}</span>` : ''}${chips}${more > 0 ? `<span class="cal-more">+${more}</span>` : ''}</button>`;
+  }
+  g.innerHTML = html;
+  g.querySelectorAll('.cal-day').forEach(b => b.onclick = () => dayDialog(b.dataset.d));
+}
+function drawUpcoming() {
+  const box = $('#home .home-upcoming'); if (!box) return;
+  const t = todayYmd(), until = addDays(t, 60); const rows = [];
+  for (const x of calLive()) {
+    if (x.type === 'event') { const end = x.end || x.start; if (end >= t && x.start <= until) rows.push([x.start < t ? t : x.start, x]); }
+    else if (isYearly(x) && x.date) { const md = x.date.slice(5); let next = `${t.slice(0, 4)}-${md}`; if (next < t) next = `${+t.slice(0, 4) + 1}-${md}`; if (next <= until) rows.push([next, x]); }
+    else if (x.type === 'period' && showPeriod() && !x.end && x.start <= t) rows.push([t, x]);
+  }
+  rows.sort((a, b) => a[0].localeCompare(b[0]) || (a[1].time || '').localeCompare(b[1].time || ''));
+  box.innerHTML = rows.length ? rows.slice(0, 12).map(([d, x]) => {
+    const left = daysBetween(t, d); const when = left === 0 ? '今日' : left === 1 ? '明日' : `${left}日後`;
+    let label = esc(x.title), sub = '';
+    if (isYearly(x)) { label = yIcon(x) + ' ' + label; sub = yearlyNote(x, d); }
+    else if (x.type === 'period') { label = '● 月のもの'; sub = `${daysBetween(x.start, t) + 1}日目`; }
+    else { if (x.end && x.end !== x.start) sub = `${fmtMD(x.start)}〜${fmtMD(x.end)}`; if (x.time) sub = (sub ? sub + ' ' : '') + x.time; }
+    return `<button class="up-row" data-id="${esc(x.id)}" data-d="${d}"><span class="up-d">${fmtMD(d)}<small>${when}</small></span><span class="up-t">${label}${sub ? `<small>${esc(sub)}</small>` : ''}</span></button>`;
+  }).join('') : '<p class="home-empty">60 日以内の予定はありません</p>';
+  box.querySelectorAll('.up-row').forEach(b => b.onclick = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); if (x) itemDialog(x.type, x, b.dataset.d); });
+}
+const refreshCal = () => { if (S.view !== 'home') return; if (HOME.mode === 'wareki') drawWarekiList(false); else { drawCal(); drawUpcoming(); } };
+
+// その日のもの → 選んで編集、または追加
+async function dayDialog(s) {
+  const items = calOn(s).filter(x => x.type !== 'period' || showPeriod()); const hol = holidayName(s);
+  let next = null;
+  const p = dialog(`${s.replace(/-/g, '/')}（${WD[parseYmd(s).getDay()]}）`, `<p style="margin:-4px 0 10px;color:var(--fg3);font-size:12.5px">${wareki(s)}${hol ? '・' + esc(hol) : ''}</p>
+    <div class="home-list" style="margin-bottom:12px">${items.map(x => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${isYearly(x) ? yIcon(x) : x.type === 'period' ? '●' : '📅'}</span><span class="hi-t">${esc(x.type === 'period' ? '月のもの' : x.title)}</span><span class="hi-m">${isYearly(x) ? yearlyNote(x, s, false) : x.time ? esc(x.time) : ''}</span></button>`).join('') || '<p class="home-empty">この日の予定はありません</p>'}</div>
+    <div class="home-btns"><button type="button" data-a="event">＋ 予定</button><button type="button" data-a="birthday">＋ 誕生日</button><button type="button" data-a="anniv">＋ 記念日</button><button type="button" data-a="period">＋ 月のもの</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  $$('#dlg .home-item').forEach(b => b.onclick = () => { next = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); itemDialog(x.type, x, s); }; $('#dlg-cancel').click(); });
+  $$('#dlg .home-btns button').forEach(b => b.onclick = () => { next = () => itemDialog(b.dataset.a, null, s); $('#dlg-cancel').click(); });
+  await p; if (next) setTimeout(next, 30);
+}
+// 追加・編集
+async function itemDialog(type, item, date) {
+  const yearly = type === 'birthday' || type === 'anniv';
+  const x = item ? { ...item } : { id: calId(), type, start: date, date: yearly ? date : undefined };
+  const T = { event: '予定', birthday: '誕生日', anniv: '記念日', period: '月のもの' }[type];
+  const noYear = yearly && x.date && x.date.startsWith('0000');
+  const body = type === 'event' ? `
+      <label class="fl">タイトル</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="例: 打ち合わせ">
+      <div class="it-row"><div><label class="fl">開始日</label><input type="date" id="it-start" value="${esc(x.start || date)}"></div><div><label class="fl">終了日（期間のとき）</label><input type="date" id="it-end" value="${esc(x.end || '')}"></div></div>
+      <div class="it-row"><div><label class="fl">時刻（任意）</label><input type="time" id="it-time" value="${esc(x.time || '')}"></div><div><label class="fl">色</label><div class="it-colors">${COLORS.map(([k, c]) => `<label><input type="radio" name="it-color" value="${k}" ${(x.color || 'blue') === k ? 'checked' : ''}><span style="background:${c}"></span></label>`).join('')}</div></div></div>
+      <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}">`
+    : yearly ? `
+      <label class="fl">${type === 'birthday' ? '名前' : 'なんの日'}</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="${type === 'birthday' ? '例: 母' : '例: 結婚記念日、入社、開業、ねこが来た日'}">
+      <label class="fl">${type === 'birthday' ? '生年月日' : 'はじまりの日'}</label><input type="date" id="it-date" value="${esc(noYear ? '2000' + x.date.slice(4) : (x.date || ''))}">
+      <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-6px 0 10px"><input type="checkbox" id="it-noyear" ${noYear ? 'checked' : ''}> ${type === 'birthday' ? '生まれ年' : '年'}はわからない（月日だけ）</label>
+      <p id="it-info" style="font-size:13px;color:var(--fg2);margin:0 0 12px"></p>
+      <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}" placeholder="例: 父、好きなもの、プレゼントの記録">`
+    : `
+      <div class="it-row"><div><label class="fl">始まった日</label><input type="date" id="it-start" value="${esc(x.start || date)}"></div><div><label class="fl">終わった日（まだなら空欄）</label><input type="date" id="it-end" value="${esc(x.end || '')}"></div></div>
+      <label class="fl">メモ（任意）</label><input type="text" id="it-note" value="${esc(x.note || '')}">`;
+  let del = false;
+  const p = dialog(`${T}を${item ? '編集' : '追加'}`, body, { okText: '保存', focus: type === 'period' ? '#it-start' : '#it-title', validate: () => {
+    if (type !== 'period' && !$('#it-title').value.trim()) { toast(type === 'birthday' ? '名前を入れてください' : 'タイトルを入れてください'); return false; }
+    if (yearly && !$('#it-date').value) { toast('日付を入れてください'); return false; }
+    if (!yearly && !$('#it-start').value) { toast('日付を入れてください'); return false; }
+    if (!yearly && $('#it-end').value && $('#it-end').value < $('#it-start').value) { toast('終了日が開始日より前です'); return false; }
+    return true; } });
+  if (item) { $('#dlg-cancel').insertAdjacentHTML('beforebegin', '<button type="button" id="it-del" style="margin-right:auto;color:#d33">削除</button>'); $('#it-del').onclick = () => { del = true; $('#dlg-cancel').click(); }; }
+  if (yearly) { const info = () => {
+    const v = $('#it-date').value; const ny = $('#it-noyear').checked; if (!v) { $('#it-info').textContent = ''; return; }
+    const md = `${+v.slice(5, 7)}月${+v.slice(8)}日`; const e = etoOf(+v.slice(0, 4));
+    $('#it-info').innerHTML = ny ? `毎年 ${md}` : type === 'birthday'
+      ? `${esc(wareki(v))}生まれ・今 <b>${ageOn(v, todayYmd())}歳</b><br>${e[2]} ${e[0]}（${e[1]}）年・${seizaOf(v)}`
+      : `${esc(wareki(v))}から・今年で <b>${+todayYmd().slice(0, 4) - +v.slice(0, 4)}年</b>（${daysBetween(v, todayYmd()).toLocaleString()}日目）`;
+  }; $('#it-date').oninput = info; $('#it-noyear').onchange = info; info(); }
+  const ok = await p; $('#it-del')?.remove();
+  if (del) { if (await confirmDlg('削除', `「${type === 'period' ? '月のもの' : x.title}」を削除します。`)) { await calRemove(x); refreshCal(); toast('削除しました'); } return; }
+  if (!ok) return;
+  if (type === 'event') Object.assign(x, { title: $('#it-title').value.trim(), start: $('#it-start').value, end: $('#it-end').value && $('#it-end').value !== $('#it-start').value ? $('#it-end').value : '', time: $('#it-time').value, color: $('input[name=it-color]:checked')?.value || 'blue', note: $('#it-note').value.trim() });
+  else if (yearly) { const v = $('#it-date').value; Object.assign(x, { title: $('#it-title').value.trim(), date: $('#it-noyear').checked ? '0000' + v.slice(4) : v, note: $('#it-note').value.trim() }); delete x.start; }
+  else Object.assign(x, { title: '月のもの', start: $('#it-start').value, end: $('#it-end').value, note: $('#it-note').value.trim() });
+  await calUpsert(x); refreshCal(); toast('保存しました');
+}
+async function birthdayList() {
+  const t = todayYmd();
+  const list = calLive().filter(isYearly).map(x => { const md = x.date.slice(5); let next = `${t.slice(0, 4)}-${md}`; if (next < t) next = `${+t.slice(0, 4) + 1}-${md}`; return [next, x]; }).sort((a, b) => a[0].localeCompare(b[0]));
+  let pick = null;
+  const p = dialog('誕生日・記念日の一覧', `<div class="home-list">${list.map(([n, x]) => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${yIcon(x)}</span><span class="hi-t">${esc(x.title)}<small style="display:block;color:var(--fg3);font-size:11.5px">${!hasYear(x) ? '年なし' : `${x.date.replace(/-/g, '/')}・${wareki(x.date)}${x.type === 'birthday' ? '生まれ' : 'から'}`}</small></span><span class="hi-m">${fmtMD(n)}${hasYear(x) ? `<br>${x.type === 'birthday' ? ageOn(x.date, t) + '歳' : ageOn(x.date, t) + '年'}` : ''}</span></button>`).join('') || '<p class="home-empty">まだ登録がありません</p>'}</div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  $$('#dlg .home-item').forEach(b => b.onclick = () => { pick = S.cal.items.find(i => i.id === b.dataset.id); $('#dlg-cancel').click(); });
+  await p; if (pick) setTimeout(() => itemDialog(pick.type, pick, todayYmd()), 30);
+}
+async function periodList() {
+  const list = calLive().filter(x => x.type === 'period').sort((a, b) => b.start.localeCompare(a.start));
+  let pick = null;
+  const p = dialog('月のものの記録', `<div class="home-list">${list.map((x, i) => { const prev = list[i + 1]; const len = x.end ? daysBetween(x.start, x.end) + 1 : null; return `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">●</span><span class="hi-t">${x.start.replace(/-/g, '/')}${x.end ? ' 〜 ' + x.end.slice(5).replace('-', '/') : ' 〜（記録中）'}${x.note ? `<small style="display:block;color:var(--fg3);font-size:11.5px">${esc(x.note)}</small>` : ''}</span><span class="hi-m">${len ? len + '日間' : ''}${prev ? `<br>前回から${daysBetween(prev.start, x.start)}日` : ''}</span></button>`; }).join('') || '<p class="home-empty">まだ記録がありません</p>'}</div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  $$('#dlg .home-item').forEach(b => b.onclick = () => { pick = S.cal.items.find(i => i.id === b.dataset.id); $('#dlg-cancel').click(); });
+  await p; if (pick) setTimeout(() => itemDialog('period', pick, pick.start), 30);
+}
+
+// ---- 和暦⇔西暦の一覧（年ごとに、その年の誕生日・記念日が並ぶ） ----
+function drawWarekiList(scrollToNow) {
+  const h = $('#home'); const ty = +todayYmd().slice(0, 4); const only = localStorage.getItem('notes:wkOnly') === '1';
+  const byYear = new Map(); // '昭和19' → items
+  for (const x of calLive().filter(x => isYearly(x) && hasYear(x))) { const w = wareki(x.date, false); if (!byYear.has(w)) byYear.set(w, []); byYear.get(w).push(x); }
+  for (const l of byYear.values()) l.sort((a, b) => a.date.localeCompare(b.date));
+  const eras = [...ERAS].reverse(); let html = '';
+  eras.forEach(([era, start], i) => {
+    const next = eras[i + 1]; const endDate = next ? addDays(next[1], -1) : null; const y0 = +start.slice(0, 4), y1 = next ? +next[1].slice(0, 4) : ty + 1;
+    let rows = '';
+    for (let y = y0; y <= y1; y++) {
+      if (next && `${y}-01-01` > endDate) break;
+      const n = y - y0 + 1; const key = `${era}${n === 1 ? '元' : n}年`; const items = byYear.get(key) || [];
+      if (only && !items.length) continue;
+      const e = etoOf(y); const a1 = ty - y - 1, a2 = ty - y;
+      rows += `<div class="wk-row${items.length ? ' has' : ''}${y === ty ? ' now' : ''}" data-y="${y}" data-era="${era}" id="wk-${era}-${y}">
+        <div class="wk-main"><b>${key}</b><span class="wk-eq">⇔</span><b>西暦${y}年</b></div>
+        <div class="wk-sub"><span>${e[2]} ${e[0]}（${e[1]}）</span><span>${a2 > 0 ? `${a1}歳/${a2}歳` : a2 === 0 ? '今年' : ''}</span></div>
+        ${items.map(x => `<button class="wk-item" data-id="${esc(x.id)}"><span class="wk-n">${yIcon(x)} ${esc(x.title)}</span> ${+x.date.slice(5, 7)}月${+x.date.slice(8)}日${x.type === 'birthday' ? `生まれ <b>${ageOn(x.date, todayYmd())}歳</b>` : `から <b>${ageOn(x.date, todayYmd())}年</b>`}${x.type === 'birthday' ? `<small>${seizaOf(x.date)}</small>` : ''}${x.note ? `<small class="wk-memo">${esc(x.note)}</small>` : ''}</button>`).join('')}
+      </div>`;
+    }
+    if (rows) html += `<div class="wk-era"><div class="wk-era-h">${era}（${start.replace(/-0?/g, '/').replace(/^(\d+)\//, '$1/')}〜${endDate ? endDate.replace(/-0?/g, '/') : ''}）</div>${rows}</div>`;
+  });
+  h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ ホーム</button><h1>和暦 ⇔ 西暦</h1><span style="flex:1"></span><button class="wk-now">今年</button></div>
+    <div class="wk-tools"><label><input type="checkbox" id="wk-only" ${only ? 'checked' : ''}> 登録がある年だけ</label><span style="flex:1"></span><button data-a="birthday">＋ 誕生日</button><button data-a="anniv">＋ 記念日</button></div>
+    <div class="wk-list">${html || '<p class="home-empty" style="padding:20px">まだ誕生日・記念日の登録がありません</p>'}</div>`;
+  h.querySelector('.wk-back').onclick = () => { HOME.mode = 'home'; showHome(); };
+  h.querySelector('.wk-now').onclick = () => { const r = h.querySelector('.wk-row.now') || [...h.querySelectorAll('.wk-row')].pop(); r?.scrollIntoView({ block: 'center' }); };
+  h.querySelector('#wk-only').onchange = e => { localStorage.setItem('notes:wkOnly', e.target.checked ? '1' : '0'); drawWarekiList(true); };
+  h.querySelectorAll('.wk-tools button[data-a]').forEach(b => b.onclick = () => itemDialog(b.dataset.a, null, todayYmd()));
+  h.querySelectorAll('.wk-item').forEach(b => b.onclick = e => { e.stopPropagation(); const x = S.cal.items.find(i => i.id === b.dataset.id); if (x) itemDialog(x.type, x, todayYmd()); });
+  h.querySelectorAll('.wk-row').forEach(r => r.onclick = () => {
+    const y = +r.dataset.y; const era = r.dataset.era; const st = (ERAS.find(e => e[0] === era) || [])[1] || '';
+    const d0 = st && st.startsWith(String(y)) ? st : `${y}-01-01`; // 元年は改元日から
+    yearDialog(y, era, d0);
+  });
+  if (scrollToNow) setTimeout(() => { const r = h.querySelector('.wk-row.now') || (only && [...h.querySelectorAll('.wk-row')].pop()); if (r) r.scrollIntoView({ block: 'center' }); }, 30);
+}
+async function yearDialog(y, era, d0) {
+  let next = null; const e = etoOf(y);
+  const p = dialog(`${wareki(d0, false)}（西暦${y}年）`, `<p style="margin:-4px 0 12px;color:var(--fg2);font-size:13px">${e[2]} ${e[0]}（${e[1]}）年・今年で ${+todayYmd().slice(0, 4) - y} 年前</p>
+    <div class="home-btns"><button type="button" data-a="birthday">＋ この年の誕生日</button><button type="button" data-a="anniv">＋ この年の記念日</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  $$('#dlg .home-btns button').forEach(b => b.onclick = () => { next = () => itemDialog(b.dataset.a, null, d0); $('#dlg-cancel').click(); });
+  await p; if (next) setTimeout(next, 30);
+}
+
 const ICON_SET = ['📁','📂','🗂️','📌','⭐','❤️','✅','📝','📒','📕','📗','📘','📙','📚','🔖','💡','🎯','🚀','🧪','🔬','💻','🖥️','📱','🤖','🧠','🎨','🖌️','✏️','📷','🎬','🎵','🎮','🧩','🛠️','⚙️','🔧','📊','📈','💰','🧾','🏢','🏠','✈️','🗺️','🍙','☕','🌱','🌸','🐱','🐶','🐹','🦊','🔥','✨','🌙','☀️','🔒','📥','📤','🗓️','⏰','❓','❗','🟥','🟧','🟨','🟩','🟦','🟪'];
+// 絵文字の一覧（カテゴリ・日本語と英語の名前で検索できる）。src/build 用に自動生成
+const EMOJI_CATS = [["😀", "顔・気持ち", "😀|にっこり笑う grinning\n😃|わーい smiley\n😄|笑顔 smile\n😁|にやっと笑う grin\n😆|きゃー laughing satisfied\n😅|冷や汗笑顔 sweat smile\n🤣|笑い転げる rolling on the floor laughing\n😂|嬉し泣き joy\n🙂|微笑む slightly smiling face\n🙃|さかさまの顔 upside down face\n🫠|溶けている顔 melting face\n😉|ウインク wink\n😊|にこにこ blush\n😇|天使の輪がついた笑顔 innocent\n🥰|ハートの笑顔 smiling face with 3 hearts\n😍|目がハートの笑顔 heart eyes\n🤩|目が星の笑顔 grinning face with star eyes star-struck\n😘|投げキッス kissing heart\n😗|キス kissing\n☺️|スマイリー relaxed\n😚|ちゅっ kissing closed eyes\n😙|にっこりキス kissing smiling eyes\n🥲|嬉し涙の顔 smiling face with tear\n😋|にこにこぺろり yum\n😛|舌を出した顔 stuck out tongue\n😜|あっかんべー stuck out tongue winking eye\n🤪|ふざけた顔 grinning face with one large and one small eye zany face\n😝|目を閉じてべー stuck out tongue closed eyes\n🤑|お金の顔 money mouth face\n🤗|ハグ hugging face\n🤭|口に手を当てた顔 face with hand over mouth smiling face with smiling eyes and hand covering mouth\n🫢|目を開けて口に手を当てた顔 face with open eyes and hand over mouth\n🫣|指の間からのぞき見る顔 face with peeking eye\n🤫|しーっ face with finger covering closed lips shushing face\n🤔|考える顔 thinking face\n🫡|敬礼する顔 saluting face\n🤐|口チャック zipper mouth face\n🤨|眉を上げた顔 face with one eyebrow raised face with raised eyebrow\n😐|ポーカーフェイス neutral face\n😑|無表情 expressionless\n😶|口のない顔 no mouth\n🫥|点線の顔 dotted line face\n😶‍🌫️|雲の中の顔 face in clouds\n😏|薄笑いをする顔 smirk\n😒|しらけた unamused\n🙄|上を見る顔 face with rolling eyes\n😬|しかめ面 grimacing\n😮‍💨|息を吐く顔 face exhaling\n🤥|うそつきの顔 lying face\n🫨|震えている顔 shaking face\n🙂‍↔️|首を横に振る head shaking horizontally\n🙂‍↕️|首を縦に振る head shaking vertically\n😌|ほっとした顔 relieved\n😔|しょぼーん pensive\n😪|眠い sleepy\n🤤|よだれを垂らした顔 drooling face\n😴|寝る sleeping\n😷|マスク顔 mask\n🤒|熱がある顔 face with thermometer\n🤕|包帯を巻いた顔 face with head bandage\n🤢|吐き気を催している顔 nauseated face\n🤮|嘔吐する顔 face vomiting face with open mouth vomiting\n🤧|くしゃみする顔 sneezing face\n🥵|暑い顔 hot face\n🥶|寒い顔 cold face\n🥴|ふらふらの顔 woozy face\n😵|めまい dizzy face\n😵‍💫|目を回した顔 face with spiral eyes\n🤯|頭爆発 exploding head shocked face with exploding head\n🤠|カウボーイの顔 face with cowboy hat\n🥳|パーティーの顔 partying face\n🥸|変装した顔 disguised face\n😎|サングラスで笑顔 sunglasses\n🤓|オタク nerd face\n🧐|モノクルを付けた顔 face with monocle\n😕|混乱 confused\n🫤|口が斜めの顔 face with diagonal mouth\n😟|悩む顔 worried\n🙁|少し困った顔 slightly frowning face\n☹️|困った顔 white frowning face\n😮|口が開いた顔 open mouth\n😯|ぽかーん hushed\n😲|びっくり astonished\n😳|赤面 flushed\n🥺|訴えるような顔 pleading face\n🥹|涙をこらえた顔 face holding back tears\n😦|あきれ顔 frowning\n😧|苦悩 anguished\n😨|青ざめ fearful\n😰|冷や汗青ざめ cold sweat\n😥|どうしよう disappointed relieved\n😢|泣き顔 cry\n😭|大泣き sob\n😱|恐怖 scream\n😖|困惑した顔 confounded\n😣|我慢 persevere\n😞|失望した顔 disappointed\n😓|冷や汗 sweat\n😩|あきらめ weary\n😫|疲れた tired face\n🥱|あくびした顔 yawning face\n😤|勝ち誇った顔 triumph\n😡|ふくれっ面 rage\n😠|ぷんぷん angry\n🤬|ののしる face with symbols on mouth serious face with symbols covering mouth\n😈|笑った悪魔 smiling imp\n👿|怒った悪魔 imp\n💀|ドクロ skull\n☠️|ドクロと骨 skull and crossbones\n💩|うんち hankey poop shit\n🤡|ピエロの顔 clown face\n👹|鬼 japanese ogre\n👺|天狗 japanese goblin\n👻|お化け ghost\n👽|エイリアン alien\n👾|インベーダー space invader\n🤖|ロボット robot face\n😺|にっこり笑う猫 smiley cat\n😸|にやっと笑う猫 smile cat\n😹|嬉し泣きする猫 joy cat\n😻|目がハートの猫 heart eyes cat\n😼|にやりとする猫 smirk cat\n😽|猫のキス kissing cat\n🙀|絶望する猫 scream cat\n😿|泣いている猫 crying cat face\n😾|不機嫌な猫 pouting cat\n🙈|見ざる see no evil\n🙉|聞かざる hear no evil\n🙊|言わざる speak no evil\n💌|ラブレター love letter\n💘|ハートに矢 cupid\n💝|ハートにリボン gift heart\n💖|きらきらハート sparkling heart\n💗|大きくなるハート heartpulse\n💓|ドキドキするハート heartbeat\n💞|回転するハート revolving hearts\n💕|2つのハート two hearts\n💟|ハートデコ heart decoration\n❣️|ハートのびっくり heavy heart exclamation mark ornament\n💔|割れたハート broken heart\n❤️‍🔥|燃えるハート heart on fire\n❤️‍🩹|包帯を巻いたハート mending heart\n❤️|赤いハート heart\n🩷|ピンクのハート pink heart\n🧡|オレンジのハート orange heart\n💛|黄色のハート yellow heart\n💚|緑のハート green heart\n💙|青いハート blue heart\n🩵|薄い青のハート light blue heart\n💜|紫のハート purple heart\n🤎|茶色いハート brown heart\n🖤|黒いハート black heart\n🩶|灰色のハート grey heart\n🤍|白いハート white heart\n💋|キスマーク kiss\n💯|100点満点 100\n💢|むかっ anger\n💥|衝突 boom collision\n💫|くらくら dizzy\n💦|あせあせ sweat drops\n💨|ダッシュ dash\n🕳️|穴 hole\n💬|会話の吹き出し speech balloon\n👁️‍🗨️|吹き出しの目 eye-in-speech-bubble\n🗨️|吹き出し左 left speech bubble\n🗯️|怒りの吹き出し right anger bubble\n💭|雲形の吹き出し thought balloon\n💤|グーグー zzz"], ["👋", "人・体", "👋|手を振る wave\n🤚|手の甲 raised back of hand\n🖐️|開いた手 raised hand with fingers splayed\n✋|挙手 hand raised hand\n🖖|バルカンの挨拶 spock-hand\n🫱|右に向けた手 rightwards hand\n🫲|左に向けた手 leftwards hand\n🫳|下に向けた手 palm down hand\n🫴|上に向けた手 palm up hand\n🫷|左向きに押している手 leftwards pushing hand\n🫸|右向きに押している手 rightwards pushing hand\n👌|okの手 ok hand\n🤌|上向きにすぼめた手 pinched fingers\n🤏|つまんでいる指 pinching hand\n✌️|vサイン v\n🤞|指をクロス crossed fingers hand with index and middle fingers crossed\n🫰|親指と人差し指をクロス hand with index finger and thumb crossed\n🤟|アイラブユー i love you hand sign\n🤘|角の指サイン sign of the horns the horns\n🤙|電話の合図 call me hand\n👈|左指差し point left\n👉|右指差し point right\n👆|手の甲上指差し point up 2\n🖕|立てた中指 middle finger reversed hand with middle finger extended\n👇|下指差し point down\n☝️|上指差し point up\n🫵|人を指差している手 index pointing at the viewer\n👍|サムズアップ +1 thumbsup\n👎|サムズダウン -1 thumbsdown\n✊|げんこつ fist\n👊|グー facepunch punch\n🤛|左向きのこぶし left-facing fist\n🤜|右向きのこぶし right-facing fist\n👏|拍手 clap\n🙌|バンザイ raised hands\n🫶|ハート形の手 heart hands\n👐|両手のひら open hands\n🤲|手のひらを揃えた両手 palms up together\n🤝|握手 handshake\n🙏|祈り pray\n✍️|書いている手 writing hand\n💅|マニキュアを塗る手 nail care\n🤳|セルフィー selfie\n💪|力こぶ muscle\n🦾|義手 mechanical arm\n🦿|義足 mechanical leg\n🦵|脚 leg\n🦶|足 foot\n👂|耳 ear\n🦻|補聴器を付けた耳 ear with hearing aid\n👃|鼻 nose\n🧠|脳 brain\n🫀|心臓 anatomical heart\n🫁|肺 lungs\n🦷|歯 tooth\n🦴|骨 bone\n👀|目 eyes\n👁️|片目 eye\n👅|舌 tongue\n👄|口 lips\n🫦|唇を咬んでいる口 biting lip\n👶|赤ん坊 baby\n🧒|子供 child\n👦|男の子 boy\n👧|女の子 girl\n🧑|大人 adult\n👱|金髪の人 person with blond hair\n👨|男性 man\n🧔|あごひげの人 bearded person\n🧔‍♂️|あごひげの男性 man with beard\n🧔‍♀️|あごひげの女性 woman with beard\n👨‍🦰|男性 赤毛 red haired man\n👨‍🦱|男性 巻き毛 curly haired man\n👨‍🦳|男性 白髪 white haired man\n👨‍🦲|男性 はげ頭 bald man\n👩|女性 woman\n👩‍🦰|女性 赤毛 red haired woman\n🧑‍🦰|大人 赤毛 red haired person\n👩‍🦱|女性 巻き毛 curly haired woman\n🧑‍🦱|大人 巻き毛 curly haired person\n👩‍🦳|女性 白髪 white haired woman\n🧑‍🦳|大人 白髪 white haired person\n👩‍🦲|女性 はげ頭 bald woman\n🧑‍🦲|大人 はげ頭 bald person\n👱‍♀️|金髪の女性 blond-haired-woman\n👱‍♂️|金髪の男性 blond-haired-man\n🧓|お年寄り older adult\n👴|おじいさん older man\n👵|おばあさん older woman\n🙍|しかめ面の人 person frowning\n🙍‍♂️|しかめ面の男 man-frowning\n🙍‍♀️|しかめ面の女 woman-frowning\n🙎|不機嫌な人 person with pouting face\n🙎‍♂️|不機嫌な男 man-pouting\n🙎‍♀️|不機嫌な女 woman-pouting\n🙅|ダメのポーズをする人 no good\n🙅‍♂️|ダメのポーズをする男 man-gesturing-no\n🙅‍♀️|ダメのポーズをする女 woman-gesturing-no\n🙆|okのポーズをする人 ok woman\n🙆‍♂️|okのポーズをする男 man-gesturing-ok\n🙆‍♀️|okのポーズをする女 woman-gesturing-ok\n💁|案内する人 information desk person\n💁‍♂️|案内する男 man-tipping-hand\n💁‍♀️|案内する女 woman-tipping-hand\n🙋|手を挙げる人 raising hand\n🙋‍♂️|手を挙げる男 man-raising-hand\n🙋‍♀️|手を挙げる女 woman-raising-hand\n🧏|耳の不自由な人 deaf person\n🧏‍♂️|耳の不自由な男性 deaf man\n🧏‍♀️|耳の不自由な女性 deaf woman\n🙇|おじぎする人 bow\n🙇‍♂️|おじぎする男 man-bowing\n🙇‍♀️|おじぎする女 woman-bowing\n🤦|ひたいに手をあてる人 face palm\n🤦‍♂️|ひたいに手をあてる男 man-facepalming\n🤦‍♀️|ひたいに手をあてる女 woman-facepalming\n🤷|お手上げする人 shrug\n🤷‍♂️|お手上げする男 man-shrugging\n🤷‍♀️|お手上げする女 woman-shrugging\n🧑‍⚕️|医者 health worker\n👨‍⚕️|男性の医者 male-doctor\n👩‍⚕️|女性の医者 female-doctor\n🧑‍🎓|学生 student\n👨‍🎓|男子学生 male-student\n👩‍🎓|女子学生 female-student\n🧑‍🏫|教師 teacher\n👨‍🏫|男性の教師 male-teacher\n👩‍🏫|女性の教師 female-teacher\n🧑‍⚖️|裁判官 judge\n👨‍⚖️|男性の裁判官 male-judge\n👩‍⚖️|女性の裁判官 female-judge\n🧑‍🌾|農家 farmer\n👨‍🌾|農家の男性 male-farmer\n👩‍🌾|農家の女性 female-farmer\n🧑‍🍳|コック cook\n👨‍🍳|男性のコック male-cook\n👩‍🍳|女性のコック female-cook\n🧑‍🔧|整備士 mechanic\n👨‍🔧|男性の整備士 male-mechanic\n👩‍🔧|女性の整備士 female-mechanic\n🧑‍🏭|溶接工 factory worker\n👨‍🏭|男性の溶接工 male-factory-worker\n👩‍🏭|女性の溶接工 female-factory-worker\n🧑‍💼|会社員 office worker\n👨‍💼|男性会社員 male-office-worker\n👩‍💼|女性会社員 female-office-worker\n🧑‍🔬|科学者 scientist\n👨‍🔬|男性科学者 male-scientist\n👩‍🔬|女性科学者 female-scientist\n🧑‍💻|技術者 technologist\n👨‍💻|男性技術者 male-technologist\n👩‍💻|女性技術者 female-technologist\n🧑‍🎤|歌手 singer\n👨‍🎤|男性歌手 male-singer\n👩‍🎤|女性歌手 female-singer\n🧑‍🎨|芸術家 artist\n👨‍🎨|男性の芸術家 male-artist\n👩‍🎨|女性の芸術家 female-artist\n🧑‍✈️|パイロット pilot\n👨‍✈️|男性パイロット male-pilot\n👩‍✈️|女性パイロット female-pilot\n🧑‍🚀|宇宙飛行士 astronaut\n👨‍🚀|男性宇宙飛行士 male-astronaut\n👩‍🚀|女性宇宙飛行士 female-astronaut\n🧑‍🚒|消防士 firefighter\n👨‍🚒|男性消防士 male-firefighter\n👩‍🚒|女性消防士 female-firefighter\n👮|警察官 cop\n👮‍♂️|男性警察官 male-police-officer\n👮‍♀️|女性警察官 female-police-officer\n🕵️|探偵 sleuth or spy\n🕵️‍♂️|男性の探偵 male-detective\n🕵️‍♀️|女性の探偵 female-detective\n💂|衛兵 guardsman\n💂‍♂️|男性の衛兵 male-guard\n💂‍♀️|女性の衛兵 female-guard\n🥷|忍者 ninja\n👷|建設作業員 construction worker\n👷‍♂️|男性の建設作業員 male-construction-worker\n👷‍♀️|女性の建設作業員 female-construction-worker\n🫅|王冠をかぶった人 person with crown\n🤴|プリンス prince\n👸|プリンセス princess\n👳|ターバンの人 man with turban\n👳‍♂️|ターバンの男性 man-wearing-turban\n👳‍♀️|ターバンの女性 woman-wearing-turban\n👲|中華帽の男性 man with gua pi mao\n🧕|スカーフの女性 person with headscarf\n🤵|タキシードの人 person in tuxedo\n🤵‍♂️|タキシードの男性 man in tuxedo\n🤵‍♀️|タキシードの女性 woman in tuxedo\n👰|ベールの人 bride with veil\n👰‍♂️|ベールの男性 man with veil\n👰‍♀️|ベールの女性 woman with veil\n🤰|妊婦 pregnant woman\n🫃|妊夫 pregnant man\n🫄|妊娠した人 pregnant person\n🤱|授乳 breast-feeding\n👩‍🍼|授乳する女性 woman feeding baby\n👨‍🍼|授乳する男性 man feeding baby\n🧑‍🍼|授乳する人 person feeding baby\n👼|天使 angel\n🎅|サンタ santa\n🤶|女性のサンタ mother christmas mrs claus\n🧑‍🎄|サンタさん mx claus\n🦸|スーパーヒーロー superhero\n🦸‍♂️|男性のスーパーヒーロー male superhero\n🦸‍♀️|女性のスーパーヒーロー female superhero\n🦹|悪役 supervillain\n🦹‍♂️|男性の悪役 male supervillain\n🦹‍♀️|女性の悪役 female supervillain\n🧙|魔法使い mage\n🧙‍♂️|男の魔法使い male mage\n🧙‍♀️|女の魔法使い female mage\n🧚|妖精 fairy\n🧚‍♂️|男の妖精 male fairy\n🧚‍♀️|女の妖精 female fairy\n🧛|吸血鬼 vampire\n🧛‍♂️|男の吸血鬼 male vampire\n🧛‍♀️|女の吸血鬼 female vampire\n🧜|人魚 merperson\n🧜‍♂️|マーマン merman\n🧜‍♀️|マーメイド mermaid\n🧝|エルフ elf\n🧝‍♂️|男のエルフ male elf\n🧝‍♀️|女のエルフ female elf\n🧞|精霊 genie\n🧞‍♂️|男の精霊 male genie\n🧞‍♀️|女の精霊 female genie\n🧟|ゾンビ zombie\n🧟‍♂️|男のゾンビ male zombie\n🧟‍♀️|女のゾンビ female zombie\n🧌|トロール troll\n💆|フェイスマッサージ中の人 massage\n💆‍♂️|フェイスマッサージ中の男 man-getting-massage\n💆‍♀️|フェイスマッサージ中の女 woman-getting-massage\n💇|散髪される人 haircut\n💇‍♂️|散髪される男 man-getting-haircut\n💇‍♀️|散髪される女 woman-getting-haircut\n🚶|歩く人 walking\n🚶‍♂️|歩く男 man-walking\n🚶‍♀️|歩く女 woman-walking\n🚶‍➡️|歩く人 右向き person walking facing right\n🚶‍♀️‍➡️|歩く女 右向き woman walking facing right\n🚶‍♂️‍➡️|歩く男 右向き man walking facing right\n🧍|立つ人 standing person\n🧍‍♂️|立つ男 man standing\n🧍‍♀️|立つ女 woman standing\n🧎|正座する人 kneeling person\n🧎‍♂️|正座する男性 man kneeling\n🧎‍♀️|正座する女性 woman kneeling\n🧎‍➡️|正座する人 右向き person kneeling facing right\n🧎‍♀️‍➡️|正座する女性 右向き woman kneeling facing right\n🧎‍♂️‍➡️|正座する男性 右向き man kneeling facing right\n🧑‍🦯|杖をついた人 person with probing cane\n🧑‍🦯‍➡️|杖をついた人 右向き person with white cane facing right\n👨‍🦯|杖をついた男性 man with probing cane\n👨‍🦯‍➡️|杖をついた男性 右向き man with white cane facing right\n👩‍🦯|杖をついた女性 woman with probing cane\n👩‍🦯‍➡️|杖をついた女性 右向き woman with white cane facing right\n🧑‍🦼|電動車椅子の人 person in motorized wheelchair\n🧑‍🦼‍➡️|電動車椅子の人 右向き person in motorized wheelchair facing right\n👨‍🦼|電動車椅子の男性 man in motorized wheelchair\n👨‍🦼‍➡️|電動車椅子の男性 右向き man in motorized wheelchair facing right\n👩‍🦼|電動車椅子の女性 woman in motorized wheelchair\n👩‍🦼‍➡️|電動車椅子の女性 右向き woman in motorized wheelchair facing right\n🧑‍🦽|手動式車椅子の人 person in manual wheelchair\n🧑‍🦽‍➡️|手動式車椅子の人 右向き person in manual wheelchair facing right\n👨‍🦽|手動式車椅子の男性 man in manual wheelchair\n👨‍🦽‍➡️|手動式車椅子の男性 右向き man in manual wheelchair facing right\n👩‍🦽|手動式車椅子の女性 woman in manual wheelchair\n👩‍🦽‍➡️|手動式車椅子の女性 右向き woman in manual wheelchair facing right\n🏃|走る人 runner running\n🏃‍♂️|走る男 man-running\n🏃‍♀️|走る女 woman-running\n🏃‍➡️|走る人 右向き person running facing right\n🏃‍♀️‍➡️|走る女 右向き woman running facing right\n🏃‍♂️‍➡️|走る男 右向き man running facing right\n💃|踊る女 dancer\n🕺|踊る男 man dancing\n🕴️|浮いてるビジネスマン man in business suit levitating\n👯|バニー dancers\n👯‍♂️|バニーボーイ man-with-bunny-ears-partying men-with-bunny-ears-partying\n👯‍♀️|バニーガール woman-with-bunny-ears-partying women-with-bunny-ears-partying\n🧖|サウナに入る人 person in steamy room\n🧖‍♂️|サウナに入る男 man in steamy room\n🧖‍♀️|サウナに入る女 woman in steamy room\n🧗|山を登る人 person climbing\n🧗‍♂️|山を登る男 man climbing\n🧗‍♀️|山を登る女 woman climbing\n🤺|フェンシングをする人 fencer\n🏇|競馬 horse racing\n⛷️|スキーヤー skier\n🏂|スノーボーダー snowboarder\n🏌️|ゴルフをする人 golfer\n🏌️‍♂️|ゴルフをする男 man-golfing\n🏌️‍♀️|ゴルフをする女 woman-golfing\n🏄|サーフィンする人 surfer\n🏄‍♂️|サーフィンする男 man-surfing\n🏄‍♀️|サーフィンする女 woman-surfing\n🚣|ボートをこぐ人 rowboat\n🚣‍♂️|ボートをこぐ男 man-rowing-boat\n🚣‍♀️|ボートをこぐ女 woman-rowing-boat\n🏊|泳ぐ人 swimmer\n🏊‍♂️|泳ぐ男 man-swimming\n🏊‍♀️|泳ぐ女 woman-swimming\n⛹️|バスケットボールをする人 person with ball\n⛹️‍♂️|バスケットボールをする男 man-bouncing-ball\n⛹️‍♀️|バスケットボールをする女 woman-bouncing-ball\n🏋️|重量挙げをする人 weight lifter\n🏋️‍♂️|重量挙げをする男 man-lifting-weights\n🏋️‍♀️|重量挙げをする女 woman-lifting-weights\n🚴|自転車に乗る人 bicyclist\n🚴‍♂️|自転車に乗る男 man-biking\n🚴‍♀️|自転車に乗る女 woman-biking\n🚵|マウンテンバイクに乗る人 mountain bicyclist\n🚵‍♂️|マウンテンバイクに乗る男 man-mountain-biking\n🚵‍♀️|マウンテンバイクに乗る女 woman-mountain-biking\n🤸|側転する人 person doing cartwheel\n🤸‍♂️|側転する男 man-cartwheeling\n🤸‍♀️|側転する女 woman-cartwheeling\n🤼|レスリングする人 wrestlers\n🤼‍♂️|レスリングする男 man-wrestling\n🤼‍♀️|レスリングする女 woman-wrestling\n🤽|水球をする人 water polo\n🤽‍♂️|水球をする男 man-playing-water-polo\n🤽‍♀️|水球をする女 woman-playing-water-polo\n🤾|ハンドボールをする人 handball\n🤾‍♂️|ハンドボールをする男 man-playing-handball\n🤾‍♀️|ハンドボールをする女 woman-playing-handball\n🤹|ジャグリングをする人 juggling\n🤹‍♂️|ジャグリングをする男 man-juggling\n🤹‍♀️|ジャグリングをする女 woman-juggling\n🧘|ヨガのポーズをする人 person in lotus position\n🧘‍♂️|ヨガのポーズをする男 man in lotus position\n🧘‍♀️|ヨガのポーズをする女 woman in lotus position\n🛀|風呂に入る人 bath\n🛌|ベッドに寝る人 sleeping accommodation\n🧑‍🤝‍🧑|手をつなぐ2人 people holding hands\n👭|手をつなぐ女性 two women holding hands women holding hands\n👫|手をつなぐ男女 couple man and woman holding hands woman and man holding hands\n👬|手をつなぐ男性 men holding hands two men holding hands\n💏|2人でキス couplekiss\n👩‍❤️‍💋‍👨|2人でキス 女性 男性 woman-kiss-man\n👨‍❤️‍💋‍👨|2人でキス 男性 男性 man-kiss-man\n👩‍❤️‍💋‍👩|2人でキス 女性 女性 woman-kiss-woman\n💑|カップルとハート couple with heart\n👩‍❤️‍👨|カップルとハート 女性 男性 woman-heart-man\n👨‍❤️‍👨|カップルとハート 男性 男性 man-heart-man\n👩‍❤️‍👩|カップルとハート 女性 女性 woman-heart-woman\n👨‍👩‍👦|家族 男性 女性 男の子 man-woman-boy\n👨‍👩‍👧|家族 男性 女性 女の子 man-woman-girl\n👨‍👩‍👧‍👦|家族 男性 女性 女の子 男の子 man-woman-girl-boy\n👨‍👩‍👦‍👦|家族 男性 女性 男の子 男の子 man-woman-boy-boy\n👨‍👩‍👧‍👧|家族 男性 女性 女の子 女の子 man-woman-girl-girl\n👨‍👨‍👦|家族 男性 男性 男の子 man-man-boy\n👨‍👨‍👧|家族 男性 男性 女の子 man-man-girl\n👨‍👨‍👧‍👦|家族 男性 男性 女の子 男の子 man-man-girl-boy\n👨‍👨‍👦‍👦|家族 男性 男性 男の子 男の子 man-man-boy-boy\n👨‍👨‍👧‍👧|家族 男性 男性 女の子 女の子 man-man-girl-girl\n👩‍👩‍👦|家族 女性 女性 男の子 woman-woman-boy\n👩‍👩‍👧|家族 女性 女性 女の子 woman-woman-girl\n👩‍👩‍👧‍👦|家族 女性 女性 女の子 男の子 woman-woman-girl-boy\n👩‍👩‍👦‍👦|家族 女性 女性 男の子 男の子 woman-woman-boy-boy\n👩‍👩‍👧‍👧|家族 女性 女性 女の子 女の子 woman-woman-girl-girl\n👨‍👦|家族 男性 男の子 man-boy\n👨‍👦‍👦|家族 男性 男の子 男の子 man-boy-boy\n👨‍👧|家族 男性 女の子 man-girl\n👨‍👧‍👦|家族 男性 女の子 男の子 man-girl-boy\n👨‍👧‍👧|家族 男性 女の子 女の子 man-girl-girl\n👩‍👦|家族 女性 男の子 woman-boy\n👩‍👦‍👦|家族 女性 男の子 男の子 woman-boy-boy\n👩‍👧|家族 女性 女の子 woman-girl\n👩‍👧‍👦|家族 女性 女の子 男の子 woman-girl-boy\n👩‍👧‍👧|家族 女性 女の子 女の子 woman-girl-girl\n🗣️|話す人のシルエット speaking head in silhouette\n👤|人のシルエット bust in silhouette\n👥|2人のシルエット busts in silhouette\n🫂|ハグする人 people hugging\n👪|家族 family\n🧑‍🧑‍🧒|家族 大人二人と子供一人 family adult adult child\n🧑‍🧑‍🧒‍🧒|家族 大人二人と子供二人 family adult adult child child\n🧑‍🧒|家族 大人一人と子供一人 family adult child\n🧑‍🧒‍🧒|家族 大人一人と子供二人 family adult child child\n👣|足あと footprints"], ["🐹", "動物・自然", "🐵|サルの顔 monkey face\n🐒|サル monkey\n🦍|ゴリラ gorilla\n🦧|オランウータン orangutan\n🐶|イヌの顔 dog\n🐕|イヌ dog2\n🦮|盲導犬 guide dog\n🐕‍🦺|介助犬 service dog\n🐩|プードル poodle\n🐺|オオカミの顔 wolf\n🦊|キツネの顔 fox face\n🦝|アライグマ raccoon\n🐱|ネコの顔 cat\n🐈|ネコ cat2\n🐈‍⬛|黒猫 black cat\n🦁|ライオンの顔 lion face\n🐯|トラの顔 tiger\n🐅|トラ tiger2\n🐆|ヒョウ leopard\n🐴|馬の顔 horse\n🫎|ヘラジカ moose\n🫏|ロバ donkey\n🐎|馬 racehorse\n🦄|ユニコーンの顔 unicorn face\n🦓|シマウマ zebra face\n🦌|シカ deer\n🦬|バイソン bison\n🐮|牛の顔 cow\n🐂|牡牛 ox\n🐃|水牛 water buffalo\n🐄|牝牛 cow2\n🐷|ブタの顔 pig\n🐖|ブタ pig2\n🐗|イノシシ boar\n🐽|ブタ鼻 pig nose\n🐏|牡羊 ram\n🐑|羊 sheep\n🐐|山羊 goat\n🐪|ラクダ dromedary camel\n🐫|フタコブラクダ camel\n🦙|ラマ llama\n🦒|キリン giraffe face\n🐘|ゾウ elephant\n🦣|マンモス mammoth\n🦏|サイ rhinoceros\n🦛|カバ hippopotamus\n🐭|ネズミの顔 mouse\n🐁|ハツカネズミ mouse2\n🐀|ネズミ rat\n🐹|ハムスターの顔 hamster\n🐰|ウサギの顔 rabbit\n🐇|ウサギ rabbit2\n🐿️|リス chipmunk\n🦫|ビーバー beaver\n🦔|ハリネズミ hedgehog\n🦇|コウモリ bat\n🐻|クマの顔 bear\n🐻‍❄️|シロクマ polar bear\n🐨|コアラ koala\n🐼|パンダの顔 panda face\n🦥|ナマケモノ sloth\n🦦|カワウソ otter\n🦨|スカンク skunk\n🦘|カンガルー kangaroo\n🦡|アナグマ badger\n🐾|肉球 feet paw prints\n🦃|七面鳥 turkey\n🐔|にわとり chicken\n🐓|おんどり rooster\n🐣|卵からかえったひよこ hatching chick\n🐤|ひよこ baby chick\n🐥|前を向いているひよこ hatched chick\n🐦|鳥 bird\n🐧|ペンギン penguin\n🕊️|ハト dove of peace\n🦅|ワシ eagle\n🦆|カモ duck\n🦢|白鳥 swan\n🦉|フクロウ owl\n🦤|ドードー dodo\n🪶|羽 feather\n🦩|フラミンゴ flamingo\n🦚|クジャク peacock\n🦜|オウム parrot\n🪽|翼 wing\n🐦‍⬛|黒い鳥 black bird\n🪿|ガチョウ goose\n🐦‍🔥|フェニックス phoenix\n🐸|カエルの顔 frog\n🐊|ワニ crocodile\n🐢|カメ turtle\n🦎|トカゲ lizard\n🐍|ヘビ snake\n🐲|ドラゴンの顔 dragon face\n🐉|ドラゴン dragon\n🦕|草食恐竜 sauropod\n🦖|ティラノサウルス t-rex\n🐳|潮吹きクジラ whale\n🐋|クジラ whale2\n🐬|イルカ dolphin flipper\n🦭|アザラシ seal\n🐟|魚 fish\n🐠|熱帯魚 tropical fish\n🐡|フグ blowfish\n🦈|サメ shark\n🐙|タコ octopus\n🐚|巻き貝 shell\n🪸|サンゴ coral\n🪼|クラゲ jellyfish\n🐌|かたつむり snail\n🦋|チョウ butterfly\n🐛|毛虫 bug\n🐜|アリ ant\n🐝|ミツバチ bee honeybee\n🪲|カブトムシ beetle\n🐞|テントウムシ lady beetle ladybug\n🦗|バッタ cricket\n🪳|ゴキブリ cockroach\n🕷️|クモ spider\n🕸️|クモの巣 spider web\n🦂|サソリ scorpion\n🦟|蚊 mosquito\n🪰|ハエ fly\n🪱|ミミズ worm\n🦠|微生物 microbe\n💐|花束 bouquet\n🌸|桜 cherry blossom\n💮|大変よくできました white flower\n🪷|ハスの花 lotus\n🏵️|花飾り rosette\n🌹|バラ rose\n🥀|しおれた花 wilted flower\n🌺|ハイビスカス hibiscus\n🌻|ヒマワリ sunflower\n🌼|開花 blossom\n🌷|チューリップ tulip\n🪻|ヒヤシンス hyacinth\n🌱|新芽 seedling\n🪴|鉢植え potted plant\n🌲|常緑樹 evergreen tree\n🌳|落葉樹 deciduous tree\n🌴|ヤシの木 palm tree\n🌵|サボテン cactus\n🌾|稲 ear of rice\n🌿|ハーブ herb\n☘️|クローバー shamrock\n🍀|四つ葉のクローバー four leaf clover\n🍁|かえで maple leaf\n🍂|落ち葉 fallen leaf\n🍃|風に揺れる葉 leaves\n🪹|空っぽの巣 empty nest\n🪺|鳥の卵と巣 nest with eggs\n🍄|キノコ mushroom"], ["🍙", "食べ物", "🍇|ぶどう grapes\n🍈|メロン melon\n🍉|スイカ watermelon\n🍊|みかん tangerine\n🍋|レモン lemon\n🍋‍🟩|ライム lime\n🍌|バナナ banana\n🍍|パイナップル pineapple\n🥭|マンゴー mango\n🍎|赤リンゴ apple\n🍏|青リンゴ green apple\n🍐|洋ナシ pear\n🍑|桃 peach\n🍒|さくらんぼ cherries\n🍓|いちご strawberry\n🫐|ブルーベリー blueberries\n🥝|キウイフルーツ kiwifruit\n🍅|トマト tomato\n🫒|オリーブ olive\n🥥|ココナツ coconut\n🥑|アボカド avocado\n🍆|ナス eggplant\n🥔|ジャガイモ potato\n🥕|人参 carrot\n🌽|とうもろこし corn\n🌶️|とうがらし hot pepper\n🫑|ピーマン bell pepper\n🥒|キュウリ cucumber\n🥬|葉野菜 leafy green\n🥦|ブロッコリー broccoli\n🧄|ニンニク garlic\n🧅|タマネギ onion\n🥜|ピーナッツ peanuts\n🫘|豆 beans\n🌰|くり chestnut\n🫚|ショウガ ginger root\n🫛|エンドウ豆 pea pod\n🍄‍🟫|きのこ brown mushroom\n🍞|食パン bread\n🥐|クロワッサン croissant\n🥖|バゲット baguette bread\n🫓|フラットブレッド flatbread\n🥨|プレッツェル pretzel\n🥯|ベーグル bagel\n🥞|パンケーキ pancakes\n🧇|ワッフル waffle\n🧀|チーズ cheese wedge\n🍖|骨付き肉 meat on bone\n🍗|鶏もも肉 poultry leg\n🥩|ステーキ肉 cut of meat\n🥓|ベーコン bacon\n🍔|ハンバーガー hamburger\n🍟|フライドポテト fries\n🍕|ピザ pizza\n🌭|ホットドッグ hotdog\n🥪|サンドイッチ sandwich\n🌮|タコス taco\n🌯|ブリトー burrito\n🫔|タマル tamale\n🥙|ケバブサンド stuffed flatbread\n🧆|ファラフェル falafel\n🥚|卵 egg\n🍳|料理 cooking fried egg\n🥘|パエリア shallow pan of food\n🍲|なべ stew\n🫕|フォンデュ fondue\n🥣|ボウルとスプーン bowl with spoon\n🥗|グリーンサラダ green salad\n🍿|ポップコーン popcorn\n🧈|バター butter\n🧂|塩 salt\n🥫|缶詰 canned food\n🍱|弁当 bento\n🍘|せんべい rice cracker\n🍙|おにぎり rice ball\n🍚|ごはん rice\n🍛|カレーライス curry\n🍜|ラーメン ramen\n🍝|スパゲッティ spaghetti\n🍠|焼き芋 sweet potato\n🍢|おでん oden\n🍣|すし sushi\n🍤|エビフライ fried shrimp\n🍥|なると fish cake\n🥮|月餅 moon cake\n🍡|だんご dango\n🥟|点心 dumpling\n🥠|フォーチュンクッキー fortune cookie\n🥡|テイクアウト弁当 takeout box\n🦀|カニ crab\n🦞|ザリガニ lobster\n🦐|エビ shrimp\n🦑|イカ squid\n🦪|牡蠣 oyster\n🍦|ソフトクリーム icecream\n🍧|かき氷 shaved ice\n🍨|アイスクリーム ice cream\n🍩|ドーナツ doughnut\n🍪|クッキー cookie\n🎂|バースデーケーキ birthday\n🍰|ショートケーキ cake\n🧁|カップケーキ cupcake\n🥧|パイ pie\n🍫|チョコレート chocolate bar\n🍬|キャンディ candy\n🍭|ぺろぺろキャンディ lollipop\n🍮|プリン custard\n🍯|はちみつ honey pot\n🍼|ほにゅう瓶 baby bottle\n🥛|牛乳入りのコップ glass of milk\n☕|温かい飲み物 coffee\n🫖|ティーポット teapot\n🍵|湯飲み tea\n🍶|徳利 sake\n🍾|シャンパン champagne\n🍷|ワイングラス wine glass\n🍸|カクテルグラス cocktail\n🍹|トロピカルドリンク tropical drink\n🍺|ビールジョッキ beer\n🍻|ビールで乾杯 beers\n🥂|グラスで乾杯 clinking glasses\n🥃|タンブラーグラス tumbler glass\n🫗|コップから注ぐ pouring liquid\n🥤|ストローカップ cup with straw\n🧋|タピオカドリンク bubble tea\n🧃|紙パック飲料 beverage box\n🧉|マテ茶 mate drink\n🧊|角氷 ice cube\n🥢|はし chopsticks\n🍽️|ナイフとフォークと皿 knife fork plate\n🍴|ナイフとフォーク fork and knife\n🥄|スプーン spoon\n🔪|包丁 hocho knife\n🫙|瓶 jar\n🏺|壺 amphora"], ["✈️", "旅行・場所", "🌍|地球(ヨーロッパとアフリカ) earth africa\n🌎|地球(アメリカ大陸) earth americas\n🌏|地球(アジアとオーストラリア) earth asia\n🌐|子午線のある地球 globe with meridians\n🗺️|世界地図 world map\n🗾|日本地図 japan\n🧭|コンパス compass\n🏔️|雪山 snow capped mountain\n⛰️|山 mountain\n🌋|火山 volcano\n🗻|富士山 mount fuji\n🏕️|キャンプ camping\n🏖️|ビーチパラソル beach with umbrella\n🏜️|砂漠 desert\n🏝️|無人島 desert island\n🏞️|国立公園 national park\n🏟️|競技場 stadium\n🏛️|歴史的な建物 classical building\n🏗️|建設中 building construction\n🧱|れんが bricks\n🪨|岩石 rock\n🪵|丸太 wood\n🛖|わらぶき小屋 hut\n🏘️|住宅街 house buildings\n🏚️|廃屋 derelict house building\n🏠|家 house\n🏡|庭付きの家 house with garden\n🏢|オフィスビル office\n🏣|郵便局 post office\n🏤|西洋の郵便局 european post office\n🏥|病院 hospital\n🏦|銀行 bank\n🏨|ホテル hotel\n🏩|ラブホテル love hotel\n🏪|コンビニ convenience store\n🏫|学校 school\n🏬|デパート department store\n🏭|工場 factory\n🏯|城 japanese castle\n🏰|西洋の城 european castle\n💒|結婚式 wedding\n🗼|東京タワー tokyo tower\n🗽|自由の女神 statue of liberty\n⛪|教会 church\n🕌|モスク mosque\n🛕|ヒンドゥー教の寺院 hindu temple\n🕍|シナゴーグ synagogue\n⛩️|鳥居 shinto shrine\n🕋|カーバ kaaba\n⛲|噴水 fountain\n⛺|テント tent\n🌁|霧の都会 foggy\n🌃|夜の都会 night with stars\n🏙️|高層ビル cityscape\n🌄|山から日の出 sunrise over mountains\n🌅|日の出 sunrise\n🌆|夕暮れの都会 city sunset\n🌇|夕日 city sunrise\n🌉|夜の橋 bridge at night\n♨️|温泉マーク hotsprings\n🎠|メリーゴーランド carousel horse\n🛝|すべり台 playground slide\n🎡|観覧車 ferris wheel\n🎢|ジェットコースター roller coaster\n💈|床屋 barber\n🎪|サーカス circus tent\n🚂|蒸気機関車 steam locomotive\n🚃|電車 railway car\n🚄|新幹線 bullettrain side\n🚅|0系新幹線 bullettrain front\n🚆|電車正面 train2\n🚇|地下鉄 metro\n🚈|ライトレール light rail\n🚉|駅 station\n🚊|路面電車正面 tram\n🚝|モノレール monorail\n🚞|登山鉄道 mountain railway\n🚋|路面電車 train\n🚌|バス bus\n🚍|バス正面 oncoming bus\n🚎|トロリーバス trolleybus\n🚐|マイクロバス minibus\n🚑|救急車 ambulance\n🚒|消防車 fire engine\n🚓|パトカー police car\n🚔|パトカー正面 oncoming police car\n🚕|タクシー taxi\n🚖|タクシー正面 oncoming taxi\n🚗|自動車 car red car\n🚘|自動車正面 oncoming automobile\n🚙|アールブイ車 blue car\n🛻|軽トラック pickup truck\n🚚|トラック truck\n🚛|トレーラー articulated lorry\n🚜|トラクター tractor\n🏎️|レーシングカー racing car\n🏍️|オートバイ racing motorcycle\n🛵|スクーター motor scooter\n🦽|手動式車椅子 manual wheelchair\n🦼|電動車椅子 motorized wheelchair\n🛺|三輪タクシー auto rickshaw\n🚲|自転車 bike\n🛴|キックボード scooter\n🛹|スケートボード skateboard\n🛼|ローラースケート roller skate\n🚏|バス停 busstop\n🛣️|高速道路 motorway\n🛤️|線路 railway track\n🛢️|ドラム缶 oil drum\n⛽|ガソリンスタンド fuelpump\n🛞|ホイール wheel\n🚨|パトランプ rotating light\n🚥|信号横 traffic light\n🚦|信号縦 vertical traffic light\n🛑|止まれの標識 octagonal sign\n🚧|工事中 construction\n⚓|錨 anchor\n🛟|救命浮環 ring buoy\n⛵|ヨット boat sailboat\n🛶|カヌー canoe\n🚤|スピードボート speedboat\n🛳️|客船 passenger ship\n⛴️|フェリー ferry\n🛥️|モーターボート motor boat\n🚢|船 ship\n✈️|飛行機 airplane\n🛩️|小型飛行機 small airplane\n🛫|飛行機離陸 airplane departure\n🛬|飛行機着陸 airplane arriving\n🪂|パラシュート parachute\n💺|座席 seat\n🚁|ヘリコプター helicopter\n🚟|懸垂式モノレール suspension railway\n🚠|ケーブルカー mountain cableway\n🚡|ロープウェイ aerial tramway\n🛰️|人工衛星 satellite\n🚀|ロケット rocket\n🛸|空飛ぶ円盤 flying saucer\n🛎️|ベルボーイベル bellhop bell\n🧳|スーツケース luggage\n⌛|砂時計 hourglass\n⏳|砂が落ちている砂時計 hourglass flowing sand\n⌚|腕時計 watch\n⏰|目覚まし時計 alarm clock\n⏱️|ストップウォッチ stopwatch\n⏲️|タイマー timer clock\n🕰️|置時計 mantelpiece clock\n🕛|12時 clock12\n🕧|12時半 clock1230\n🕐|1時 clock1\n🕜|1時半 clock130\n🕑|2時 clock2\n🕝|2時半 clock230\n🕒|3時 clock3\n🕞|3時半 clock330\n🕓|4時 clock4\n🕟|4時半 clock430\n🕔|5時 clock5\n🕠|5時半 clock530\n🕕|6時 clock6\n🕡|6時半 clock630\n🕖|7時 clock7\n🕢|7時半 clock730\n🕗|8時 clock8\n🕣|8時半 clock830\n🕘|9時 clock9\n🕤|9時半 clock930\n🕙|10時 clock10\n🕥|10時半 clock1030\n🕚|11時 clock11\n🕦|11時半 clock1130\n🌑|新月 new moon\n🌒|初月 waxing crescent moon\n🌓|上弦の月 first quarter moon\n🌔|十三夜月 moon waxing gibbous moon\n🌕|満月 full moon\n🌖|寝待月 waning gibbous moon\n🌗|下弦の月 last quarter moon\n🌘|有明月 waning crescent moon\n🌙|三日月 crescent moon\n🌚|顔のある新月 new moon with face\n🌛|顔のある上弦の月 first quarter moon with face\n🌜|顔のある下弦の月 last quarter moon with face\n🌡️|温度計 thermometer\n☀️|太陽 sunny\n🌝|顔のある満月 full moon with face\n🌞|顔のある太陽 sun with face\n🪐|環のある惑星 ringed planet\n⭐|スター star\n🌟|きらきら星 star2\n🌠|流れ星 stars\n🌌|天の川 milky way\n☁️|雲 cloud\n⛅|曇り時々晴れ partly sunny\n⛈️|雷雨 thunder cloud and rain\n🌤️|晴れ時々曇り mostly sunny sun small cloud\n🌥️|曇り一時晴れ barely sunny sun behind cloud\n🌦️|雨時々晴れ partly sunny rain sun behind rain cloud\n🌧️|雨雲 rain cloud\n🌨️|雪雲 snow cloud\n🌩️|雷雲 lightning lightning cloud\n🌪️|竜巻 tornado tornado cloud\n🌫️|霧 fog\n🌬️|顔のある風 wind blowing face\n🌀|渦巻き cyclone\n🌈|虹 rainbow\n🌂|閉じた傘 closed umbrella\n☂️|傘 umbrella\n☔|傘と雨 umbrella with rain drops\n⛱️|パラソル umbrella on ground\n⚡|高電圧 zap\n❄️|雪の結晶 snowflake\n☃️|雪だるまと雪 snowman\n⛄|雪だるま snowman without snow\n☄️|彗星 comet\n🔥|火 fire\n💧|水滴 droplet\n🌊|波 ocean"], ["⚽", "活動", "🎃|ハロウィンかぼちゃ jack o lantern\n🎄|クリスマスツリー christmas tree\n🎆|打ち上げ花火 fireworks\n🎇|線香花火 sparkler\n🧨|爆竹 firecracker\n✨|きらきら sparkles\n🎈|風船 balloon\n🎉|クラッカー tada\n🎊|くす玉 confetti ball\n🎋|七夕 tanabata tree\n🎍|門松 bamboo\n🎎|ひな祭り dolls\n🎏|こいのぼり flags\n🎐|風鈴 wind chime\n🎑|月見 rice scene\n🧧|赤い封筒 red envelope\n🎀|リボン ribbon\n🎁|プレゼント gift\n🎗️|リマインダーリボン reminder ribbon\n🎟️|入場券 admission tickets\n🎫|チケット ticket\n🎖️|勲章 medal\n🏆|トロフィー trophy\n🏅|メダル sports medal\n🥇|金メダル first place medal\n🥈|銀メダル second place medal\n🥉|銅メダル third place medal\n⚽|サッカー soccer\n⚾|野球 baseball\n🥎|ソフトボール softball\n🏀|バスケットボール basketball\n🏐|バレーボール volleyball\n🏈|アメフト football\n🏉|ラグビー rugby football\n🎾|テニス tennis\n🥏|フリスビー flying disc\n🎳|ボウリング bowling\n🏏|クリケット cricket bat and ball\n🏑|ホッケー field hockey stick and ball\n🏒|アイスホッケー ice hockey stick and puck\n🥍|ラクロス lacrosse\n🏓|卓球 table tennis paddle and ball\n🏸|バドミントン badminton racquet and shuttlecock\n🥊|ボクシング boxing glove\n🥋|武道 martial arts uniform\n🥅|ゴールネット goal net\n⛳|ゴルフ golf\n⛸️|アイススケート ice skate\n🎣|釣り fishing pole and fish\n🤿|ダイビング マスク diving mask\n🎽|長距離走 running shirt with sash\n🎿|スキー ski\n🛷|そり競技 sled\n🥌|カーリング curling stone\n🎯|的 dart\n🪀|ヨーヨー yo-yo\n🪁|たこ kite\n🔫|水鉄砲 gun\n🎱|ビリヤード 8ball\n🔮|水晶玉 crystal ball\n🪄|魔法の杖 magic wand\n🎮|テレビゲーム video game\n🕹️|ジョイスティック joystick\n🎰|スロットマシン slot machine\n🎲|サイコロ game die\n🧩|ジグソーパズル jigsaw\n🧸|テディベア teddy bear\n🪅|ピニャータ pinata\n🪩|ミラーボール mirror ball\n🪆|マトリョーシカ nesting dolls\n♠️|スペード spades\n♥️|ハート hearts\n♦️|ダイヤ diamonds\n♣️|クラブ clubs\n♟️|チェスの駒 chess pawn\n🃏|ジョーカー black joker\n🀄|麻雀 mahjong\n🎴|花札 flower playing cards\n🎭|舞台芸術 performing arts\n🖼️|絵画 frame with picture\n🎨|絵の具パレット art\n🧵|糸 thread\n🪡|縫い針 sewing needle\n🧶|毛糸 yarn\n🪢|結び目 knot"], ["💡", "もの", "👓|メガネ eyeglasses\n🕶️|サングラス dark sunglasses\n🥽|ゴーグル goggles\n🥼|白衣 lab coat\n🦺|安全ベスト safety vest\n👔|ネクタイ necktie\n👕|tシャツ shirt tshirt\n👖|ジーンズ jeans\n🧣|マフラー scarf\n🧤|手袋 gloves\n🧥|コート coat\n🧦|ソックス socks\n👗|ワンピース dress\n👘|着物 kimono\n🥻|サリー sari\n🩱|ワンピースの水着 one-piece swimsuit\n🩲|ブリーフ briefs\n🩳|ショーツ shorts\n👙|ビキニ bikini\n👚|婦人服 womans clothes\n🪭|扇子 folding hand fan\n👛|がま口 purse\n👜|ハンドバッグ handbag\n👝|ポーチ pouch\n🛍️|紙袋 shopping bags\n🎒|バックパック school satchel\n🩴|ビーチサンダル thong sandal\n👞|紳士靴 mans shoe shoe\n👟|スニーカー athletic shoe\n🥾|ハイキングシューズ hiking boot\n🥿|フラットシューズ womans flat shoe\n👠|ハイヒール high heel\n👡|サンダル sandal\n🩰|トウシューズ ballet shoes\n👢|ブーツ boot\n🪮|アフロコーム hair pick\n👑|王冠 crown\n👒|婦人帽子 womans hat\n🎩|シルクハット tophat\n🎓|角帽 mortar board\n🧢|キャップ billed cap\n🪖|軍用ヘルメット military helmet\n⛑️|白十字ヘルメット helmet with white cross\n📿|数珠 prayer beads\n💄|口紅 lipstick\n💍|指輪 ring\n💎|宝石 gem\n🔇|スピーカー消音 mute\n🔈|スピーカー speaker\n🔉|スピーカー音量小 sound\n🔊|スピーカー音量大 loud sound\n📢|拡声器 loudspeaker\n📣|メガホン mega\n📯|郵便ラッパ postal horn\n🔔|ベル bell\n🔕|ベル消音 no bell\n🎼|楽譜 musical score\n🎵|音符 musical note\n🎶|複数の音符 notes\n🎙️|スタジオマイク studio microphone\n🎚️|レベルスライダー level slider\n🎛️|コントロールつまみ control knobs\n🎤|マイク microphone\n🎧|ヘッドホン headphones\n📻|ラジオ radio\n🎷|サックス saxophone\n🪗|アコーディオン accordion\n🎸|ギター guitar\n🎹|鍵盤 musical keyboard\n🎺|トランペット trumpet\n🎻|バイオリン violin\n🪕|バンジョー banjo\n🥁|ドラム drum with drumsticks\n🪘|コンガ long drum\n🪇|マラカス maracas\n🪈|笛 flute\n📱|携帯電話 iphone\n📲|着信中 calling\n☎️|固定電話 phone telephone\n📞|受話器 telephone receiver\n📟|ポケベル pager\n📠|ファックス fax\n🔋|電池 battery\n🪫|バッテリー残量低下 low battery\n🔌|コンセント electric plug\n💻|ノートパソコン computer\n🖥️|デスクトップパソコン desktop computer\n🖨️|プリンタ printer\n⌨️|キーボード keyboard\n🖱️|マウス three button mouse\n🖲️|トラックボール trackball\n💽|md minidisc\n💾|フロッピー floppy disk\n💿|cd cd\n📀|dvd dvd\n🧮|そろばん abacus\n🎥|映画カメラ movie camera\n🎞️|映画フィルム film frames\n📽️|映写機 film projector\n🎬|カチンコ clapper\n📺|テレビ tv\n📷|カメラ camera\n📸|フラッシュを焚いているカメラ camera with flash\n📹|ビデオカメラ video camera\n📼|ビデオテープ vhs\n🔍|虫眼鏡左 mag\n🔎|虫眼鏡右 mag right\n🕯️|ろうそく candle\n💡|電球 bulb\n🔦|懐中電灯 flashlight\n🏮|赤ちょうちん izakaya lantern lantern\n🪔|ディヤランプ diya lamp\n📔|表紙付きノート notebook with decorative cover\n📕|閉じた本 closed book\n📖|開いた本 book open book\n📗|緑の本 green book\n📘|青の本 blue book\n📙|オレンジの本 orange book\n📚|本の山 books\n📓|ノート notebook\n📒|リングノート ledger\n📃|巻きページ page with curl\n📜|巻き物 scroll\n📄|ページ page facing up\n📰|新聞 newspaper\n🗞️|丸めた新聞 rolled up newspaper\n📑|ページに付箋 bookmark tabs\n🔖|しおり bookmark\n🏷️|荷札 label\n💰|ドル袋 moneybag\n🪙|コイン coin\n💴|円札 yen\n💵|ドル札 dollar\n💶|ユーロ札 euro\n💷|ポンド札 pound\n💸|羽が生えたお金 money with wings\n💳|クレジットカード credit card\n🧾|レシート receipt\n💹|為替 chart\n✉️|封筒 email envelope\n📧|eメール e-mail\n📨|メール受信中 incoming envelope\n📩|メール受信 envelope with arrow\n📤|送信トレイ outbox tray\n📥|受信トレイ inbox tray\n📦|荷物 package\n📫|閉じた郵便受け(手紙あり) mailbox\n📪|閉じた郵便受け(手紙なし) mailbox closed\n📬|開いた郵便受け(手紙あり) mailbox with mail\n📭|開いた郵便受け(手紙なし) mailbox with no mail\n📮|郵便ポスト postbox\n🗳️|投票箱 ballot box with ballot\n✏️|鉛筆 pencil2\n✒️|ペン先 black nib\n🖋️|万年筆 lower left fountain pen\n🖊️|ペン lower left ballpoint pen\n🖌️|絵筆 lower left paintbrush\n🖍️|クレヨン lower left crayon\n📝|鉛筆とメモ memo pencil\n💼|ブリーフケース briefcase\n📁|フォルダー file folder\n📂|開いたフォルダー open file folder\n🗂️|カードフォルダー card index dividers\n📅|カレンダー date\n📆|日めくりカレンダー calendar\n🗒️|メモ帳 spiral note pad\n🗓️|月めくりカレンダー spiral calendar pad\n📇|カードインデックス card index\n📈|グラフ上向き chart with upwards trend\n📉|グラフ下向き chart with downwards trend\n📊|棒グラフ bar chart\n📋|クリップボード clipboard\n📌|押しピン pushpin\n📍|丸い押しピン round pushpin\n📎|クリップ paperclip\n🖇️|つながったクリップ linked paperclips\n📏|定規 straight ruler\n📐|三角定規 triangular ruler\n✂️|はさみ scissors\n🗃️|カードファイルボックス card file box\n🗄️|ファイルキャビネット file cabinet\n🗑️|ごみ箱 wastebasket\n🔒|閉じた錠 lock\n🔓|開いた錠 unlock\n🔏|閉じた錠とペン lock with ink pen\n🔐|閉じた錠と鍵 closed lock with key\n🔑|鍵 key\n🗝️|古い鍵 old key\n🔨|ハンマー hammer\n🪓|斧 axe\n⛏️|つるはし pick\n⚒️|ハンマーとつるはし hammer and pick\n🛠️|ハンマーとレンチ hammer and wrench\n🗡️|短刀 dagger knife\n⚔️|クロスした剣 crossed swords\n💣|爆弾 bomb\n🪃|ブーメラン boomerang\n🏹|弓矢 bow and arrow\n🛡️|盾 shield\n🪚|のこぎり carpentry saw\n🔧|レンチ wrench\n🪛|ねじ回し screwdriver\n🔩|ボルトとナット nut and bolt\n⚙️|歯車 gear\n🗜️|万力 compression\n⚖️|天秤 scales\n🦯|白杖 probing cane\n🔗|リンクシンボル link\n⛓️‍💥|壊れた鎖 broken chain\n⛓️|鎖 chains\n🪝|フック hook\n🧰|工具箱 toolbox\n🧲|u字型磁石 magnet\n🪜|はしご ladder\n⚗️|蒸留器 alembic\n🧪|試験管 test tube\n🧫|ペトリ皿 petri dish\n🧬|dna dna\n🔬|顕微鏡 microscope\n🔭|望遠鏡 telescope\n📡|パラボラアンテナ satellite antenna\n💉|注射器 syringe\n🩸|血液 drop of blood\n💊|薬 pill\n🩹|絆創膏 adhesive bandage\n🩼|松葉杖 crutch\n🩺|聴診器 stethoscope\n🩻|x線 x-ray\n🚪|ドア door\n🛗|エレベーター elevator\n🪞|鏡 mirror\n🪟|窓 window\n🛏️|ベッド bed\n🛋️|ソファとランプ couch and lamp\n🪑|椅子 chair\n🚽|便器 toilet\n🪠|ラバーカップ plunger\n🚿|シャワー shower\n🛁|バスタブ bathtub\n🪤|ねずみ捕り mouse trap\n🪒|剃刀 razor\n🧴|ローション lotion bottle\n🧷|安全ピン safety pin\n🧹|ほうき broom\n🧺|かご basket\n🧻|トイレットペーパー roll of paper\n🪣|バケツ bucket\n🧼|石けん soap\n🫧|泡 bubbles\n🪥|歯ブラシ toothbrush\n🧽|スポンジ sponge\n🧯|消火器 fire extinguisher\n🛒|ショッピングカート shopping trolley\n🚬|煙草 smoking\n⚰️|棺桶 coffin\n🪦|墓石 headstone\n⚱️|骨壺 funeral urn\n🧿|ナザール・ボンジュウ nazar amulet\n🪬|ハムサ hamsa\n🗿|モアイ moyai\n🪧|プラカード placard\n🪪|身分証 identification card"], ["❤️", "記号", "🏧|atm atm\n🚮|ゴミ箱 put litter in its place\n🚰|飲料水 potable water\n♿|車椅子 wheelchair\n🚹|男子トイレ mens\n🚺|女子トイレ womens\n🚻|トイレ restroom\n🚼|ベビーマーク baby symbol\n🚾|wc wc\n🛂|出入国審査 passport control\n🛃|税関 customs\n🛄|手荷物受取 baggage claim\n🛅|手荷物預かり left luggage\n⚠️|警告 warning\n🚸|児童横断 children crossing\n⛔|車両進入禁止 no entry\n🚫|車両通行止め no entry sign\n🚳|自転車禁止 no bicycles\n🚭|禁煙 no smoking\n🚯|ポイ捨て禁止 do not litter\n🚱|飲用不可 non-potable water\n🚷|歩行者立入禁止 no pedestrians\n📵|携帯電話禁止 no mobile phones\n🔞|18歳未満禁止 underage\n☢️|放射能 radioactive sign\n☣️|バイオハザード biohazard sign\n⬆️|上矢印 arrow up\n↗️|右上矢印 arrow upper right\n➡️|右矢印 arrow right\n↘️|右下矢印 arrow lower right\n⬇️|下矢印 arrow down\n↙️|左下矢印 arrow lower left\n⬅️|左矢印 arrow left\n↖️|左上矢印 arrow upper left\n↕️|上下矢印 arrow up down\n↔️|左右矢印 left right arrow\n↩️|右カーブ矢印 leftwards arrow with hook\n↪️|左カーブ矢印 arrow right hook\n⤴️|上カーブ矢印 arrow heading up\n⤵️|下カーブ矢印 arrow heading down\n🔃|右回り縦矢印 arrows clockwise\n🔄|左回り矢印 arrows counterclockwise\n🔙|back矢印 back\n🔚|end矢印 end\n🔛|on矢印 on\n🔜|soon矢印 soon\n🔝|top矢印 top\n🛐|礼拝所 place of worship\n⚛️|原子のシンボル atom symbol\n🕉️|オーム om symbol\n✡️|ダビデの星 star of david\n☸️|法輪 wheel of dharma\n☯️|陰陽 yin yang\n✝️|十字架 latin cross\n☦️|八端十字架 orthodox cross\n☪️|星と三日月 star and crescent\n☮️|ピースマーク peace symbol\n🕎|メノーラー menorah with nine branches\n🔯|六芒星 six pointed star\n🪯|カンダ khanda\n♈|おひつじ座 aries\n♉|おうし座 taurus\n♊|ふたご座 gemini\n♋|かに座 cancer\n♌|しし座 leo\n♍|おとめ座 virgo\n♎|てんびん座 libra\n♏|さそり座 scorpius\n♐|いて座 sagittarius\n♑|やぎ座 capricorn\n♒|みずがめ座 aquarius\n♓|うお座 pisces\n⛎|へびつかい座 ophiuchus\n🔀|シャッフルボタン twisted rightwards arrows\n🔁|リピートボタン repeat\n🔂|1曲リピートボタン repeat one\n▶️|再生ボタン arrow forward\n⏩|早送りボタン fast forward\n⏭️|次の曲ボタン black right pointing double triangle with vertical bar\n⏯️|再生/一時停止ボタン black right pointing triangle with double vertical bar\n◀️|逆再生ボタン arrow backward\n⏪|早戻しボタン rewind\n⏮️|前の曲ボタン black left pointing double triangle with vertical bar\n🔼|上ボタン arrow up small\n⏫|高速上ボタン arrow double up\n🔽|下ボタン arrow down small\n⏬|高速下ボタン arrow double down\n⏸️|一時停止ボタン double vertical bar\n⏹️|停止ボタン black square for stop\n⏺️|録音録画ボタン black circle for record\n⏏️|取り出しボタン eject\n🎦|映画 cinema\n🔅|低輝度 low brightness\n🔆|高輝度 high brightness\n📶|アンテナマーク signal strength\n🛜|wi-fi wireless\n📳|マナーモード vibration mode\n📴|携帯電話電源オフ mobile phone off\n♀️|女性のマーク female sign\n♂️|男性のマーク male sign\n⚧️|トランスジェンダーのマーク transgender symbol\n✖️|掛け算 heavy multiplication x\n➕|プラス heavy plus sign\n➖|マイナス heavy minus sign\n➗|割り算 heavy division sign\n🟰|太字の等号 heavy equals sign\n♾️|無限大 infinity\n‼️|二重感嘆符 bangbang\n⁉️|感嘆符疑問符 interrobang\n❓|赤い疑問符 question\n❔|白い疑問符 grey question\n❕|白い感嘆符 grey exclamation\n❗|赤い感嘆符 exclamation heavy exclamation mark\n〰️|波線 wavy dash\n💱|外貨両替 currency exchange\n💲|ドル記号 heavy dollar sign\n⚕️|医療のシンボル medical symbol staff of aesculapius\n♻️|リサイクルマーク recycle\n⚜️|フルール・ド・リス fleur de lis\n🔱|トライデント trident\n📛|名札 name badge\n🔰|初心者マーク beginner\n⭕|太い丸 o\n✅|白抜きのチェック white check mark\n☑️|チェックボックス ballot box with check\n✔️|太字のチェック heavy check mark\n❌|バツ x\n❎|白抜きのバツ negative squared cross mark\n➰|ループ curly loop\n➿|ダブルループ loop\n〽️|いおりてん part alternation mark\n✳️|八角アスタリスク eight spoked asterisk\n✴️|八角星 eight pointed black star\n❇️|スパークル sparkle\n©️|著作権マーク copyright\n®️|登録商標マーク registered\n™️|商標マーク tm\n#️⃣|囲み数字 # hash\n*️⃣|囲み数字 * keycap star\n0️⃣|囲み数字 0 zero\n1️⃣|囲み数字 1 one\n2️⃣|囲み数字 2 two\n3️⃣|囲み数字 3 three\n4️⃣|囲み数字 4 four\n5️⃣|囲み数字 5 five\n6️⃣|囲み数字 6 six\n7️⃣|囲み数字 7 seven\n8️⃣|囲み数字 8 eight\n9️⃣|囲み数字 9 nine\n🔟|囲み数字 10 keycap ten\n🔠|英大文字の入力 capital abcd\n🔡|英小文字の入力 abcd\n🔢|数字の入力 1234\n🔣|記号の入力 symbols\n🔤|英字の入力 abc\n🅰️|血液型a型 a\n🆎|血液型ab型 ab\n🅱️|血液型b型 b\n🆑|clマーク cl\n🆒|coolマーク cool\n🆓|freeマーク free\nℹ️|iマーク information source\n🆔|idマーク id\nⓂ️|丸いmマーク m\n🆕|newマーク new\n🆖|ngマーク ng\n🅾️|血液型o型 o2\n🆗|okマーク ok\n🅿️|pマーク parking\n🆘|sosマーク sos\n🆙|upマーク up\n🆚|vsマーク vs\n🈁|ココのマーク koko\n🈂️|サのマーク sa\n🈷️|月マーク u6708\n🈶|有マーク u6709\n🈯|指マーク u6307\n🉐|マル得 ideograph advantage\n🈹|割マーク u5272\n🈚|無マーク u7121\n🈲|禁マーク u7981\n🉑|可マーク accept\n🈸|申マーク u7533\n🈴|合マーク u5408\n🈳|空マーク u7a7a\n㊗️|祝マーク congratulations\n㊙️|マル秘 secret\n🈺|営マーク u55b6\n🈵|満マーク u6e80\n🔴|赤い丸 red circle\n🟠|オレンジの丸 large orange circle\n🟡|黄色い丸 large yellow circle\n🟢|緑の丸 large green circle\n🔵|青い丸 large blue circle\n🟣|紫の丸 large purple circle\n🟤|茶色の丸 large brown circle\n⚫|黒い丸 black circle\n⚪|白い丸 white circle\n🟥|赤い四角 large red square\n🟧|オレンジの四角 large orange square\n🟨|黄色い四角 large yellow square\n🟩|緑の四角 large green square\n🟦|青い四角 large blue square\n🟪|紫の四角 large purple square\n🟫|茶色い四角 large brown square\n⬛|黒四角特大 black large square\n⬜|白四角特大 white large square\n◼️|黒四角大 black medium square\n◻️|白四角大 white medium square\n◾|黒四角中 black medium small square\n◽|白四角中 white medium small square\n▪️|黒四角小 black small square\n▫️|白四角小 white small square\n🔶|大きいオレンジのひし形 large orange diamond\n🔷|大きい青のひし形 large blue diamond\n🔸|小さいオレンジのひし形 small orange diamond\n🔹|小さい青のひし形 small blue diamond\n🔺|赤い上三角 small red triangle\n🔻|赤い下三角 small red triangle down\n💠|ドット付きひし形 diamond shape with a dot inside\n🔘|ラジオボタン radio button\n🔳|白枠四角 white square button\n🔲|黒枠四角 black square button"], ["🏁", "旗", "🏁|チェッカーフラッグ checkered flag\n🚩|三角の旗 triangular flag on post\n🎌|祝日の旗 crossed flags\n🏴|黒旗 waving black flag\n🏳️|白旗 waving white flag\n🏳️‍🌈|レインボーフラッグ rainbow-flag\n🏳️‍⚧️|トランスジェンダーフラッグ transgender flag\n🏴‍☠️|海賊旗 pirate flag\n🇦🇨|旗 アセンション島 flag-ac\n🇦🇩|旗 アンドラ flag-ad\n🇦🇪|旗 アラブ首長国連邦 flag-ae\n🇦🇫|旗 アフガニスタン flag-af\n🇦🇬|旗 アンティグア・バーブーダ flag-ag\n🇦🇮|旗 アンギラ flag-ai\n🇦🇱|旗 アルバニア flag-al\n🇦🇲|旗 アルメニア flag-am\n🇦🇴|旗 アンゴラ flag-ao\n🇦🇶|旗 南極 flag-aq\n🇦🇷|旗 アルゼンチン flag-ar\n🇦🇸|旗 米領サモア flag-as\n🇦🇹|旗 オーストリア flag-at\n🇦🇺|旗 オーストラリア flag-au\n🇦🇼|旗 アルバ flag-aw\n🇦🇽|旗 オーランド諸島 flag-ax\n🇦🇿|旗 アゼルバイジャン flag-az\n🇧🇦|旗 ボスニア・ヘルツェゴビナ flag-ba\n🇧🇧|旗 バルバドス flag-bb\n🇧🇩|旗 バングラデシュ flag-bd\n🇧🇪|旗 ベルギー flag-be\n🇧🇫|旗 ブルキナファソ flag-bf\n🇧🇬|旗 ブルガリア flag-bg\n🇧🇭|旗 バーレーン flag-bh\n🇧🇮|旗 ブルンジ flag-bi\n🇧🇯|旗 ベナン flag-bj\n🇧🇱|旗 サン・バルテルミー flag-bl\n🇧🇲|旗 バミューダ flag-bm\n🇧🇳|旗 ブルネイ flag-bn\n🇧🇴|旗 ボリビア flag-bo\n🇧🇶|旗 オランダ領カリブ flag-bq\n🇧🇷|旗 ブラジル flag-br\n🇧🇸|旗 バハマ flag-bs\n🇧🇹|旗 ブータン flag-bt\n🇧🇻|旗 ブーベ島 flag-bv\n🇧🇼|旗 ボツワナ flag-bw\n🇧🇾|旗 ベラルーシ flag-by\n🇧🇿|旗 ベリーズ flag-bz\n🇨🇦|旗 カナダ flag-ca\n🇨🇨|旗 ココス(キーリング)諸島 flag-cc\n🇨🇩|旗 コンゴ民主共和国(キンシャサ) flag-cd\n🇨🇫|旗 中央アフリカ共和国 flag-cf\n🇨🇬|旗 コンゴ共和国(ブラザビル) flag-cg\n🇨🇭|旗 スイス flag-ch\n🇨🇮|旗 コートジボワール flag-ci\n🇨🇰|旗 クック諸島 flag-ck\n🇨🇱|旗 チリ flag-cl\n🇨🇲|旗 カメルーン flag-cm\n🇨🇳|旗 中国 cn flag-cn\n🇨🇴|旗 コロンビア flag-co\n🇨🇵|旗 クリッパートン島 flag-cp\n🇨🇷|旗 コスタリカ flag-cr\n🇨🇺|旗 キューバ flag-cu\n🇨🇻|旗 カーボベルデ flag-cv\n🇨🇼|旗 キュラソー flag-cw\n🇨🇽|旗 クリスマス島 flag-cx\n🇨🇾|旗 キプロス flag-cy\n🇨🇿|旗 チェコ flag-cz\n🇩🇪|旗 ドイツ de flag-de\n🇩🇬|旗 ディエゴガルシア島 flag-dg\n🇩🇯|旗 ジブチ flag-dj\n🇩🇰|旗 デンマーク flag-dk\n🇩🇲|旗 ドミニカ国 flag-dm\n🇩🇴|旗 ドミニカ共和国 flag-do\n🇩🇿|旗 アルジェリア flag-dz\n🇪🇦|旗 セウタ・メリリャ flag-ea\n🇪🇨|旗 エクアドル flag-ec\n🇪🇪|旗 エストニア flag-ee\n🇪🇬|旗 エジプト flag-eg\n🇪🇭|旗 西サハラ flag-eh\n🇪🇷|旗 エリトリア flag-er\n🇪🇸|旗 スペイン es flag-es\n🇪🇹|旗 エチオピア flag-et\n🇪🇺|旗 欧州連合 flag-eu\n🇫🇮|旗 フィンランド flag-fi\n🇫🇯|旗 フィジー flag-fj\n🇫🇰|旗 フォークランド諸島 flag-fk\n🇫🇲|旗 ミクロネシア連邦 flag-fm\n🇫🇴|旗 フェロー諸島 flag-fo\n🇫🇷|旗 フランス flag-fr fr\n🇬🇦|旗 ガボン flag-ga\n🇬🇧|旗 イギリス flag-gb gb uk\n🇬🇩|旗 グレナダ flag-gd\n🇬🇪|旗 ジョージア flag-ge\n🇬🇫|旗 仏領ギアナ flag-gf\n🇬🇬|旗 ガーンジー flag-gg\n🇬🇭|旗 ガーナ flag-gh\n🇬🇮|旗 ジブラルタル flag-gi\n🇬🇱|旗 グリーンランド flag-gl\n🇬🇲|旗 ガンビア flag-gm\n🇬🇳|旗 ギニア flag-gn\n🇬🇵|旗 グアドループ flag-gp\n🇬🇶|旗 赤道ギニア flag-gq\n🇬🇷|旗 ギリシャ flag-gr\n🇬🇸|旗 サウスジョージア・サウスサンドウィッチ諸島 flag-gs\n🇬🇹|旗 グアテマラ flag-gt\n🇬🇺|旗 グアム flag-gu\n🇬🇼|旗 ギニアビサウ flag-gw\n🇬🇾|旗 ガイアナ flag-gy\n🇭🇰|旗 中華人民共和国香港特別行政区 flag-hk\n🇭🇲|旗 ハード島・マクドナルド諸島 flag-hm\n🇭🇳|旗 ホンジュラス flag-hn\n🇭🇷|旗 クロアチア flag-hr\n🇭🇹|旗 ハイチ flag-ht\n🇭🇺|旗 ハンガリー flag-hu\n🇮🇨|旗 カナリア諸島 flag-ic\n🇮🇩|旗 インドネシア flag-id\n🇮🇪|旗 アイルランド flag-ie\n🇮🇱|旗 イスラエル flag-il\n🇮🇲|旗 マン島 flag-im\n🇮🇳|旗 インド flag-in\n🇮🇴|旗 英領インド洋地域 flag-io\n🇮🇶|旗 イラク flag-iq\n🇮🇷|旗 イラン flag-ir\n🇮🇸|旗 アイスランド flag-is\n🇮🇹|旗 イタリア flag-it it\n🇯🇪|旗 ジャージー flag-je\n🇯🇲|旗 ジャマイカ flag-jm\n🇯🇴|旗 ヨルダン flag-jo\n🇯🇵|旗 日本 flag-jp jp\n🇰🇪|旗 ケニア flag-ke\n🇰🇬|旗 キルギス flag-kg\n🇰🇭|旗 カンボジア flag-kh\n🇰🇮|旗 キリバス flag-ki\n🇰🇲|旗 コモロ flag-km\n🇰🇳|旗 セントクリストファー・ネーヴィス flag-kn\n🇰🇵|旗 北朝鮮 flag-kp\n🇰🇷|旗 韓国 flag-kr kr\n🇰🇼|旗 クウェート flag-kw\n🇰🇾|旗 ケイマン諸島 flag-ky\n🇰🇿|旗 カザフスタン flag-kz\n🇱🇦|旗 ラオス flag-la\n🇱🇧|旗 レバノン flag-lb\n🇱🇨|旗 セントルシア flag-lc\n🇱🇮|旗 リヒテンシュタイン flag-li\n🇱🇰|旗 スリランカ flag-lk\n🇱🇷|旗 リベリア flag-lr\n🇱🇸|旗 レソト flag-ls\n🇱🇹|旗 リトアニア flag-lt\n🇱🇺|旗 ルクセンブルク flag-lu\n🇱🇻|旗 ラトビア flag-lv\n🇱🇾|旗 リビア flag-ly\n🇲🇦|旗 モロッコ flag-ma\n🇲🇨|旗 モナコ flag-mc\n🇲🇩|旗 モルドバ flag-md\n🇲🇪|旗 モンテネグロ flag-me\n🇲🇫|旗 サン・マルタン flag-mf\n🇲🇬|旗 マダガスカル flag-mg\n🇲🇭|旗 マーシャル諸島 flag-mh\n🇲🇰|旗 北マケドニア flag-mk\n🇲🇱|旗 マリ flag-ml\n🇲🇲|旗 ミャンマー (ビルマ) flag-mm\n🇲🇳|旗 モンゴル flag-mn\n🇲🇴|旗 中華人民共和国マカオ特別行政区 flag-mo\n🇲🇵|旗 北マリアナ諸島 flag-mp\n🇲🇶|旗 マルティニーク flag-mq\n🇲🇷|旗 モーリタニア flag-mr\n🇲🇸|旗 モントセラト flag-ms\n🇲🇹|旗 マルタ flag-mt\n🇲🇺|旗 モーリシャス flag-mu\n🇲🇻|旗 モルディブ flag-mv\n🇲🇼|旗 マラウイ flag-mw\n🇲🇽|旗 メキシコ flag-mx\n🇲🇾|旗 マレーシア flag-my\n🇲🇿|旗 モザンビーク flag-mz\n🇳🇦|旗 ナミビア flag-na\n🇳🇨|旗 ニューカレドニア flag-nc\n🇳🇪|旗 ニジェール flag-ne\n🇳🇫|旗 ノーフォーク島 flag-nf\n🇳🇬|旗 ナイジェリア flag-ng\n🇳🇮|旗 ニカラグア flag-ni\n🇳🇱|旗 オランダ flag-nl\n🇳🇴|旗 ノルウェー flag-no\n🇳🇵|旗 ネパール flag-np\n🇳🇷|旗 ナウル flag-nr\n🇳🇺|旗 ニウエ flag-nu\n🇳🇿|旗 ニュージーランド flag-nz\n🇴🇲|旗 オマーン flag-om\n🇵🇦|旗 パナマ flag-pa\n🇵🇪|旗 ペルー flag-pe\n🇵🇫|旗 仏領ポリネシア flag-pf\n🇵🇬|旗 パプアニューギニア flag-pg\n🇵🇭|旗 フィリピン flag-ph\n🇵🇰|旗 パキスタン flag-pk\n🇵🇱|旗 ポーランド flag-pl\n🇵🇲|旗 サンピエール島・ミクロン島 flag-pm\n🇵🇳|旗 ピトケアン諸島 flag-pn\n🇵🇷|旗 プエルトリコ flag-pr\n🇵🇸|旗 パレスチナ自治区 flag-ps\n🇵🇹|旗 ポルトガル flag-pt\n🇵🇼|旗 パラオ flag-pw\n🇵🇾|旗 パラグアイ flag-py\n🇶🇦|旗 カタール flag-qa\n🇷🇪|旗 レユニオン flag-re\n🇷🇴|旗 ルーマニア flag-ro\n🇷🇸|旗 セルビア flag-rs\n🇷🇺|旗 ロシア flag-ru ru\n🇷🇼|旗 ルワンダ flag-rw\n🇸🇦|旗 サウジアラビア flag-sa\n🇸🇧|旗 ソロモン諸島 flag-sb\n🇸🇨|旗 セーシェル flag-sc\n🇸🇩|旗 スーダン flag-sd\n🇸🇪|旗 スウェーデン flag-se\n🇸🇬|旗 シンガポール flag-sg\n🇸🇭|旗 セントヘレナ flag-sh\n🇸🇮|旗 スロベニア flag-si\n🇸🇯|旗 スバールバル諸島・ヤンマイエン島 flag-sj\n🇸🇰|旗 スロバキア flag-sk\n🇸🇱|旗 シエラレオネ flag-sl\n🇸🇲|旗 サンマリノ flag-sm\n🇸🇳|旗 セネガル flag-sn\n🇸🇴|旗 ソマリア flag-so\n🇸🇷|旗 スリナム flag-sr\n🇸🇸|旗 南スーダン flag-ss\n🇸🇹|旗 サントメ・プリンシペ flag-st\n🇸🇻|旗 エルサルバドル flag-sv\n🇸🇽|旗 シント・マールテン flag-sx\n🇸🇾|旗 シリア flag-sy\n🇸🇿|旗 エスワティニ flag-sz\n🇹🇦|旗 トリスタン・ダ・クーニャ flag-ta\n🇹🇨|旗 タークス・カイコス諸島 flag-tc\n🇹🇩|旗 チャド flag-td\n🇹🇫|旗 仏領極南諸島 flag-tf\n🇹🇬|旗 トーゴ flag-tg\n🇹🇭|旗 タイ flag-th\n🇹🇯|旗 タジキスタン flag-tj\n🇹🇰|旗 トケラウ flag-tk\n🇹🇱|旗 東ティモール flag-tl\n🇹🇲|旗 トルクメニスタン flag-tm\n🇹🇳|旗 チュニジア flag-tn\n🇹🇴|旗 トンガ flag-to\n🇹🇷|旗 トルコ flag-tr\n🇹🇹|旗 トリニダード・トバゴ flag-tt\n🇹🇻|旗 ツバル flag-tv\n🇹🇼|旗 台湾 flag-tw\n🇹🇿|旗 タンザニア flag-tz\n🇺🇦|旗 ウクライナ flag-ua\n🇺🇬|旗 ウガンダ flag-ug\n🇺🇲|旗 合衆国領有小離島 flag-um\n🇺🇳|旗 国際連合 flag-un\n🇺🇸|旗 アメリカ合衆国 flag-us us\n🇺🇾|旗 ウルグアイ flag-uy\n🇺🇿|旗 ウズベキスタン flag-uz\n🇻🇦|旗 バチカン市国 flag-va\n🇻🇨|旗 セントビンセント及びグレナディーン諸島 flag-vc\n🇻🇪|旗 ベネズエラ flag-ve\n🇻🇬|旗 英領ヴァージン諸島 flag-vg\n🇻🇮|旗 米領ヴァージン諸島 flag-vi\n🇻🇳|旗 ベトナム flag-vn\n🇻🇺|旗 バヌアツ flag-vu\n🇼🇫|旗 ウォリス・フツナ flag-wf\n🇼🇸|旗 サモア flag-ws\n🇽🇰|旗 コソボ flag-xk\n🇾🇪|旗 イエメン flag-ye\n🇾🇹|旗 マヨット flag-yt\n🇿🇦|旗 南アフリカ flag-za\n🇿🇲|旗 ザンビア flag-zm\n🇿🇼|旗 ジンバブエ flag-zw\n🏴󠁧󠁢󠁥󠁮󠁧󠁿|旗 イングランド flag-england\n🏴󠁧󠁢󠁳󠁣󠁴󠁿|旗 スコットランド flag-scotland\n🏴󠁧󠁢󠁷󠁬󠁳󠁿|旗 ウェールズ flag-wales"]];
+
+const EMOJI_ALL = (() => { let all = null; return () => all || (all = EMOJI_CATS.flatMap(([, , s]) => s.split('\n').map(l => { const i = l.indexOf('|'); return [l.slice(0, i), l.slice(i + 1).toLowerCase()]; }))); })();
+const toHira = s => s.replace(/[\u30a1-\u30f6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60)); // カタカナでもひらがなでも引っかかるように
 async function pickFolderIcon(d) {
   const cur = folderIcon(d);
-  const p = dialog(`「${baseOf(d)}」のアイコン`, `<div id="icon-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px;max-height:240px;overflow:auto;margin:4px 0 12px">${ICON_SET.map(i => `<button type="button" class="icon-pick${i === cur ? ' on' : ''}" data-i="${i}">${i}</button>`).join('')}</div>
-    <label style="font-size:12.5px;color:var(--fg2)">ほかの絵文字（スマホの絵文字キーボードなどで入れる）</label>
-    <input type="text" id="dlg-icon" value="${esc(cur)}" placeholder="例: 🍣" maxlength="8" style="font-size:20px">`, { okText: '決定', focus: '#dlg-icon', validate: () => $('#dlg-icon').value.trim() });
-  $$('#icon-grid .icon-pick').forEach(b => b.onclick = () => { $('#dlg-icon').value = b.dataset.i; $('#dlg-ok').click(); });
+  let recent = []; try { recent = JSON.parse(localStorage.getItem('notes:recentIcons') || '[]'); } catch {}
+  const tabs = [['⭐', 'よく使う'], ...EMOJI_CATS.map(([i, n]) => [i, n])];
+  const p = dialog(`「${baseOf(d)}」のアイコン`, `
+    <input type="search" id="icon-q" placeholder="検索（例: ねこ、ほし、cat、folder）" style="width:100%;margin:0 0 8px">
+    <div id="icon-tabs">${tabs.map(([i, n], k) => `<button type="button" data-k="${k}" title="${esc(n)}"${k === 0 ? ' class="on"' : ''}>${i}</button>`).join('')}</div>
+    <div id="icon-label" style="font-size:12px;color:var(--fg3);margin:6px 2px 4px"></div>
+    <div id="icon-grid"></div>
+    <label style="font-size:12.5px;color:var(--fg2)">一覧に無いときは、ここに絵文字を直接入れる</label>
+    <input type="text" id="dlg-icon" value="${esc(cur)}" placeholder="例: 🍣" maxlength="8" style="font-size:20px">`, { okText: '決定', focus: '#icon-q', validate: () => $('#dlg-icon').value.trim() });
+  const grid = $('#icon-grid');
+  const draw = (list, label) => {
+    $('#icon-label').textContent = label;
+    grid.innerHTML = list.length ? list.map(c => `<button type="button" class="icon-pick${c === cur ? ' on' : ''}" data-i="${esc(c)}">${c}</button>`).join('') : '<p style="color:var(--fg3);font-size:13px;grid-column:1/-1;margin:8px 2px">見つかりませんでした</p>';
+    grid.scrollTop = 0;
+  };
+  const showTab = k => {
+    $$('#icon-tabs button').forEach(b => b.classList.toggle('on', +b.dataset.k === k));
+    if (k === 0) draw([...new Set([...recent, ...ICON_SET])], recent.length ? '最近使ったもの・おすすめ' : 'おすすめ');
+    else { const [, n, s] = EMOJI_CATS[k - 1]; draw(s.split('\n').map(l => l.slice(0, l.indexOf('|'))), n); }
+  };
+  $$('#icon-tabs button').forEach(b => b.onclick = () => { $('#icon-q').value = ''; showTab(+b.dataset.k); });
+  $('#icon-q').oninput = () => {
+    const qv = toHira($('#icon-q').value.trim().toLowerCase());
+    if (!qv) { showTab(0); return; }
+    const words = qv.split(/\s+/);
+    const hits = EMOJI_ALL().filter(([, kw]) => { const h = toHira(kw); return words.every(w => h.includes(w)); }).map(([c]) => c);
+    $$('#icon-tabs button').forEach(b => b.classList.remove('on'));
+    draw(hits.slice(0, 400), `「${$('#icon-q').value.trim()}」${hits.length} 件`);
+  };
+  grid.onclick = e => { const b = e.target.closest('.icon-pick'); if (!b) return; $('#dlg-icon').value = b.dataset.i; $('#dlg-ok').click(); };
+  $('#icon-q').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); const f = grid.querySelector('.icon-pick'); if (f) f.click(); } };
+  showTab(0);
   $('#dlg-cancel').insertAdjacentHTML('beforebegin', '<button type="button" id="dlg-noicon" style="margin-right:auto">アイコンなし</button>');
   let clear = false; $('#dlg-noicon').onclick = () => { clear = true; $('#dlg-cancel').click(); };
   const v = await p; $('#dlg-noicon')?.remove();
   if (!clear && v === null) return;
   S.vaultData.folderIcons = S.vaultData.folderIcons || {};
-  if (clear || !v) delete S.vaultData.folderIcons[d]; else S.vaultData.folderIcons[d] = [...new Intl.Segmenter().segment(v)].map(x => x.segment).slice(0, 2).join('');
+  if (clear || !v) delete S.vaultData.folderIcons[d];
+  else {
+    const icon = [...new Intl.Segmenter().segment(v)].map(x => x.segment).slice(0, 2).join('');
+    S.vaultData.folderIcons[d] = icon;
+    try { localStorage.setItem('notes:recentIcons', JSON.stringify([icon, ...recent.filter(x => x !== icon)].slice(0, 24))); } catch {}
+  }
   saveVaultData(); renderTree($('#search').value);
   if (S.view === 'gallery') showGallery(S.selectedDir); else if (S.current) $('#crumb').textContent = (S.current.dir ? crumbOf(S.current.dir) + ' › ' : '') + (S.current.fmTitle || S.current.title);
 }
@@ -2431,6 +2922,7 @@ function renderTree(filter = '') {
       row.onclick = e => {
         if (e.target.classList.contains('caret')) { f.classList.toggle('closed'); localStorage.setItem('notes:closed:' + d, f.classList.contains('closed') ? '1' : '0'); return; }
         f.classList.remove('closed'); localStorage.setItem('notes:closed:' + d, '0'); showGallery(d);
+        if (matchMedia('(max-width:760px)').matches && !$('#app').classList.contains('side-hidden')) $('#btn-side-hide').click(); // スマホはフォルダの一覧を広く
       };
       row.draggable = true;
       row.ondragstart = e => { S.dragDir = d; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', d); e.stopPropagation(); };
@@ -2438,7 +2930,7 @@ function renderTree(filter = '') {
       row.ondragover = e => { if (S.dragNote || (S.dragDir && S.dragDir !== d && !d.startsWith(S.dragDir + '/'))) { e.preventDefault(); row.classList.add('drop'); } };
       row.ondragleave = () => row.classList.remove('drop');
       row.ondrop = async e => { e.preventDefault(); row.classList.remove('drop'); if (S.dragDir) { const src = S.dragDir; S.dragDir = null; if (src !== d && dirOf(src) !== d && !d.startsWith(src + '/')) await moveFolder(src, d); return; } const list = S.dragNotes || (S.dragNote ? [S.dragNote] : []); if (list.length > 1) { for (const n of list) await moveNote(n, d, true); S.multi = null; renderTree($('#search').value); toast(`${list.length} 件を移動しました → ${d}`); } else if (list[0]) moveNote(list[0], d); };
-      row.oncontextmenu = e => { e.preventDefault(); folderMenu(e, d); };
+      row.oncontextmenu = e => { e.preventDefault(); folderMenu(e, d); }; onLongPress(row, e => folderMenu(e, d));
       f.appendChild(row);
       const ch = document.createElement('div'); ch.className = 'children'; f.appendChild(ch);
       build(d, ch);
@@ -2475,12 +2967,21 @@ function noteRow(n) {
     if (S.multi) { S.multi = null; $$('#tree .row.sel').forEach(x => x.classList.remove('sel')); $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`; }
     S.multiAnchor = n; openNote(n);
   };
-  r.oncontextmenu = e => { e.preventDefault(); if (S.multi && S.multi.has(n) && S.multi.size > 1) multiMenu(e); else noteMenu(e, n); };
+  r.oncontextmenu = e => { e.preventDefault(); if (S.multi && S.multi.has(n) && S.multi.size > 1) multiMenu(e); else noteMenu(e, n); }; onLongPress(r, e => noteMenu(e, n));
   return r;
 }
 function markActiveRow() { $$('#tree .row').forEach(r => r.classList.toggle('active', !!S.current && r.dataset.path === S.current.path)); }
 
 // ---------- メニュー ----------
+// スマホ（タッチ）は右クリックが無いので、長押しでメニューを出す
+function onLongPress(el, fn) {
+  let timer = null, fired = false;
+  el.addEventListener('touchstart', e => { fired = false; const p = e.touches[0]; const x = p.clientX, y = p.clientY; clearTimeout(timer); timer = setTimeout(() => { fired = true; if (navigator.vibrate) navigator.vibrate(10); fn({ clientX: x, clientY: y + 8, preventDefault() {}, target: el }); }, 520); }, { passive: true });
+  el.addEventListener('touchmove', () => clearTimeout(timer), { passive: true });
+  el.addEventListener('touchcancel', () => clearTimeout(timer), { passive: true });
+  el.addEventListener('touchend', e => { clearTimeout(timer); if (fired) e.preventDefault(); }); // 指を離したときのクリックを出さない
+  el.addEventListener('click', e => { if (fired) { e.preventDefault(); e.stopImmediatePropagation(); fired = false; } }, true);
+}
 function showMenu(e, items) {
   closeMenu();
   const m = document.createElement('div'); m.className = 'menu'; m.id = 'ctx';
@@ -2496,6 +2997,7 @@ function showMenu(e, items) {
 function onDocDown(e) { if (e.target.closest('#ctx')) return; closeMenu(); }
 function closeMenu() { $('#ctx')?.remove(); document.removeEventListener('mousedown', onDocDown); }
 const noteMenu = (e, n) => showMenu(e, [
+  { label: isFav('note', n.path) ? '★ お気に入りから外す' : '☆ お気に入りに入れる', run: () => toggleFav('note', n.path) },
   { label: '名前を変更', run: () => renameNote(n) },
   { label: 'フォルダへ移動…', run: () => moveNoteDialog(n) },
   { label: 'フォルダにする（中にまとめる）', run: () => noteToFolder(n) },
@@ -2533,6 +3035,7 @@ const folderMenu = (e, d) => {
     { label: 'フォルダのノートを続けて発表', run: () => presentFolder(d, null) },
     { label: 'ここをルートにして表示（左の一覧を絞り込む）', run: () => setScope(d) },
     { label: 'アイコンを選ぶ…', run: () => pickFolderIcon(d) },
+    { label: isFav('dir', d) ? '★ お気に入りから外す' : '☆ お気に入りに入れる', run: () => toggleFav('dir', d) },
     { label: '名前を変更', run: () => renameFolder(d) },
     { label: 'フォルダへ移動…', run: () => moveFolderDialog(d) },
     { label: '削除', run: () => deleteFolder(d) },
@@ -2559,14 +3062,15 @@ async function rescan(keepPath) {
   return S.rescanning;
 }
 async function rescanInner(keepPath) {
-  await flushSave();
+  await flushSave(); const wasHome = S.view === 'home'; await calLoad();
   const cur = keepPath || (S.current && S.current.path);
   S.dirs.clear(); S.notes = []; S.byPath.clear(); S.urlCache.forEach(u => URL.revokeObjectURL(u)); S.urlCache.clear(); S.multi = null;
   await scanDir(S.root, '');
   S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
   $('#vault-count').textContent = `${S.notes.length} ノート`; $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`;
   S.current = null; renderTree($('#search').value);
-  if (cur && S.byPath.has(cur)) openNote(S.byPath.get(cur)); else showGallery(S.dirs.has(S.selectedDir) ? S.selectedDir : '');
+  if (wasHome && !keepPath) showHome();
+  else if (cur && S.byPath.has(cur)) openNote(S.byPath.get(cur)); else showGallery(S.dirs.has(S.selectedDir) ? S.selectedDir : '');
 }
 async function moveDir(src, dstParent, newName) {
   const name = newName || baseOf(src); const dst = join(dstParent, name);
@@ -2619,6 +3123,8 @@ function setView(v) {
   S.view = v;
   $('#empty').style.display = v === 'empty' ? '' : 'none';
   $('#gallery').style.display = v === 'gallery' ? '' : 'none';
+  $('#home').style.display = v === 'home' ? '' : 'none';
+  $('#btn-home').classList.toggle('on', v === 'home');
   $('#doc').style.display = v === 'doc' ? '' : 'none';
   $('#btn-note-menu').style.display = v === 'doc' ? '' : 'none';
   $('#btn-present').style.display = (v === 'doc' || v === 'gallery') ? '' : 'none';
@@ -2632,7 +3138,8 @@ async function showGallery(dir = S.selectedDir || '') {
   setView('gallery'); $('#crumb').textContent = S.root ? (dir ? crumbOf(dir) : S.root.name) : ''; $('#status').textContent = '';
   const g = $('#gallery'); g.innerHTML = '';
   const head = document.createElement('div'); head.className = 'gal-head';
-  head.innerHTML = `<h1>${esc(dir ? iconName(dir) : S.root.name)}</h1><div class="gal-actions"><button id="gal-select" title="カードをクリックで選んで、まとめてフォルダへ移動・削除">☑ 選択</button><button id="gal-new">＋ ノート</button><button id="gal-newdir">＋ フォルダ</button><button id="gal-export">エクスポート…</button><button id="gal-present" title="このフォルダのノートを続けて発表">▶ 発表</button>${dir ? `<button id="gal-up">↑ 上のフォルダ</button>` : ''}</div>`;
+  head.innerHTML = `<h1>${esc(dir ? iconName(dir) : S.root.name)}</h1><div class="gal-actions"><button id="gal-select" title="カードをクリックで選んで、まとめてフォルダへ移動・削除">☑ 選択</button><button id="gal-new">＋ ノート</button><button id="gal-newdir">＋ フォルダ</button><button id="gal-export">エクスポート…</button><button id="gal-present" title="このフォルダのノートを続けて発表">▶ 発表</button>${dir ? `<button id="gal-icon" title="このフォルダのアイコン（絵文字）を選ぶ">${esc(folderIcon(dir) || '☺')} アイコン</button><button id="gal-up">↑ 上のフォルダ</button>` : ''}</div>`;
+  head.querySelector('#gal-icon')?.addEventListener('click', () => pickFolderIcon(dir));
   // ---- 選択（カードのチェック or 「☑ 選択」で、クリックしても開かずに選ぶ）----
   if (S.galSelectDir !== dir) { S.galSelect = false; S.galSelectDir = dir; }
   const selbar = document.createElement('div'); selbar.className = 'gal-selbar';
@@ -2689,7 +3196,7 @@ async function showGallery(dir = S.selectedDir || '') {
       if (S.galSelect || (S.multi && S.multi.size) || e.shiftKey || e.metaKey || e.ctrlKey) { e.preventDefault(); toggleSel(n, e.shiftKey); return; }
       S.multiAnchor = n; openNote(n);
     };
-    c.oncontextmenu = e => { e.preventDefault(); const list = S.multi && S.multi.has(n) ? [...S.multi] : [n]; if (list.length > 1) multiMenu(e); else noteMenu(e, n); };
+    c.oncontextmenu = e => { e.preventDefault(); const list = S.multi && S.multi.has(n) ? [...S.multi] : [n]; if (list.length > 1) multiMenu(e); else noteMenu(e, n); }; onLongPress(c, e => noteMenu(e, n));
     c.dataset.path = n.path;
     if (img) urlFor(img).then(u => { if (u) c.querySelector('.thumb').style.backgroundImage = `url("${u}")`; else c.querySelector('.thumb').classList.add('empty'); });
     return c;
@@ -2771,7 +3278,7 @@ marked.use({ gfm: true, breaks: false });
 async function openNote(n) {
   if (S.current === n) return;
   await flushSave();
-  S.current = n; S.selectedDir = n.dir; markActiveRow();
+  S.current = n; S.selectedDir = n.dir; markActiveRow(); markOpened(n);
   if (matchMedia('(max-width:760px)').matches && !$('#app').classList.contains('side-hidden')) $('#btn-side-hide').click(); // スマホは本文を広く
   localStorage.setItem('notes:last:' + S.root.name, n.path);
   setView('doc');
@@ -2951,7 +3458,7 @@ async function renameFile(n, newBase) {
     const w = await fh.createWritable(); await w.write(n.text); await w.close();
     await dir.removeEntry(n.name);
   }
-  S.byPath.delete(n.path); n.name = name; n.title = name.replace(/\.md$/i, ''); n.path = join(n.dir, name); n.handle = fh; S.byPath.set(n.path, n);
+  const oldP = n.path; S.byPath.delete(n.path); n.name = name; n.title = name.replace(/\.md$/i, ''); n.path = join(n.dir, name); n.handle = fh; S.byPath.set(n.path, n); remapFav(oldP, n.path, false);
   localStorage.setItem('notes:last:' + S.root.name, n.path);
   renderTree($('#search').value);
 }
@@ -2999,7 +3506,7 @@ async function moveNote(n, dir, quiet = false) {
     for (const r of new Set(refs)) { if (srcAtt.isDrive && dstAtt.isDrive) { try { if (!(await dstAtt.getFileHandle(r).then(() => true, () => false))) await srcAtt.copyEntry(r, dstAtt); S.urlCache.delete(normalize(join(dir, 'attachments/' + r))); } catch {} continue; } try { const f = await (await srcAtt.getFileHandle(r)).getFile(); const nh = await dstAtt.getFileHandle(r, { create: true }); const nw = await nh.createWritable(); await nw.write(f); await nw.close(); S.urlCache.delete(normalize(join(dir, 'attachments/' + r))); } catch {} }
   }
   if (!(dst.isDrive && srcDirH.isDrive)) await srcDirH.removeEntry(n.name);
-  S.byPath.delete(n.path); n.dir = dir; n.name = name; n.title = name.replace(/\.md$/i, ''); n.path = join(dir, name); n.handle = fh; S.byPath.set(n.path, n);
+  const oldP = n.path; S.byPath.delete(n.path); n.dir = dir; n.name = name; n.title = name.replace(/\.md$/i, ''); n.path = join(dir, name); n.handle = fh; S.byPath.set(n.path, n); remapFav(oldP, n.path, false);
   S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
   if (!quiet) { renderTree($('#search').value); toast(`移動しました → ${dir || '（ルート）'}`); }
   if (S.current === n) { $('#crumb').textContent = (n.dir ? crumbOf(n.dir) + ' › ' : '') + (n.fmTitle || n.title); localStorage.setItem('notes:last:' + S.root.name, n.path); }
@@ -3499,7 +4006,8 @@ applyTheme(localStorage.getItem('notes:theme') || 'craft'); installCustomThemes(
 
 // ---------- イベント ----------
 $('#btn-open').onclick = e => openMenu(e); $('#btn-open2').onclick = () => openFolder();
-$('#vault-name').onclick = () => { if (S.root) showGallery(''); };
+$('#vault-name').onclick = () => { if (S.root) { HOME.mode = 'home'; showHome(); } };
+$('#btn-home').onclick = () => { if (S.root) { HOME.mode = 'home'; showHome(); } };
 $('#tree').ondragover = e => { if ((S.dragNote || S.dragDir) && e.target === $('#tree')) { e.preventDefault(); } };
 $('#tree').ondrop = async e => { if (S.dragDir && e.target === $('#tree')) { e.preventDefault(); const src = S.dragDir; S.dragDir = null; if (dirOf(src) !== '') await moveFolder(src, ''); return; } if (S.dragNote && e.target === $('#tree')) { e.preventDefault(); const list = S.dragNotes || [S.dragNote]; for (const n of list) await moveNote(n, '', true); S.multi = null; renderTree($('#search').value); toast(`${list.length} 件を移動しました → （ルート）`); } };
 $('#btn-reopen').onclick = () => { const h = S._lastRoot; if (h) openFolder(h); }; // 先に読んでおいた値を使う（スマホはクリック直後でないとログイン画面が開けない）
@@ -3536,6 +4044,7 @@ $('#btn-side-show').onclick = () => { $('#app').classList.remove('side-hidden');
 $('#main').addEventListener('pointerdown', () => { if (matchMedia('(max-width:760px)').matches && !$('#app').classList.contains('side-hidden') && !$('#empty').offsetParent) $('#btn-side-hide').click(); }); // スマホ: 一覧の外をタップで閉じる
 $('#btn-note-menu').onclick = e => S.current && showMenu(e, [
   { label: '保存 (⌘S)', run: () => { setDirty(true); saveCurrent(); } },
+  { label: isFav('note', S.current.path) ? '★ お気に入りから外す' : '☆ お気に入りに入れる', run: () => toggleFav('note', S.current.path) },
   { label: '名前を変更', run: () => renameNote(S.current) },
   { label: 'Markdown をコピー', run: () => { navigator.clipboard.writeText(serialize()); toast('コピーしました'); } },
   { label: 'エクスポート…（PDF / Word / HTML / Markdown）', run: async () => { await flushSave(); exportDialog([S.current]); } },
