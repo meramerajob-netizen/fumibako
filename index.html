@@ -428,6 +428,10 @@ dialog input[type=date],dialog input[type=time]{width:100%;padding:7px 10px;bord
 .wk-sub{display:flex;justify-content:center;gap:28px;color:var(--fg3);font-size:13px;margin-top:2px}
 .wk-item{display:block;width:100%;border:none;background:none;cursor:pointer;color:var(--accent);font-size:calc(15px * var(--fs));font-weight:600;padding:5px 0 2px;line-height:1.5}
 .wk-item b{font-weight:700}
+.wk-item{position:relative}
+.wk-item.hid{opacity:.5}
+.wk-eye{position:absolute;right:4px;top:4px;font-size:14px;padding:2px 4px;border-radius:6px;opacity:.55}
+.wk-eye:hover{opacity:1;background:var(--bg2)}
 .wk-item small{display:block;color:var(--fg2);font-weight:400;font-size:12.5px}
 .wk-item .wk-memo{color:var(--accent);font-weight:600}
 /* お金 */
@@ -2541,9 +2545,13 @@ function calSave() {
 function calUpsert(item) { item.updatedAt = Date.now(); const i = S.cal.items.findIndex(x => x.id === item.id); if (i >= 0) S.cal.items[i] = item; else S.cal.items.push(item); return calSave(); }
 function calRemove(item) { return calUpsert({ id: item.id, deleted: true }); }
 // その日にかかるもの
+// カレンダーと「これから」に出さないもの: 種類ごと（保管庫の設定）と、1 件ごと（hideCal）
+const calHideKinds = () => (S.vaultData.settings && S.vaultData.settings.calHide) || [];
+const calHidden = x => !!x.hideCal || calHideKinds().includes(x.type);
+function toggleKindOnCal(k) { const l = new Set(calHideKinds()); l.has(k) ? l.delete(k) : l.add(k); S.vaultData.settings.calHide = [...l]; saveVaultData(); refreshCal(); }
 function calOn(s) {
   const out = []; const today = todayYmd();
-  for (const x of calLive()) {
+  for (const x of calLive().filter(x => !calHidden(x))) {
     if (isYearly(x)) { if (x.date && x.date.slice(5) === s.slice(5) && (x.date.startsWith('0000') || x.date <= s)) out.push(x); continue; }
     if (x.type === 'subsc') { if (subscOn(x, s)) out.push(x); continue; }
     if (!x.start) continue;
@@ -2647,9 +2655,12 @@ async function showHome() {
   h.querySelectorAll('.cal-nav').forEach(b => b.onclick = () => { let [y, m] = HOME.ym; m += +b.dataset.d; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } HOME.ym = [y, m]; drawCal(); });
   h.querySelector('.cal-today').onclick = () => { const t = new Date(); HOME.ym = [t.getFullYear(), t.getMonth()]; drawCal(); };
   h.querySelector('.cal-menu').onclick = e => showMenu(e, [
-    { label: (showPeriod() ? '✓ ' : '　') + '月のものをカレンダーに出す', run: () => { localStorage.setItem('notes:showPeriod', showPeriod() ? '0' : '1'); drawCal(); drawUpcoming(); } },
+    { hd: 'カレンダーと「これから」に出すもの' },
+    ...['birthday', 'anniv', 'memorial'].map(k => ({ label: (calHideKinds().includes(k) ? '　' : '✓ ') + `${KINDS[k][0]} ${KINDS[k][1]}`, run: () => toggleKindOnCal(k) })),
+    { label: (showPeriod() ? '✓ ' : '　') + '● 月のもの', run: () => { localStorage.setItem('notes:showPeriod', showPeriod() ? '0' : '1'); drawCal(); drawUpcoming(); } },
     { label: '誕生日・記念日・命日の一覧…', run: birthdayList },
-    { label: (showMoney() ? '✓ ' : '　') + 'お金（引き落とし・立て替え・入金）を出す', run: () => { localStorage.setItem('notes:showMoney', showMoney() ? '0' : '1'); drawCal(); } },
+    { label: (showMoney() ? '✓ ' : '　') + '💳 お金（引き落とし・立て替え・入金）', run: () => { localStorage.setItem('notes:showMoney', showMoney() ? '0' : '1'); drawCal(); } },
+    { hd: 'ほか' },
     { label: 'お金のページ', run: () => { HOME.mode = 'money'; showHome(); } },
     { label: '和暦⇔西暦の一覧', run: () => { HOME.mode = 'wareki'; showHome(); } },
     { label: '月のものの記録一覧…', run: periodList },
@@ -2686,7 +2697,7 @@ function drawCal() {
 function drawUpcoming() {
   const box = $('#home .home-upcoming'); if (!box) return;
   const t = todayYmd(), until = addDays(t, 60); const rows = [];
-  for (const x of calLive()) {
+  for (const x of calLive().filter(x => !calHidden(x))) {
     if (x.type === 'event') { const end = x.end || x.start; if (end >= t && x.start <= until) rows.push([x.start < t ? t : x.start, x]); }
     else if (isYearly(x) && x.date) { const md = x.date.slice(5); let next = `${t.slice(0, 4)}-${md}`; if (next < t) next = `${+t.slice(0, 4) + 1}-${md}`; if (next <= until) rows.push([next, x]); }
     else if (x.type === 'subsc') { const n = subscNext(x, t); if (n && n <= until) rows.push([n, x]); }
@@ -2743,6 +2754,7 @@ async function itemDialog(type, item, date) {
       <label class="fl">${dateLabel}</label><input type="date" id="it-date" value="${esc(noYear ? '2000' + x.date.slice(4) : (x.date || ''))}">
       <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-6px 0 10px"><input type="checkbox" id="it-noyear" ${noYear ? 'checked' : ''}> 年はわからない（月日だけ）</label>
       ${type === 'memorial' ? `<label class="fl">生年月日（任意。享年を出す）</label><input type="date" id="it-birth" value="${esc(x.birth || '')}">` : ''}
+      <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-4px 0 10px"><input type="checkbox" id="it-hidecal" ${x.hideCal ? 'checked' : ''}> カレンダーと「これから」には出さない（和暦⇔西暦の一覧には残る）</label>
       <p id="it-info" style="font-size:13px;color:var(--fg2);margin:0 0 12px;line-height:1.6"></p>
       <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}" placeholder="${type === 'memorial' ? '例: 父方の祖母、お寺の連絡先' : '例: 父、好きなもの、プレゼントの記録'}">`
     : type === 'subsc' ? `
@@ -2804,6 +2816,7 @@ async function itemDialog(type, item, date) {
     const v = $('#it-date').value; Object.assign(x, { title: $('#it-title').value.trim(), date: $('#it-noyear').checked ? '0000' + v.slice(4) : v, note: $('#it-note').value.trim() }); delete x.start;
     if (type === 'anniv') { x.tag = $('#it-tag').value.trim(); x.emoji = [...new Intl.Segmenter().segment($('#it-emoji').value.trim())].map(z => z.segment).slice(0, 1).join(''); }
     if (type === 'memorial') x.birth = $('#it-birth').value;
+    if ($('#it-hidecal').checked) x.hideCal = true; else delete x.hideCal;
   }
   else if (type === 'subsc') Object.assign(x, { title: $('#it-title').value.trim(), start: $('#it-start').value, end: $('#it-end').value, cycle: $('#it-cycle').value, price: $('#it-price').value ? +$('#it-price').value : '', note: $('#it-note').value.trim() });
   else Object.assign(x, { title: '月のもの', start: $('#it-start').value, end: $('#it-end').value, note: $('#it-note').value.trim() });
@@ -2873,6 +2886,11 @@ function drawWarekiList(scrollToNow) {
   h.querySelector('.wk-csv').onclick = exportCalCsv;
   h.querySelector('#wk-only').onchange = e => { localStorage.setItem('notes:wkOnly', e.target.checked ? '1' : '0'); drawWarekiList(true); };
   h.querySelectorAll('.wk-tools button[data-a]').forEach(b => b.onclick = () => itemDialog(b.dataset.a, null, todayYmd()));
+  h.querySelectorAll('.wk-eye').forEach(sp => sp.onclick = async e => {
+    e.stopPropagation(); const x = S.cal.items.find(i => i.id === sp.dataset.eye); if (!x) return;
+    const y = { ...x }; if (y.hideCal) delete y.hideCal; else y.hideCal = true;
+    await calUpsert(y); drawWarekiList(false); toast(y.hideCal ? `「${y.title}」をカレンダーに出さないようにしました` : `「${y.title}」をカレンダーに出します`);
+  });
   h.querySelectorAll('.wk-item').forEach(b => b.onclick = e => { e.stopPropagation(); const x = S.cal.items.find(i => i.id === b.dataset.id); if (x) itemDialog(x.type, x, todayYmd()); });
   h.querySelectorAll('.wk-row').forEach(r => r.onclick = () => {
     const y = +r.dataset.y; const era = r.dataset.era; const st = (ERAS.find(e => e[0] === era) || [])[1] || '';
@@ -2896,7 +2914,7 @@ function wkItemHtml(x) {
   else if (x.type === 'memorial') { const nk = nextKaiki(d, t); main = `${md} 没${x.birth ? `（享年${kyonen(x.birth, d)}）` : ''} <b>没後${ageOn(d, t)}年</b>`; small = nk ? `次は ${nk[1]}（${nk[0]}年）` : ''; }
   else if (x.type === 'subsc') { const done = x.end && x.end < t; main = `${md}から <b>${fmtYM(monthsBetween(d, done ? x.end : t))}</b>${done ? '（やめた）' : ''}`; small = x.price ? yen(x.price) + (x.cycle === 'year' ? '/年' : '/月') : ''; }
   else { main = `${md}から <b>${ageOn(d, t)}年</b>`; small = x.tag ? '#' + x.tag : ''; }
-  return `<button class="wk-item k-${x.type}" data-id="${esc(x.id)}"><span class="wk-n">${yIcon(x)} ${esc(x.title)}</span> ${main}${small ? `<small>${esc(small)}</small>` : ''}${x.note ? `<small class="wk-memo">${esc(x.note)}</small>` : ''}</button>`;
+  return `<button class="wk-item k-${x.type}${calHidden(x) ? ' hid' : ''}" data-id="${esc(x.id)}"><span class="wk-eye" data-eye="${esc(x.id)}" title="${x.hideCal ? 'カレンダーに出す' : 'カレンダーに出さない'}">${x.hideCal ? '🚫' : '📅'}</span><span class="wk-n">${yIcon(x)} ${esc(x.title)}</span> ${main}${small ? `<small>${esc(small)}</small>` : ''}${x.note ? `<small class="wk-memo">${esc(x.note)}</small>` : ''}</button>`;
 }
 
 // ---- 表（CSV）で書き出す。Excel でもそのまま開けるように BOM 付き UTF-8 ----
@@ -2907,7 +2925,7 @@ async function exportCalCsv() {
     ${KIND_ALL.map(([k, n]) => `<label class="exp-opt" style="align-items:center"><input type="checkbox" name="csv-k" value="${k}" ${k !== 'period' && counts[k] ? 'checked' : ''} ${counts[k] ? '' : 'disabled'}><span><b style="display:inline">${n}</b> <small style="display:inline">${counts[k]} 件</small></span></label>`).join('')}`, { okText: '書き出す', focus: '#dlg-ok', validate: () => $$('input[name=csv-k]:checked').map(i => i.value) });
   if (!ok || !ok.length) return;
   const t = todayYmd(), ty = +t.slice(0, 4);
-  const head = ['種類', '名前・タイトル', 'タグ', '日付', '和暦', '終わりの日', '生年月日', '年齢・経過', '次の日', '回忌・更新', '金額', '支払い', '時刻', 'メモ'];
+  const head = ['種類', '名前・タイトル', 'タグ', '日付', '和暦', '終わりの日', '生年月日', '年齢・経過', '次の日', '回忌・更新', '金額', '支払い', '時刻', 'メモ', 'カレンダー'];
   const rows = [];
   const order = Object.fromEntries(KIND_ALL.map(([k], i) => [k, i]));
   for (const x of calLive().filter(x => ok.includes(x.type)).sort((a, b) => order[a.type] - order[b.type] || (a.date || a.start || '').localeCompare(b.date || b.start || ''))) {
@@ -2927,7 +2945,7 @@ async function exportCalCsv() {
       const done = x.end && x.end < t; elapsed = fmtYM(monthsBetween(x.start, done ? x.end : t)) + (done ? '（やめた）' : '');
       next = done ? '' : subscNext(x, t) || ''; note2 = done ? '' : '更新';
     } else if (x.type === 'period') elapsed = x.end ? `${daysBetween(x.start, x.end) + 1}日間` : '記録中';
-    rows.push([kind, x.title || '', x.tag || '', dShow, d && !d.startsWith('0000') ? wareki(d) : '', x.end || '', x.birth || '', elapsed, next, note2, x.price || '', x.type === 'subsc' ? (x.cycle === 'year' ? '毎年' : '毎月') : '', x.time || '', x.note || '']);
+    rows.push([kind, x.title || '', x.tag || '', dShow, d && !d.startsWith('0000') ? wareki(d) : '', x.end || '', x.birth || '', elapsed, next, note2, x.price || '', x.type === 'subsc' ? (x.cycle === 'year' ? '毎年' : '毎月') : '', x.time || '', x.note || '', x.hideCal ? '出さない' : '']);
   }
   const cell = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   const csv = '﻿' + [head, ...rows].map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';
@@ -2980,6 +2998,7 @@ function importCalCsv() {
       if (!type) { skipped.push(`${get(r, '種類')}（種類が分からない）: ${title}`); continue; }
       if ((type !== 'period' && !title) || !d) { skipped.push(`${title || '（名前なし）'}: 名前か日付がない`); continue; }
       const x = { id: calId(), type, title: type === 'period' ? '月のもの' : title, note: get(r, 'メモ') };
+      if (get(r, 'カレンダー') === '出さない') x.hideCal = true;
       if (type === 'event' || type === 'period') { x.start = d.startsWith('0000') ? '' : d; x.end = normDate(get(r, '終わりの日')); x.time = get(r, '時刻'); if (!x.start) { skipped.push(`${title}: 年のない日付`); continue; } }
       else { x.date = d; if (type === 'anniv') x.tag = get(r, 'タグ'); if (type === 'memorial') x.birth = normDate(get(r, '生年月日')); }
       const same = calLive().find(y => y.type === x.type && y.title === x.title && (y.date || y.start) === (x.date || x.start));
