@@ -1662,6 +1662,7 @@ const GD = {
   listedAt: 0, listing: null,
   mem: new Map(),     // id → {md5, blob}（このタブの中だけのキャッシュ）
   folderCreating: new Map(),
+  pending: new Map(), // '親id/名前' → まだドライブに無い（作成中の）DriveFile
 };
 const GD_FOLDER = 'application/vnd.google-apps.folder';
 const GD_API = 'https://www.googleapis.com/drive/v3/files';
@@ -1690,10 +1691,12 @@ function gdLogin() {
   if (!gdClientId()) return Promise.reject(gdErr('ConfigError', 'Google のクライアント ID が設定されていません'));
   if (!window.google?.accounts?.oauth2) return gdLoadGis().then(() => { throw gdErr('RetryError', 'ログインの準備ができました。もう一度押してください'); });
   GD.refreshing = new Promise((res, rej) => {
-    if (!GD.tokenClient) GD.tokenClient = google.accounts.oauth2.initTokenClient({ client_id: gdClientId(), scope: 'https://www.googleapis.com/auth/drive.file', callback: () => {} });
+    // login_hint: 前に使ったアカウントを指定すると、アカウント選択を飛ばして小窓がすぐ閉じる
+    if (!GD.tokenClient) GD.tokenClient = google.accounts.oauth2.initTokenClient({ client_id: gdClientId(), scope: 'https://www.googleapis.com/auth/drive.file', login_hint: localStorage.getItem('notes:gHint') || undefined, callback: () => {} });
     GD.tokenClient.callback = r => {
       if (r.error) { rej(gdErr('AuthError', 'ログインできませんでした（' + r.error + '）')); return; }
       GD.token = r.access_token; GD.exp = Date.now() + (Number(r.expires_in) || 3600) * 1000;
+      gdSaveToken(); gdRememberAccount();
       try { localStorage.setItem('notes:gLogged', '1'); } catch {}
       hideReauth(); res();
     };
@@ -1702,10 +1705,21 @@ function gdLogin() {
   }).finally(() => { GD.refreshing = null; });
   return GD.refreshing;
 }
+// 通行証は有効期限（1 時間）までこの端末に覚えておく。期限内なら開き直してもログイン不要
+function gdSaveToken() { try { localStorage.setItem('notes:gTok', JSON.stringify({ t: GD.token, exp: GD.exp })); } catch {} }
+function gdRestoreToken() {
+  try { const v = JSON.parse(localStorage.getItem('notes:gTok') || 'null'); if (v && v.t && v.exp > Date.now() + 2 * 60e3) { GD.token = v.t; GD.exp = v.exp; return true; } } catch {}
+  return false;
+}
+async function gdRememberAccount() {
+  if (localStorage.getItem('notes:gHint')) return;
+  try { const j = await gdFetch('https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)'); if (j.user?.emailAddress) localStorage.setItem('notes:gHint', j.user.emailAddress); } catch {}
+}
 function gdLogout() {
   const t = GD.token; GD.token = null; GD.exp = 0;
   try { if (t) google.accounts.oauth2.revoke(t, () => {}); } catch {}
-  try { localStorage.removeItem('notes:gLogged'); } catch {}
+  try { localStorage.removeItem('notes:gLogged'); localStorage.removeItem('notes:gTok'); localStorage.removeItem('notes:gHint'); } catch {}
+  GD.tokenClient = null;
 }
 // 通行証は 1 時間で切れる。切れる少し前に、次のクリックやキー操作のついでに取り直す
 ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => {
@@ -1726,15 +1740,33 @@ async function gdFetch(url, opt = {}, as = 'json') {
     if (!GD.token) { showReauth(); throw gdErr('AuthError', 'Google ドライブにログインしていません'); }
     let r;
     try { r = await fetch(url, { ...opt, headers: { ...(opt.headers || {}), Authorization: 'Bearer ' + GD.token } }); }
-    catch (e) { if (attempt < 3) { await new Promise(s => setTimeout(s, 800 * 2 ** attempt)); continue; } throw gdErr('NetworkError', '通信できませんでした（電波の状態を確認してください）'); }
-    if (r.status === 401) { GD.token = null; showReauth(); throw gdErr('AuthError', 'Google ドライブのログインが切れました'); }
-    if ((r.status === 429 || r.status >= 500 || r.status === 403) && attempt < 4) {
+    catch (e) { if (attempt < 3 && !opt.noRetry) { await new Promise(s => setTimeout(s, 800 * 2 ** attempt)); continue; } throw gdErr('NetworkError', '通信できませんでした（電波の状態を確認してください）'); }
+    if (r.status === 401) { GD.token = null; try { localStorage.removeItem('notes:gTok'); } catch {} showReauth(); throw gdErr('AuthError', 'Google ドライブのログインが切れました'); }
+    if ((r.status === 429 || r.status >= 500 || r.status === 403) && attempt < 4 && !(opt.noRetry && r.status >= 500)) {
       const body = r.status === 403 ? await r.clone().text() : '';
       if (r.status !== 403 || /rateLimit|userRateLimit/i.test(body)) { await new Promise(s => setTimeout(s, 1000 * 2 ** attempt + Math.random() * 300)); continue; }
     }
     if (r.status === 404) throw gdErr('NotFoundError', 'ドライブにファイルが見つかりません');
-    if (!r.ok) { let m = ''; try { m = (await r.json()).error.message; } catch {} throw gdErr('DriveError', `ドライブのエラー（${r.status}）${m ? ': ' + m : ''}`); }
+    if (!r.ok) { let m = ''; try { m = (await r.json()).error.message; } catch {} const e = gdErr('DriveError', `ドライブのエラー（${r.status}）${m ? ': ' + m : ''}`); e.status = r.status; throw e; }
     return as === 'json' ? r.json() : as === 'blob' ? r.blob() : r;
+  }
+}
+// 新しく作る（POST）ときは、通信が途中で切れても実は作れていることがある。
+// そのまま送り直すと同じファイルが 2 つ 3 つできるので、送り直す前にドライブに同じ名前ができていないか確かめる
+async function gdCreate(parentId, name, doPost) {
+  const started = Date.now() - 60e3;
+  for (let attempt = 0; ; attempt++) {
+    try { return await doPost(); }
+    catch (e) {
+      const transient = e.name === 'NetworkError' || (e.name === 'DriveError' && e.status >= 500);
+      if (!transient || attempt >= 3) throw e;
+      await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+      try {
+        const j = await gdFetch(`${GD_API}?q=${encodeURIComponent(`name=${q(name)} and ${q(parentId)} in parents and trashed=false`)}&fields=${encodeURIComponent('files(' + GD_FIELDS + ',createdTime)')}`);
+        const made = (j.files || []).filter(f => Date.parse(f.createdTime) >= started).pop();
+        if (made) return made; // 実はできていた
+      } catch {}
+    }
   }
 }
 const q = s => "'" + String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'";
@@ -1816,7 +1848,10 @@ class DriveDir {
     const m = gdChild(this.id, name, false); if (m) return new DriveFile(m, this.id);
     if (gdChild(this.id, name, true)) throw gdErr('TypeMismatchError', name + ' はフォルダです');
     if (!create) throw gdErr('NotFoundError', name + ' が見つかりません');
-    return new DriveFile({ id: null, name, parents: [this.id] }, this.id); // 中身は close() のときに作る
+    // 中身は close() のときに作る。作っている途中にもう一度呼ばれたら同じハンドルを返す（二重に作らない）
+    const key = this.id + '/' + name;
+    if (!GD.pending.has(key)) GD.pending.set(key, new DriveFile({ id: null, name, parents: [this.id] }, this.id));
+    return GD.pending.get(key);
   }
   async getDirectoryHandle(name, { create = false } = {}) {
     await gdEnsureListed();
@@ -1824,7 +1859,7 @@ class DriveDir {
     if (gdChild(this.id, name, false)) throw gdErr('TypeMismatchError', name + ' はファイルです');
     if (!create) throw gdErr('NotFoundError', name + ' が見つかりません');
     const key = this.id + '/' + name;
-    if (!GD.folderCreating.has(key)) GD.folderCreating.set(key, gdFetch(`${GD_API}?fields=${GD_FIELDS}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: GD_FOLDER, parents: [this.id] }) }).then(f => { gdPut(f); return f; }).finally(() => GD.folderCreating.delete(key)));
+    if (!GD.folderCreating.has(key)) GD.folderCreating.set(key, gdCreate(this.id, name, () => gdFetch(`${GD_API}?fields=${GD_FIELDS}`, { method: 'POST', noRetry: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: GD_FOLDER, parents: [this.id] }) })).then(f => { gdPut(f); return f; }).finally(() => GD.folderCreating.delete(key)));
     const f = await GD.folderCreating.get(key); return new DriveDir(f.id, f.name);
   }
   async removeEntry(name, { recursive = false } = {}) {
@@ -1874,6 +1909,7 @@ class DriveFile {
   }
   async _upload(blob) {
     const type = mimeOf(this.name);
+    if (!this.id && this._creating) { try { await this._creating; } catch {} } // 先に作成中なら、それを待ってから上書き
     if (this.id) {
       if (!this.force && this._readMd5 !== undefined) await this._checkConflict(blob);
       const f = await gdFetch(`${GD_UP}/${this.id}?uploadType=media&fields=${GD_FIELDS}`, { method: 'PATCH', headers: { 'Content-Type': type }, body: blob });
@@ -1883,8 +1919,12 @@ class DriveFile {
       const form = new FormData();
       form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
       form.append('file', blob);
-      const f = await gdFetch(`${GD_UP}?uploadType=multipart&fields=${GD_FIELDS}`, { method: 'POST', body: form });
+      const key = this.parentId + '/' + this.name;
+      this._creating = gdCreate(this.parentId, this.name, () => gdFetch(`${GD_UP}?uploadType=multipart&fields=${GD_FIELDS}`, { method: 'POST', noRetry: true, body: form }));
+      let f; try { f = await this._creating; } finally { this._creating = null; }
+      GD.pending.delete(key);
       this._done(f, blob);
+      if (String(f.size) !== String(blob.size)) { await gdFetch(`${GD_UP}/${f.id}?uploadType=media&fields=${GD_FIELDS}`, { method: 'PATCH', headers: { 'Content-Type': type }, body: blob }).then(g => this._done(g, blob)); }
     }
     this.force = false;
   }
@@ -1976,7 +2016,7 @@ async function gdCopyLocalDialog() {
 // ---- 他の端末での変更を取り込む（画面に戻ったとき＋開いている間は 1 分ごと） ----
 let gdSyncing = false;
 async function gdSync(force = false) {
-  if (!S.root || !S.root.isDrive || !GD.token || gdSyncing || document.hidden) return;
+  if (!S.root || !S.root.isDrive || !GD.token || gdSyncing || document.hidden || S.opening || S.rescanning) return;
   if (!force && Date.now() - GD.listedAt < 20e3) return;
   if (S.dirty || S.saving || document.querySelector('dialog[open]')) return;
   gdSyncing = true;
@@ -2023,9 +2063,67 @@ async function gdResolveConflict(n, myText, err) {
   return 'done';
 }
 
+// ---- 重複の片付け: 同じフォルダに同じ名前のファイル・フォルダが複数あるとき ----
+// 中身が同じファイルは 1 つ残してゴミ箱へ。中身が違うファイルは名前に「（重複2）」を付けて両方残す。
+// 同じ名前のフォルダは中身を 1 つ目に集めて、空になった方をゴミ箱へ。
+function gdFindDups(rootId) {
+  const out = []; // {parent, name, ids, folder}
+  const walk = id => {
+    const by = new Map();
+    for (const k of GD.kids.get(id) || []) { const m = GD.files.get(k); if (!m) continue; const key = (m.mimeType === GD_FOLDER ? 'd:' : 'f:') + m.name; if (!by.has(key)) by.set(key, []); by.get(key).push(m); }
+    for (const [key, list] of by) if (list.length > 1) out.push({ parent: id, name: list[0].name, folder: key.startsWith('d:'), list: list.sort((a, b) => (a.modifiedTime || '').localeCompare(b.modifiedTime || '')) });
+    for (const k of GD.kids.get(id) || []) { const m = GD.files.get(k); if (m && m.mimeType === GD_FOLDER) walk(k); }
+  };
+  walk(rootId); return out;
+}
+async function gdCleanDups(rootId) {
+  let trashed = 0, renamed = 0, merged = 0;
+  const trash = async id => { await gdFetch(`${GD_API}/${id}?fields=id`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trashed: true }) }); gdDrop(id); trashed++; };
+  for (let round = 0; round < 5; round++) {
+    const dups = gdFindDups(rootId); if (!dups.length) break;
+    for (const g of dups) {
+      if (g.folder) {
+        const keep = g.list[0];
+        for (const extra of g.list.slice(1)) {
+          for (const k of [...(GD.kids.get(extra.id) || [])]) { const f = await gdFetch(`${GD_API}/${k}?fields=${GD_FIELDS}&addParents=${keep.id}&removeParents=${extra.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: '{}' }); gdPut(f); }
+          await trash(extra.id); merged++;
+        }
+      } else {
+        const seen = new Map(); let n = 2;
+        for (const m of g.list) {
+          if (m.md5Checksum && seen.has(m.md5Checksum)) { await trash(m.id); continue; }
+          seen.set(m.md5Checksum || m.id, m);
+          if (seen.size > 1) { const nn = m.name.replace(/(\.[^.]+)?$/, `（重複${n++}）$1`); const f = await gdFetch(`${GD_API}/${m.id}?fields=${GD_FIELDS}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: nn }) }); gdPut(f); renamed++; }
+        }
+      }
+    }
+  }
+  return { trashed, renamed, merged };
+}
+async function gdCleanDupsDialog() {
+  if (!S.root || !S.root.isDrive) { toast('ドライブの保管庫を開いてから使ってください'); return; }
+  await flushSave(); await gdListAll();
+  const dups = gdFindDups(S.root.id);
+  if (!dups.length) { toast('重複はありませんでした'); return; }
+  const same = dups.filter(g => !g.folder && new Set(g.list.map(m => m.md5Checksum)).size === 1).length;
+  const lines = dups.slice(0, 40).map(g => `${g.folder ? '📁 ' : ''}${g.name} × ${g.list.length}`).join('\n');
+  if (!(await dialog('重複を片付ける', `<p style="margin:0 0 10px;color:var(--fg2)">同じ場所に同じ名前のものが ${dups.length} 組あります（うち中身まで同じファイル ${same} 組）。</p>
+    <pre style="font-size:11.5px;white-space:pre-wrap;max-height:200px;overflow:auto;background:var(--bg2);padding:8px;border-radius:8px">${esc(lines)}${dups.length > 40 ? '\n…' : ''}</pre>
+    <p style="font-size:12.5px;color:var(--fg2);margin:10px 0 14px">中身が同じファイルは 1 つ残してゴミ箱へ（30 日は戻せます）。中身が違うものは「（重複2）」を付けて両方残します。同じ名前のフォルダは 1 つにまとめます。</p>`, { okText: '片付ける', focus: '#dlg-ok' }))) return;
+  toast('片付けています…', 60000);
+  try { const r = await gdCleanDups(S.root.id); await rescan(); toast(`ゴミ箱へ ${r.trashed} 件、名前を変えたもの ${r.renamed} 件、まとめたフォルダ ${r.merged} 件`, 5000); }
+  catch (e) { toast('途中で止まりました: ' + e.message, 5000); }
+}
+
 
 // ---------- フォルダを読む ----------
-async function openFolder(handle) {
+// 開く・読み直すは同時に走らせない（2 回押したり、同期と重なったりすると一覧が二重になるため）
+function openFolder(handle) {
+  if (S.opening) { toast('読み込み中です。少しお待ちください'); return S.opening; }
+  S.opening = openFolderInner(handle).finally(() => { S.opening = null; });
+  return S.opening;
+}
+async function openFolderInner(handle) {
   if (!handle) {
     try { handle = await window.showDirectoryPicker({ mode: 'readwrite' }); } catch { return; }
   }
@@ -2038,7 +2136,9 @@ async function openFolder(handle) {
     try {
       await gdListAll();
       if (!GD.files.has(handle.id)) { toast('ドライブにこの保管庫が見つかりません（削除されたか、別の Google アカウントです）', 5000); return; }
-      await gdPrefetch(handle.id, (d, t) => { $('#side-hint').textContent = `ドライブから読み込み中… ${d} / ${t}`; });
+      toast('ドライブから読み込み中…', 60000);
+      await gdPrefetch(handle.id, (d, t) => { $('#side-hint').textContent = `ドライブから読み込み中… ${d} / ${t}`; toast(`ドライブから読み込み中… ${d} / ${t}`, 60000); });
+      toast('読み込みました', 1200);
     } catch (e) { toast(e.message, 5000); $('#side-hint').textContent = '読み込めませんでした'; return; }
   }
   S.root = handle; S.dirs.clear(); S.notes = []; S.byPath.clear(); S.urlCache.forEach(u => URL.revokeObjectURL(u)); S.urlCache.clear(); S.current = null;
@@ -2055,6 +2155,7 @@ async function openFolder(handle) {
   renderTree(); updateInboxBadge();
   const last = localStorage.getItem('notes:last:' + handle.name);
   if (last && S.byPath.has(last)) openNote(S.byPath.get(last)); else showGallery();
+  if (handle.isDrive) { const n = gdFindDups(handle.id).length; if (n) setTimeout(() => toast(`同じ名前のファイルが ${n} 組あります。「開く」→「重複したファイルを片付ける…」で整理できます`, 6000), 1500); }
 }
 
 // 最近開いたフォルダ（DirectoryHandle を IndexedDB に配列で保存。ピン留めは先頭に固定）
@@ -2071,6 +2172,7 @@ async function rememberRecent(handle) {
 async function openMenu(e) {
   const list = await getRecents(); const items = [{ hd: 'Google ドライブ（PC とスマホで同じ内容）' }, { label: 'ドライブの保管庫を開く・作る…', run: gdOpenVaultDialog }];
   if (window.showDirectoryPicker) items.push({ label: 'PC のフォルダをドライブへコピー…', run: gdCopyLocalDialog });
+  if (S.root && S.root.isDrive) items.push({ label: '重複したファイルを片付ける…', run: gdCleanDupsDialog });
   if (GD.token) items.push({ label: 'Google からログアウト', run: () => { gdLogout(); toast('ログアウトしました'); } });
   if (window.showDirectoryPicker) items.push({ hd: 'PC のフォルダを開く' }, { label: '別のフォルダを選ぶ…', run: () => openFolder() });
   if (list.length) {
@@ -2100,6 +2202,7 @@ async function scanDir(dh, path) {
     const text = await file.text();
     const note = { path: join(path, name), dir: path, name, handle: h, mtime: file.lastModified, order: 9999, title: name.replace(/\.md$/i, ''), text, fm: '', body: text };
     parseFrontmatter(note);
+    if (S.byPath.has(note.path)) continue; // 同じ名前のファイルが 2 つあるときは 1 つだけ出す（「重複を片付ける」で整理できる）
     S.notes.push(note); S.byPath.set(note.path, note);
   }
 }
@@ -2257,6 +2360,8 @@ async function importInbox() {
         const tagLine = tags.length ? 'タグ: ' + tags.map(t => '#' + t.replace(/\s+/g, '_')).join(' ') : ''; // 行頭の # は見出し扱いされる（保存時に \# になる）ので「タグ: 」を前に置く
         const parts = [body, imgLines.join('\n\n'), tagLine].filter(Boolean);
         const full = `---\ntitle: "${title.replace(/"/g, '\\"')}"\nsource: "iPhone"\ncreated: ${d.toISOString()}\n${tagFm}---\n\n${parts.join('\n\n')}\n`;
+        // 別の端末で先に取り込み済み（同じ内容のノートがある）なら作らない
+        if (!imgLines.length && S.notes.some(x => x.dir === inboxDir && x.text === full)) { doneIds.push(it.id); continue; }
         const fh = await dh.getFileHandle(name, { create: true }); const w = await fh.createWritable(); await w.write(full); await w.close();
         const note = { path: join(inboxDir, name), dir: inboxDir, name, handle: fh, mtime: Date.now(), order: 9999, title: name.replace(/\.md$/i, ''), text: full, fm: '', body: '' };
         parseFrontmatter(note); S.notes.push(note); S.byPath.set(note.path, note); created++; doneIds.push(it.id);
@@ -2419,6 +2524,12 @@ async function copyDirRecursive(srcH, dstH) {
   }
 }
 async function rescan(keepPath) {
+  if (S.opening) await S.opening.catch(() => {});
+  if (S.rescanning) return S.rescanning;
+  S.rescanning = rescanInner(keepPath).finally(() => { S.rescanning = null; });
+  return S.rescanning;
+}
+async function rescanInner(keepPath) {
   await flushSave();
   const cur = keepPath || (S.current && S.current.path);
   S.dirs.clear(); S.notes = []; S.byPath.clear(); S.urlCache.forEach(u => URL.revokeObjectURL(u)); S.urlCache.clear(); S.multi = null;
@@ -3616,6 +3727,7 @@ document.execCommand('defaultParagraphSeparator', false, 'p');
   if (h && !h.isDrive && !window.showDirectoryPicker) h = null;
   if (h && h.isDrive && !gdOnline()) h = null;
   S._lastRoot = h;
+  if (h && h.isDrive && gdRestoreToken()) { openFolder(h); return; } // 1 時間以内に開いていれば、そのまま開く
   if (h) { $('#btn-reopen').style.display = ''; $('#btn-reopen').textContent = h.isDrive ? `前回の保管庫を開く（☁ ${h.name}）` : `前回のフォルダを開く（${h.name}）`; if (!h.isDrive && (await h.queryPermission({ mode: 'readwrite' })) === 'granted') openFolder(h); }
 })();
 
