@@ -144,6 +144,9 @@ input,select{font:inherit;color:inherit}
 .row.active{background:var(--accent-bg);color:var(--accent)}
 .row .ico{opacity:.6;flex:none;font-size:12px}
 .row .name{overflow:hidden;text-overflow:ellipsis}
+.row .ficon{flex:none;font-size:14px;line-height:1;margin-right:2px}
+.icon-pick{font-size:20px;line-height:1;padding:6px 0;border:1px solid transparent;border-radius:8px;background:none;cursor:pointer}
+.icon-pick:hover,.icon-pick.on{background:var(--accent-bg);border-color:var(--accent)}
 #side-bottom{padding:8px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--fg2);display:flex;justify-content:space-between;align-items:center}
 #side-bottom .side-btns{display:flex;gap:2px;flex:none}
 #side-bottom button{padding:3px 6px;font-size:12px}
@@ -2268,6 +2271,31 @@ function saveVaultData() {
   vaultSaveTimer = setTimeout(async () => { try { const fh = await S.root.getFileHandle('_notes.json', { create: true }); const w = await fh.createWritable(); await w.write(JSON.stringify(S.vaultData, null, 1)); await w.close(); } catch (e) { console.warn(e); } }, 800);
 }
 const setting = k => S.vaultData.settings[k] || localStorage.getItem('notes:' + k) || '';
+// ---------- フォルダのアイコン（絵文字）。フォルダ名は変えずに保管庫の _notes.json に覚える ----------
+const folderIcon = d => (S.vaultData.folderIcons || {})[d] || '';
+const iconName = d => (folderIcon(d) ? folderIcon(d) + ' ' : '') + baseOf(d);
+const crumbOf = dir => { const segs = dir ? dir.split('/') : []; return segs.map((s, i) => iconName(segs.slice(0, i + 1).join('/'))).join(' › '); };
+function remapFolderIcons(from, to) {
+  const m = S.vaultData.folderIcons; if (!m) return; let changed = false;
+  for (const k of Object.keys(m)) if (k === from || k.startsWith(from + '/')) { const v = m[k]; delete m[k]; if (to !== null) m[to + k.slice(from.length)] = v; changed = true; }
+  if (changed) saveVaultData();
+}
+const ICON_SET = ['📁','📂','🗂️','📌','⭐','❤️','✅','📝','📒','📕','📗','📘','📙','📚','🔖','💡','🎯','🚀','🧪','🔬','💻','🖥️','📱','🤖','🧠','🎨','🖌️','✏️','📷','🎬','🎵','🎮','🧩','🛠️','⚙️','🔧','📊','📈','💰','🧾','🏢','🏠','✈️','🗺️','🍙','☕','🌱','🌸','🐱','🐶','🐹','🦊','🔥','✨','🌙','☀️','🔒','📥','📤','🗓️','⏰','❓','❗','🟥','🟧','🟨','🟩','🟦','🟪'];
+async function pickFolderIcon(d) {
+  const cur = folderIcon(d);
+  const p = dialog(`「${baseOf(d)}」のアイコン`, `<div id="icon-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px;max-height:240px;overflow:auto;margin:4px 0 12px">${ICON_SET.map(i => `<button type="button" class="icon-pick${i === cur ? ' on' : ''}" data-i="${i}">${i}</button>`).join('')}</div>
+    <label style="font-size:12.5px;color:var(--fg2)">ほかの絵文字（スマホの絵文字キーボードなどで入れる）</label>
+    <input type="text" id="dlg-icon" value="${esc(cur)}" placeholder="例: 🍣" maxlength="8" style="font-size:20px">`, { okText: '決定', focus: '#dlg-icon', validate: () => $('#dlg-icon').value.trim() });
+  $$('#icon-grid .icon-pick').forEach(b => b.onclick = () => { $('#dlg-icon').value = b.dataset.i; $('#dlg-ok').click(); });
+  $('#dlg-cancel').insertAdjacentHTML('beforebegin', '<button type="button" id="dlg-noicon" style="margin-right:auto">アイコンなし</button>');
+  let clear = false; $('#dlg-noicon').onclick = () => { clear = true; $('#dlg-cancel').click(); };
+  const v = await p; $('#dlg-noicon')?.remove();
+  if (!clear && v === null) return;
+  S.vaultData.folderIcons = S.vaultData.folderIcons || {};
+  if (clear || !v) delete S.vaultData.folderIcons[d]; else S.vaultData.folderIcons[d] = [...new Intl.Segmenter().segment(v)].map(x => x.segment).slice(0, 2).join('');
+  saveVaultData(); renderTree($('#search').value);
+  if (S.view === 'gallery') showGallery(S.selectedDir); else if (S.current) $('#crumb').textContent = (S.current.dir ? crumbOf(S.current.dir) + ' › ' : '') + (S.current.fmTitle || S.current.title);
+}
 
 // ---------- OGP（リンクカードの見出し・説明・画像） ----------
 const ogpQueue = []; let ogpRunning = 0;
@@ -2399,7 +2427,7 @@ function renderTree(filter = '') {
       const f = document.createElement('div'); f.className = 'folder'; f.dataset.path = d;
       if (!q && localStorage.getItem('notes:closed:' + d) === '1') f.classList.add('closed');
       const row = document.createElement('div'); row.className = 'row' + (S.selectedDir === d ? ' active' : '');
-      row.innerHTML = `<span class="caret">▾</span><span class="name">${esc(baseOf(d))}</span>`;
+      row.innerHTML = `<span class="caret">▾</span>${folderIcon(d) ? `<span class="ficon">${esc(folderIcon(d))}</span>` : ''}<span class="name">${esc(baseOf(d))}</span>`;
       row.onclick = e => {
         if (e.target.classList.contains('caret')) { f.classList.toggle('closed'); localStorage.setItem('notes:closed:' + d, f.classList.contains('closed') ? '1' : '0'); return; }
         f.classList.remove('closed'); localStorage.setItem('notes:closed:' + d, '0'); showGallery(d);
@@ -2504,6 +2532,7 @@ const folderMenu = (e, d) => {
     { label: 'フォルダごとエクスポート…', run: async () => { await flushSave(); exportDialog(notesInDir(d)); } },
     { label: 'フォルダのノートを続けて発表', run: () => presentFolder(d, null) },
     { label: 'ここをルートにして表示（左の一覧を絞り込む）', run: () => setScope(d) },
+    { label: 'アイコンを選ぶ…', run: () => pickFolderIcon(d) },
     { label: '名前を変更', run: () => renameFolder(d) },
     { label: 'フォルダへ移動…', run: () => moveFolderDialog(d) },
     { label: '削除', run: () => deleteFolder(d) },
@@ -2546,10 +2575,11 @@ async function moveDir(src, dstParent, newName) {
   const srcH = S.dirs.get(src) || await getDirByPath(src); const parentH = await getDirByPath(dstParent, true);
   if (await parentH.getDirectoryHandle(name).then(() => true, () => false)) { toast('同じ名前のフォルダがあります: ' + dst); return null; }
   const srcParent = S.dirs.get(dirOf(src)) || await getDirByPath(dirOf(src));
-  if (srcParent.isDrive) { await srcParent.moveEntry(baseOf(src), parentH, name); return dst; } // ドライブはフォルダを付け替えるだけ
+  if (srcParent.isDrive) { await srcParent.moveEntry(baseOf(src), parentH, name); remapFolderIcons(src, dst); return dst; } // ドライブはフォルダを付け替えるだけ
   const dstH = await parentH.getDirectoryHandle(name, { create: true });
   await copyDirRecursive(srcH, dstH);
   await srcParent.removeEntry(baseOf(src), { recursive: true });
+  remapFolderIcons(src, dst);
   return dst;
 }
 async function renameFolder(d) {
@@ -2569,7 +2599,7 @@ async function moveFolder(d, to) {
 async function deleteFolder(d) {
   const count = S.notes.filter(n => n.dir === d || n.dir.startsWith(d + '/')).length;
   if (!(await confirmDlg('フォルダを削除', `「${d}」を削除します（中のノート ${count} 件と画像も消えます）。`))) return;
-  const parent = S.dirs.get(dirOf(d)) || await getDirByPath(dirOf(d)); await parent.removeEntry(baseOf(d), { recursive: true });
+  const parent = S.dirs.get(dirOf(d)) || await getDirByPath(dirOf(d)); await parent.removeEntry(baseOf(d), { recursive: true }); remapFolderIcons(d, null);
   const cur = S.current && S.current.path; S.selectedDir = dirOf(d); await rescan(cur && cur.startsWith(d + '/') ? null : cur); toast('削除しました');
 }
 // ノートを「同名のフォルダ＋その中のノート」にする（Craft のサブページのようにまとめられる）
@@ -2599,10 +2629,10 @@ async function showGallery(dir = S.selectedDir || '') {
   await flushSave();
   S.current = null; S.selectedDir = dir; markActiveRow();
   $$('#tree .folder > .row').forEach(r => r.classList.toggle('active', r.parentElement.dataset.path === dir));
-  setView('gallery'); $('#crumb').textContent = S.root ? (dir ? dir.replace(/\//g, ' › ') : S.root.name) : ''; $('#status').textContent = '';
+  setView('gallery'); $('#crumb').textContent = S.root ? (dir ? crumbOf(dir) : S.root.name) : ''; $('#status').textContent = '';
   const g = $('#gallery'); g.innerHTML = '';
   const head = document.createElement('div'); head.className = 'gal-head';
-  head.innerHTML = `<h1>${esc(dir ? baseOf(dir) : S.root.name)}</h1><div class="gal-actions"><button id="gal-select" title="カードをクリックで選んで、まとめてフォルダへ移動・削除">☑ 選択</button><button id="gal-new">＋ ノート</button><button id="gal-newdir">＋ フォルダ</button><button id="gal-export">エクスポート…</button><button id="gal-present" title="このフォルダのノートを続けて発表">▶ 発表</button>${dir ? `<button id="gal-up">↑ 上のフォルダ</button>` : ''}</div>`;
+  head.innerHTML = `<h1>${esc(dir ? iconName(dir) : S.root.name)}</h1><div class="gal-actions"><button id="gal-select" title="カードをクリックで選んで、まとめてフォルダへ移動・削除">☑ 選択</button><button id="gal-new">＋ ノート</button><button id="gal-newdir">＋ フォルダ</button><button id="gal-export">エクスポート…</button><button id="gal-present" title="このフォルダのノートを続けて発表">▶ 発表</button>${dir ? `<button id="gal-up">↑ 上のフォルダ</button>` : ''}</div>`;
   // ---- 選択（カードのチェック or 「☑ 選択」で、クリックしても開かずに選ぶ）----
   if (S.galSelectDir !== dir) { S.galSelect = false; S.galSelectDir = dir; }
   const selbar = document.createElement('div'); selbar.className = 'gal-selbar';
@@ -2709,7 +2739,7 @@ async function showGallery(dir = S.selectedDir || '') {
   for (const d of S.dirs.keys()) if (d && dirOf(d) === dir && !groups.has(d)) groups.set(d, []);
   if (!groups.has(dir)) groups.set(dir, []);
   for (const [gd, notes] of [...groups.entries()].sort((a, b) => (a[0] === dir ? -1 : b[0] === dir ? 1 : a[0].localeCompare(b[0], 'ja')))) {
-    if (gd !== dir) { const h = document.createElement('h2'); h.className = 'gal-sub'; h.textContent = gd.slice(dir ? dir.length + 1 : 0) + `　（${notes.length}）`; h.onclick = () => showGallery(gd); g.appendChild(h); }
+    if (gd !== dir) { const h = document.createElement('h2'); h.className = 'gal-sub'; h.textContent = (folderIcon(gd) ? folderIcon(gd) + ' ' : '') + gd.slice(dir ? dir.length + 1 : 0) + `　（${notes.length}）`; h.onclick = () => showGallery(gd); g.appendChild(h); }
     if (!notes.length) { if (gd === dir) { const e = document.createElement('p'); e.className = 'gal-empty'; e.textContent = 'このフォルダにノートはありません'; g.appendChild(e); } continue; }
     const wrap = document.createElement('div'); wrap.className = 'cards'; g.appendChild(wrap);
     for (const n of notes) wrap.appendChild(makeCard(n));
@@ -2745,7 +2775,7 @@ async function openNote(n) {
   if (matchMedia('(max-width:760px)').matches && !$('#app').classList.contains('side-hidden')) $('#btn-side-hide').click(); // スマホは本文を広く
   localStorage.setItem('notes:last:' + S.root.name, n.path);
   setView('doc');
-  $('#crumb').textContent = (n.dir ? n.dir.replace(/\//g, ' › ') + ' › ' : '') + (n.fmTitle || n.title);
+  $('#crumb').textContent = (n.dir ? crumbOf(n.dir) + ' › ' : '') + (n.fmTitle || n.title);
   $('#title').textContent = n.fmTitle || n.title;
   $('#meta').textContent = `${fmtDate(n.mtime)} 更新 · ${n.body.length.toLocaleString()} 文字`;
   const ed = $('#editor');
@@ -2901,7 +2931,7 @@ async function saveCurrent() {
     n.text = text; n.body = body; n.fm = fm; n.fmTitle = fm ? newTitle : n.fmTitle; n.mtime = Date.now(); n.tags = tagsOf(n);
     if (safeName(newTitle) !== n.title) await renameFile(n, safeName(newTitle));
     setDirty(false); $('#status').textContent = '保存済み ' + fmtDate(n.mtime).slice(-5);
-    $('#crumb').textContent = (n.dir ? n.dir.replace(/\//g, ' › ') + ' › ' : '') + (n.fmTitle || n.title);
+    $('#crumb').textContent = (n.dir ? crumbOf(n.dir) + ' › ' : '') + (n.fmTitle || n.title);
     const row = $(`#tree .row[data-path="${CSS.escape(n.path)}"] .name`); if (row) row.textContent = n.fmTitle || n.title;
   } catch (e) {
     if (e.name === 'ConflictError') { S.saving = false; const r = await gdResolveConflict(n, text, e); if (r === 'retry') { S.dirty = true; return saveCurrent(); } return; }
@@ -2972,7 +3002,7 @@ async function moveNote(n, dir, quiet = false) {
   S.byPath.delete(n.path); n.dir = dir; n.name = name; n.title = name.replace(/\.md$/i, ''); n.path = join(dir, name); n.handle = fh; S.byPath.set(n.path, n);
   S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
   if (!quiet) { renderTree($('#search').value); toast(`移動しました → ${dir || '（ルート）'}`); }
-  if (S.current === n) { $('#crumb').textContent = (n.dir ? n.dir.replace(/\//g, ' › ') + ' › ' : '') + (n.fmTitle || n.title); localStorage.setItem('notes:last:' + S.root.name, n.path); }
+  if (S.current === n) { $('#crumb').textContent = (n.dir ? crumbOf(n.dir) + ' › ' : '') + (n.fmTitle || n.title); localStorage.setItem('notes:last:' + S.root.name, n.path); }
   else if (S.view === 'gallery') showGallery(S.selectedDir);
 }
 async function renameNote(n) {
