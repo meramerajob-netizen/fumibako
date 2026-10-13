@@ -388,6 +388,13 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:1px 5px
 .cal-day.today .n{background:var(--accent);color:#fff!important}
 .cal-day .hol{font-size:9.5px;color:#d24a4a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cal-chip{font-size:10.5px;line-height:1.35;padding:1px 4px;border-radius:4px;background:color-mix(in srgb,var(--c,#3b6cf0) 16%,transparent);color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid var(--c,#3b6cf0)}
+.cal-chip.mem{background:color-mix(in srgb,#8a8f98 18%,transparent)!important;border-left-color:#8a8f98!important}
+.cal-chip.sub{background:color-mix(in srgb,#2f9e6b 14%,transparent)!important;border-left-color:#2f9e6b!important}
+.wk-chips{display:flex;gap:6px;overflow-x:auto;margin:-4px 0 12px;padding-bottom:2px}
+.wk-chips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:100px;padding:4px 11px;font-size:12.5px;cursor:pointer;color:var(--fg2)}
+.wk-chips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.wk-item.k-memorial{color:var(--fg2)}
+.wk-item.k-subsc{color:#2f9e6b}
 .cal-chip.bd{background:color-mix(in srgb,#e0882f 14%,transparent);border-left-color:#e0882f}
 .cal-more{font-size:10px;color:var(--fg3)}
 .cal-day.per:after{content:"";position:absolute;left:3px;right:3px;bottom:2px;height:3px;border-radius:2px;background:#e86a8a;opacity:.8}
@@ -423,6 +430,51 @@ dialog input[type=date],dialog input[type=time]{width:100%;padding:7px 10px;bord
 .wk-item b{font-weight:700}
 .wk-item small{display:block;color:var(--fg2);font-weight:400;font-size:12.5px}
 .wk-item .wk-memo{color:var(--accent);font-weight:600}
+/* お金 */
+.m-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.m-head h2{margin:0}
+.m-head .m-open,.m-mini{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:4px 12px;font-size:12.5px;cursor:pointer;color:var(--fg)}
+.m-scope{display:flex;gap:4px}
+.m-scope button,.m-tabs button{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:4px 11px;font-size:12.5px;cursor:pointer;color:var(--fg2)}
+.m-scope button.on,.m-tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.m-tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 14px;padding-bottom:2px}
+.m-tabs button{flex:none;font-size:13.5px;padding:6px 14px}
+.m-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.m-tile{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px;cursor:pointer;color:var(--fg)}
+.m-tile:hover{border-color:var(--accent)}
+.m-tile span{font-size:12px;color:var(--fg2)}.m-tile b{font-size:calc(21px * var(--fs))}.m-tile small{font-size:11.5px;color:var(--fg3)}
+.m-up{margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.m-row{display:flex;align-items:center;gap:12px;width:100%;border:none;border-bottom:1px solid var(--line);background:none;padding:10px 14px;text-align:left;cursor:pointer;color:var(--fg);font-size:calc(14px * var(--fs))}
+.m-row:last-child{border-bottom:none}.m-row:hover{background:var(--bg2)}
+.m-row.done{opacity:.55}
+.m-d{flex:none;width:74px;font-size:12.5px;color:var(--fg2)}
+.m-t{flex:1;min-width:0}.m-t small{display:block;color:var(--fg3);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-a{flex:none;font-weight:600;text-align:right}.m-a small{font-weight:400;color:var(--fg3);font-size:11px}
+.m-a.in{color:#2f9e6b}.m-a.out{color:var(--fg)}
+.m-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:6px}
+.m-sum div{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column}
+.m-sum span{font-size:12px;color:var(--fg2)}.m-sum b{font-size:calc(19px * var(--fs))}
+.m-body h3{font-size:13px;color:var(--fg2);margin:20px 0 8px;font-weight:600;display:flex;gap:10px;align-items:baseline}
+.m-body h3 small{font-weight:400;color:var(--fg3);font-size:12px}
+.m-break{display:flex;flex-wrap:wrap;gap:6px}
+.m-break span{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:4px 12px;font-size:12.5px;color:var(--fg2)}
+.m-break b{color:var(--fg);margin-left:4px}
+.m-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.m-table{border-collapse:collapse;width:100%;font-size:calc(13.5px * var(--fs))}
+.m-table th,.m-table td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.m-table th:first-child,.m-table td:first-child{text-align:left}
+.m-table th{font-size:12px;color:var(--fg2);font-weight:600;background:var(--bg2)}
+.m-radio{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.m-radio input{display:none}
+.m-radio span{display:inline-block;border:1px solid var(--line);border-radius:100px;padding:5px 12px;font-size:13px;cursor:pointer}
+.m-radio input:checked+span{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.m-num,.m-sel{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);margin:2px 0 12px}
+.m-pays{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;margin:2px 0 4px}
+.m-pay{padding:3px 0}.m-pay a,.m-ov a{color:#d33;text-decoration:none;margin-left:6px}
+.m-ov{display:inline-block;border:1px solid var(--line);border-radius:100px;padding:2px 10px;margin:2px}
+.cal-chip.mo{background:color-mix(in srgb,#2f9e6b 13%,transparent);border-left-color:#2f9e6b}
+.cal-chip.mo.out{background:color-mix(in srgb,#8a5cf0 12%,transparent);border-left-color:#8a5cf0}
+@media (max-width:760px){.m-tiles{grid-template-columns:1fr}.m-d{width:60px}}
 @media (max-width:900px){.home-grid{grid-template-columns:1fr}}
 @media (max-width:760px){
   #home{padding:18px 14px 80px}
@@ -2404,11 +2456,37 @@ const etoOf = y => ETO[((y - 4) % 12 + 12) % 12];
 const SEIZA = [[119,'やぎ座','♑'],[218,'みずがめ座','♒'],[320,'うお座','♓'],[419,'おひつじ座','♈'],[520,'おうし座','♉'],[621,'ふたご座','♊'],[722,'かに座','♋'],[822,'しし座','♌'],[922,'おとめ座','♍'],[1023,'てんびん座','♎'],[1122,'さそり座','♏'],[1221,'いて座','♐'],[1231,'やぎ座','♑']];
 const seizaOf = s => { const k = +s.slice(5, 7) * 100 + +s.slice(8, 10); const z = SEIZA.find(x => k <= x[0]); return z ? z[2] + ' ' + z[1] : ''; };
 // 毎年くり返すもの（誕生日・記念日）
-const isYearly = x => x.type === 'birthday' || x.type === 'anniv';
-const yIcon = x => x.type === 'birthday' ? '🎂' : '🎉';
+// 記録の種類（誕生日・記念日・命日・サブスク）。記念日は自分でタグと絵文字を付けられる
+const KINDS = { birthday: ['🎂', '誕生日'], anniv: ['🎉', '記念日'], memorial: ['🕯️', '命日'], subsc: ['💳', 'サブスク'] };
+const isRecord = x => x.type in KINDS;
+const isYearly = x => x.type === 'birthday' || x.type === 'anniv' || x.type === 'memorial'; // 毎年同じ月日にくる
+const yIcon = x => x.emoji || (KINDS[x.type] || ['📅'])[0];
 const hasYear = x => x.date && !x.date.startsWith('0000');
-const yearsAt = (x, on) => hasYear(x) ? ageOn(x.date, on) : null; // 誕生日なら年齢、記念日なら何年たったか
-const yearlyNote = (x, on, future = true) => { const n = yearsAt(x, on); if (n === null) return ''; return x.type === 'birthday' ? `${n}歳${future ? 'になる' : ''}` : (n >= 1 ? `${n}周年` : 'はじまりの日'); };
+const yearsAt = (x, on) => hasYear(x) ? ageOn(x.date, on) : null; // 誕生日なら年齢、記念日・命日なら何年たったか
+const KAIKI = [[1, '一周忌'], [2, '三回忌'], [6, '七回忌'], [12, '十三回忌'], [16, '十七回忌'], [22, '二十三回忌'], [26, '二十七回忌'], [32, '三十三回忌'], [49, '五十回忌']];
+const kaikiOf = n => (KAIKI.find(k => k[0] === n) || [])[1] || '';
+const nextKaiki = (date, from) => { const y0 = +date.slice(0, 4); const k = KAIKI.find(([n]) => `${y0 + n}${date.slice(4)}` >= from); return k ? [y0 + k[0], k[1]] : null; }; // 今日以降で次にくる回忌
+const kyonen = (birth, death) => +death.slice(0, 4) - +birth.slice(0, 4) + 1; // 享年（数え年）
+const yen = v => v ? '¥' + Number(v).toLocaleString() : '';
+const lastDay = (y, m) => new Date(y, m, 0).getDate();
+// サブスク: その日が更新日か
+function subscOn(x, s) {
+  if (!x.start || s < x.start || (x.end && s > x.end)) return false;
+  if (x.cycle === 'year') return s.slice(5) === x.start.slice(5);
+  const [y, m, d] = s.split('-').map(Number); return d === Math.min(+x.start.slice(8), lastDay(y, m));
+}
+function subscNext(x, from) { for (let i = 0; i < 370; i++) { const s = addDays(from, i); if (x.end && s > x.end) return null; if (subscOn(x, s)) return s; } return null; }
+const monthsBetween = (a, b) => { const A = parseYmd(a), B = parseYmd(b); let m = (B.getFullYear() - A.getFullYear()) * 12 + B.getMonth() - A.getMonth(); if (B.getDate() < A.getDate()) m--; return Math.max(m, 0); };
+const fmtYM = m => (m >= 12 ? `${Math.floor(m / 12)}年` : '') + (m % 12 ? `${m % 12}ヶ月` : (m >= 12 ? '' : '0ヶ月'));
+const subscMonthly = x => x.price ? (x.cycle === 'year' ? x.price / 12 : +x.price) : 0;
+const yearlyNote = (x, on, future = true) => {
+  if (x.type === 'subsc') return `更新${x.price ? '・' + yen(x.price) + (x.cycle === 'year' ? '/年' : '/月') : ''}`;
+  const n = yearsAt(x, on); if (n === null) return '';
+  if (x.type === 'birthday') return `${n}歳${future ? 'になる' : ''}`;
+  if (x.type === 'memorial') return n >= 1 ? (kaikiOf(n) ? kaikiOf(n) + '・' : '') + `没後${n}年` : '';
+  return n >= 1 ? `${n}周年` : 'はじまりの日';
+};
+const tagsInUse = () => [...new Set(calLive().filter(x => x.type === 'anniv' && x.tag).map(x => x.tag))];
 
 // ---- 日本の祝日（2000〜2099 年。振替休日・国民の休日を含む） ----
 const HOLI = new Map();
@@ -2447,7 +2525,7 @@ async function calReadFile() {
     const d = JSON.parse(text); return Array.isArray(d.items) ? d.items : [];
   } catch { return []; }
 }
-async function calLoad() { S.cal = { items: S.root ? await calReadFile() : [] }; }
+async function calLoad() { S.cal = { items: S.root ? await calReadFile() : [] }; await MONEY.load(); if (S.root) await moneyMigrate().catch(e => console.warn(e)); }
 // 保存は「ドライブの最新と混ぜてから」書く（PC とスマホで同時に足しても消えない）
 const calMerge = (a, b) => { const m = new Map(); for (const x of [...a, ...b]) { const o = m.get(x.id); if (!o || (x.updatedAt || 0) >= (o.updatedAt || 0)) m.set(x.id, x); } return [...m.values()]; };
 let calSaving = Promise.resolve();
@@ -2467,6 +2545,7 @@ function calOn(s) {
   const out = []; const today = todayYmd();
   for (const x of calLive()) {
     if (isYearly(x)) { if (x.date && x.date.slice(5) === s.slice(5) && (x.date.startsWith('0000') || x.date <= s)) out.push(x); continue; }
+    if (x.type === 'subsc') { if (subscOn(x, s)) out.push(x); continue; }
     if (!x.start) continue;
     const end = x.end || (x.type === 'period' ? (today > x.start ? today : x.start) : x.start); // 月のもので終わりが未記入なら今日まで
     if (x.start <= s && s <= end) out.push(x);
@@ -2513,6 +2592,7 @@ async function showHome() {
   setView('home'); $('#crumb').textContent = (S.root.isDrive ? '☁ ' : '') + S.root.name; $('#status').textContent = '';
   const h = $('#home');
   if (HOME.mode === 'wareki') { drawWarekiList(true); return; }
+  if (HOME.mode === 'money') { drawMoneyPage(); return; }
   if (!HOME.ym) { const t = new Date(); HOME.ym = [t.getFullYear(), t.getMonth()]; }
   const recent = recentNotes(12);
   const favs = favList().filter(f => f.type === 'dir' ? S.dirs.has(f.path) : S.byPath.has(f.path));
@@ -2526,13 +2606,14 @@ async function showHome() {
     <div class="home-grid">
       <section class="home-sec"><div class="cal-head"><button class="cal-nav" data-d="-1" title="前の月">‹</button><h2 class="cal-title"></h2><button class="cal-nav" data-d="1" title="次の月">›</button><button class="cal-today">今日</button><span style="flex:1"></span><button class="cal-menu" title="カレンダーの設定">⋯</button></div><div class="cal-grid"></div></section>
       <section class="home-sec"><h2>これから</h2><div class="home-upcoming"></div>
-        <div class="home-btns"><button data-a="event">＋ 予定</button><button data-a="birthday">＋ 誕生日</button><button data-a="anniv">＋ 記念日</button><button data-a="period">＋ 月のもの</button></div>
+        <div class="home-btns"><button data-a="event">＋ 予定</button><button data-a="birthday">＋ 誕生日</button><button data-a="anniv">＋ 記念日</button><button data-a="memorial">＋ 命日</button><button data-a="period">＋ 月のもの</button></div>
         <h2 style="margin-top:22px">和暦変換</h2><div class="wareki">
           <div><input type="date" id="wk-date" value="${todayYmd()}"><span id="wk-out"></span></div>
           <div><select id="wk-era">${ERAS.map(([e]) => `<option>${e}</option>`).join('')}</select><input type="number" id="wk-y" min="1" max="99" value="${+todayYmd().slice(0, 4) - 2018}" style="width:70px">年 → <span id="wk-out2"></span></div>
         </div>
         <div class="home-btns"><button class="open-wk">和暦⇔西暦の一覧・誕生日と記念日 ›</button></div></section>
     </div>
+    <section class="home-sec" id="home-money"></section>
     ${favs.length ? `<section class="home-sec"><h2>お気に入り</h2><div class="home-list">${favs.map(f => f.type === 'dir'
       ? `<button class="home-item" data-dir="${esc(f.path)}"><span class="hi-ic">${esc(folderIcon(f.path) || '📁')}</span><span class="hi-t">${esc(baseOf(f.path))}</span><span class="hi-m">${countIn(f.path)}</span></button>`
       : `<button class="home-item" data-note="${esc(f.path)}"><span class="hi-ic">📄</span><span class="hi-t">${esc(S.byPath.get(f.path).fmTitle || S.byPath.get(f.path).title)}</span><span class="hi-m">${esc(S.byPath.get(f.path).dir ? crumbOf(S.byPath.get(f.path).dir) : '')}</span></button>`).join('')}</div></section>` : ''}
@@ -2567,16 +2648,20 @@ async function showHome() {
   h.querySelector('.cal-today').onclick = () => { const t = new Date(); HOME.ym = [t.getFullYear(), t.getMonth()]; drawCal(); };
   h.querySelector('.cal-menu').onclick = e => showMenu(e, [
     { label: (showPeriod() ? '✓ ' : '　') + '月のものをカレンダーに出す', run: () => { localStorage.setItem('notes:showPeriod', showPeriod() ? '0' : '1'); drawCal(); drawUpcoming(); } },
-    { label: '誕生日・記念日の一覧…', run: birthdayList },
+    { label: '誕生日・記念日・命日の一覧…', run: birthdayList },
+    { label: (showMoney() ? '✓ ' : '　') + 'お金（引き落とし・立て替え・入金）を出す', run: () => { localStorage.setItem('notes:showMoney', showMoney() ? '0' : '1'); drawCal(); } },
+    { label: 'お金のページ', run: () => { HOME.mode = 'money'; showHome(); } },
     { label: '和暦⇔西暦の一覧', run: () => { HOME.mode = 'wareki'; showHome(); } },
     { label: '月のものの記録一覧…', run: periodList },
+    { label: '表（CSV）で書き出す…', run: exportCalCsv },
+    { label: '表（CSV）から取り込む…（固定費もいっしょに入る）', run: importCalCsv },
   ]);
   h.querySelectorAll('.home-btns button[data-a]').forEach(b => b.onclick = () => itemDialog(b.dataset.a, null, todayYmd()));
   h.querySelector('.open-wk').onclick = () => { HOME.mode = 'wareki'; showHome(); };
   // 和暦
   const wk = () => { const v = $('#wk-date').value; $('#wk-out').textContent = v ? `→ ${wareki(v)}` + (holidayName(v) ? `（${holidayName(v)}）` : '') : ''; const y = eraToYear($('#wk-era').value, +$('#wk-y').value || 1); $('#wk-out2').textContent = y ? `西暦 ${y} 年` : ''; };
   ['#wk-date', '#wk-era', '#wk-y'].forEach(s => $(s).oninput = wk); wk();
-  drawCal(); drawUpcoming();
+  drawCal(); drawUpcoming(); drawMoneyHome();
 }
 function chipsOf(s) {
   return calOn(s).filter(x => x.type !== 'period' || showPeriod()).sort((a, b) => (a.type === 'period') - (b.type === 'period') || (a.time || '').localeCompare(b.time || ''));
@@ -2589,9 +2674,11 @@ function drawCal() {
   for (let i = 0; i < 42; i++) {
     const d = new Date(start); d.setDate(start.getDate() + i); const s = ymd(d); const hol = holidayName(s);
     const items = chipsOf(s); const per = items.some(x => x.type === 'period');
-    const chips = items.filter(x => x.type !== 'period').slice(0, 3).map(x => isYearly(x) ? `<span class="cal-chip bd">${yIcon(x)} ${esc(x.title)}</span>` : `<span class="cal-chip" style="--c:${colorOf(x.color)}">${x.time ? esc(x.time) + ' ' : ''}${esc(x.title)}</span>`).join('');
-    const more = items.filter(x => x.type !== 'period').length - 3;
-    html += `<button class="cal-day${d.getMonth() !== m ? ' out' : ''}${s === today ? ' today' : ''}${d.getDay() === 0 || hol ? ' sun' : d.getDay() === 6 ? ' sat' : ''}${per ? ' per' : ''}" data-d="${s}" title="${esc(hol)}"><span class="n">${d.getDate()}</span>${hol ? `<span class="hol">${esc(hol)}</span>` : ''}${chips}${more > 0 ? `<span class="cal-more">+${more}</span>` : ''}</button>`;
+    const chips = items.filter(x => x.type !== 'period').slice(0, 3).map(x => isRecord(x) ? `<span class="cal-chip bd${x.type === 'memorial' ? ' mem' : x.type === 'subsc' ? ' sub' : ''}">${yIcon(x)} ${esc(x.title)}</span>` : `<span class="cal-chip" style="--c:${colorOf(x.color)}">${x.time ? esc(x.time) + ' ' : ''}${esc(x.title)}</span>`).join('');
+    const mon = showMoney() ? moneyOn(s) : []; const room = Math.max(0, 3 - items.filter(x => x.type !== 'period').length);
+    const mchips = mon.slice(0, room).map(m => `<span class="cal-chip mo ${m.dir}">${m.icon} ${esc(m.label)}</span>`).join('');
+    const more = items.filter(x => x.type !== 'period').length + mon.length - 3;
+    html += `<button class="cal-day${d.getMonth() !== m ? ' out' : ''}${s === today ? ' today' : ''}${d.getDay() === 0 || hol ? ' sun' : d.getDay() === 6 ? ' sat' : ''}${per ? ' per' : ''}" data-d="${s}" title="${esc(hol)}"><span class="n">${d.getDate()}</span>${hol ? `<span class="hol">${esc(hol)}</span>` : ''}${chips}${mchips}${more > 0 ? `<span class="cal-more">+${more}</span>` : ''}</button>`;
   }
   g.innerHTML = html;
   g.querySelectorAll('.cal-day').forEach(b => b.onclick = () => dayDialog(b.dataset.d));
@@ -2602,72 +2689,123 @@ function drawUpcoming() {
   for (const x of calLive()) {
     if (x.type === 'event') { const end = x.end || x.start; if (end >= t && x.start <= until) rows.push([x.start < t ? t : x.start, x]); }
     else if (isYearly(x) && x.date) { const md = x.date.slice(5); let next = `${t.slice(0, 4)}-${md}`; if (next < t) next = `${+t.slice(0, 4) + 1}-${md}`; if (next <= until) rows.push([next, x]); }
+    else if (x.type === 'subsc') { const n = subscNext(x, t); if (n && n <= until) rows.push([n, x]); }
     else if (x.type === 'period' && showPeriod() && !x.end && x.start <= t) rows.push([t, x]);
   }
   rows.sort((a, b) => a[0].localeCompare(b[0]) || (a[1].time || '').localeCompare(b[1].time || ''));
   box.innerHTML = rows.length ? rows.slice(0, 12).map(([d, x]) => {
     const left = daysBetween(t, d); const when = left === 0 ? '今日' : left === 1 ? '明日' : `${left}日後`;
     let label = esc(x.title), sub = '';
-    if (isYearly(x)) { label = yIcon(x) + ' ' + label; sub = yearlyNote(x, d); }
+    if (isRecord(x)) { label = yIcon(x) + ' ' + label; sub = yearlyNote(x, d); }
     else if (x.type === 'period') { label = '● 月のもの'; sub = `${daysBetween(x.start, t) + 1}日目`; }
     else { if (x.end && x.end !== x.start) sub = `${fmtMD(x.start)}〜${fmtMD(x.end)}`; if (x.time) sub = (sub ? sub + ' ' : '') + x.time; }
     return `<button class="up-row" data-id="${esc(x.id)}" data-d="${d}"><span class="up-d">${fmtMD(d)}<small>${when}</small></span><span class="up-t">${label}${sub ? `<small>${esc(sub)}</small>` : ''}</span></button>`;
   }).join('') : '<p class="home-empty">60 日以内の予定はありません</p>';
   box.querySelectorAll('.up-row').forEach(b => b.onclick = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); if (x) itemDialog(x.type, x, b.dataset.d); });
 }
-const refreshCal = () => { if (S.view !== 'home') return; if (HOME.mode === 'wareki') drawWarekiList(false); else { drawCal(); drawUpcoming(); } };
+const refreshCal = () => { if (S.view !== 'home') return; if (HOME.mode === 'wareki') drawWarekiList(false); else if (HOME.mode === 'money') drawMoneyPage(); else { drawCal(); drawUpcoming(); } };
 
 // その日のもの → 選んで編集、または追加
 async function dayDialog(s) {
   const items = calOn(s).filter(x => x.type !== 'period' || showPeriod()); const hol = holidayName(s);
+  const money = showMoney() ? moneyOn(s) : [];
   let next = null;
   const p = dialog(`${s.replace(/-/g, '/')}（${WD[parseYmd(s).getDay()]}）`, `<p style="margin:-4px 0 10px;color:var(--fg3);font-size:12.5px">${wareki(s)}${hol ? '・' + esc(hol) : ''}</p>
-    <div class="home-list" style="margin-bottom:12px">${items.map(x => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${isYearly(x) ? yIcon(x) : x.type === 'period' ? '●' : '📅'}</span><span class="hi-t">${esc(x.type === 'period' ? '月のもの' : x.title)}</span><span class="hi-m">${isYearly(x) ? yearlyNote(x, s, false) : x.time ? esc(x.time) : ''}</span></button>`).join('') || '<p class="home-empty">この日の予定はありません</p>'}</div>
-    <div class="home-btns"><button type="button" data-a="event">＋ 予定</button><button type="button" data-a="birthday">＋ 誕生日</button><button type="button" data-a="anniv">＋ 記念日</button><button type="button" data-a="period">＋ 月のもの</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
-  $$('#dlg .home-item').forEach(b => b.onclick = () => { next = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); itemDialog(x.type, x, s); }; $('#dlg-cancel').click(); });
-  $$('#dlg .home-btns button').forEach(b => b.onclick = () => { next = () => itemDialog(b.dataset.a, null, s); $('#dlg-cancel').click(); });
+    <div class="home-list" style="margin-bottom:12px">${items.map(x => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${isRecord(x) ? yIcon(x) : x.type === 'period' ? '●' : '📅'}</span><span class="hi-t">${esc(x.type === 'period' ? '月のもの' : x.title)}</span><span class="hi-m">${isRecord(x) ? yearlyNote(x, s, false) : x.time ? esc(x.time) : ''}</span></button>`).join('') || (money.length ? '' : '<p class="home-empty">この日の予定はありません</p>')}${money.map((m, i) => `<button class="home-item" data-mi="${i}"><span class="hi-ic">${m.icon}</span><span class="hi-t">${esc(m.label)}</span><span class="hi-m">${m.dir === 'in' ? '+' : ''}${yen(m.amount)}</span></button>`).join('')}</div>
+    <div class="home-btns"><button type="button" data-a="event">＋ 予定</button><button type="button" data-a="birthday">＋ 誕生日</button><button type="button" data-a="anniv">＋ 記念日</button><button type="button" data-a="memorial">＋ 命日</button><button type="button" data-a="period">＋ 月のもの</button></div>
+    <div class="home-btns" style="margin-top:6px"><button type="button" data-m="fixed">＋ 固定費</button><button type="button" data-m="advance">＋ 立て替え</button><button type="button" data-m="in">＋ 入金</button><button type="button" data-m="out">＋ 出金</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  $$('#dlg .home-item[data-id]').forEach(b => b.onclick = () => { next = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); itemDialog(x.type, x, s); }; $('#dlg-cancel').click(); });
+  $$('#dlg .home-item[data-mi]').forEach(b => b.onclick = () => { next = () => moneyEdit(MONEY.items.find(x => x.id === money[+b.dataset.mi].x.id)); $('#dlg-cancel').click(); });
+  $$('#dlg .home-btns button[data-a]').forEach(b => b.onclick = () => { next = () => itemDialog(b.dataset.a, null, s); $('#dlg-cancel').click(); });
+  $$('#dlg .home-btns button[data-m]').forEach(b => b.onclick = () => { next = () => moneyNew(b.dataset.m, s); $('#dlg-cancel').click(); });
   await p; if (next) setTimeout(next, 30);
 }
 // 追加・編集
 async function itemDialog(type, item, date) {
-  const yearly = type === 'birthday' || type === 'anniv';
-  const x = item ? { ...item } : { id: calId(), type, start: date, date: yearly ? date : undefined };
-  const T = { event: '予定', birthday: '誕生日', anniv: '記念日', period: '月のもの' }[type];
+  const yearly = type === 'birthday' || type === 'anniv' || type === 'memorial';
+  const isNew = !item || item._new; // _new: 種類を切り替えた直後のまだ保存していないもの
+  const x = item ? { ...item, type } : { id: calId(), type, start: date, date: yearly ? date : undefined, cycle: 'month' }; delete x._new;
+  const T = { event: '予定', birthday: '誕生日', anniv: '記念日', memorial: '命日', subsc: 'サブスク', period: '月のもの' }[type];
   const noYear = yearly && x.date && x.date.startsWith('0000');
+  const tags = tagsInUse();
+  const dateLabel = { birthday: '生年月日', anniv: 'はじまりの日', memorial: '亡くなった日' }[type];
+  const titleLabel = { birthday: '名前', anniv: 'なんの日', memorial: '名前', subsc: 'サービス名' }[type] || 'タイトル';
+  const titlePh = { birthday: '例: 母', anniv: '例: 結婚記念日、入社、開業、ねこが来た日', memorial: '例: 祖母', subsc: '例: 動画配信、クラウド容量' }[type] || '例: 打ち合わせ';
   const body = type === 'event' ? `
-      <label class="fl">タイトル</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="例: 打ち合わせ">
+      <label class="fl">タイトル</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="${titlePh}">
       <div class="it-row"><div><label class="fl">開始日</label><input type="date" id="it-start" value="${esc(x.start || date)}"></div><div><label class="fl">終了日（期間のとき）</label><input type="date" id="it-end" value="${esc(x.end || '')}"></div></div>
       <div class="it-row"><div><label class="fl">時刻（任意）</label><input type="time" id="it-time" value="${esc(x.time || '')}"></div><div><label class="fl">色</label><div class="it-colors">${COLORS.map(([k, c]) => `<label><input type="radio" name="it-color" value="${k}" ${(x.color || 'blue') === k ? 'checked' : ''}><span style="background:${c}"></span></label>`).join('')}</div></div></div>
       <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}">`
     : yearly ? `
-      <label class="fl">${type === 'birthday' ? '名前' : 'なんの日'}</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="${type === 'birthday' ? '例: 母' : '例: 結婚記念日、入社、開業、ねこが来た日'}">
-      <label class="fl">${type === 'birthday' ? '生年月日' : 'はじまりの日'}</label><input type="date" id="it-date" value="${esc(noYear ? '2000' + x.date.slice(4) : (x.date || ''))}">
-      <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-6px 0 10px"><input type="checkbox" id="it-noyear" ${noYear ? 'checked' : ''}> ${type === 'birthday' ? '生まれ年' : '年'}はわからない（月日だけ）</label>
-      <p id="it-info" style="font-size:13px;color:var(--fg2);margin:0 0 12px"></p>
-      <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}" placeholder="例: 父、好きなもの、プレゼントの記録">`
+      <label class="fl">種類</label><select id="it-kind" style="width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);margin:2px 0 12px">${['birthday', 'anniv', 'memorial'].map(k => `<option value="${k}" ${k === type ? 'selected' : ''}>${KINDS[k][0]} ${KINDS[k][1]}</option>`).join('')}</select>
+      <label class="fl">${titleLabel}</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="${titlePh}">
+      ${type === 'anniv' ? `<div class="it-row"><div><label class="fl">タグ（任意。同じタグでまとめて見られる）</label><input type="text" id="it-tag" list="it-tags" value="${esc(x.tag || '')}" placeholder="例: 引っ越し、仕事、ペット"><datalist id="it-tags">${tags.map(t => `<option value="${esc(t)}">`).join('')}</datalist></div><div><label class="fl">絵文字（任意）</label><input type="text" id="it-emoji" value="${esc(x.emoji || '')}" placeholder="🎉" maxlength="8" style="font-size:18px"></div></div>` : ''}
+      <label class="fl">${dateLabel}</label><input type="date" id="it-date" value="${esc(noYear ? '2000' + x.date.slice(4) : (x.date || ''))}">
+      <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-6px 0 10px"><input type="checkbox" id="it-noyear" ${noYear ? 'checked' : ''}> 年はわからない（月日だけ）</label>
+      ${type === 'memorial' ? `<label class="fl">生年月日（任意。享年を出す）</label><input type="date" id="it-birth" value="${esc(x.birth || '')}">` : ''}
+      <p id="it-info" style="font-size:13px;color:var(--fg2);margin:0 0 12px;line-height:1.6"></p>
+      <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}" placeholder="${type === 'memorial' ? '例: 父方の祖母、お寺の連絡先' : '例: 父、好きなもの、プレゼントの記録'}">`
+    : type === 'subsc' ? `
+      <label class="fl">${titleLabel}</label><input type="text" id="it-title" value="${esc(x.title || '')}" placeholder="${titlePh}">
+      <div class="it-row"><div><label class="fl">始めた日</label><input type="date" id="it-start" value="${esc(x.start || date)}"></div><div><label class="fl">やめた日（続けているなら空欄）</label><input type="date" id="it-end" value="${esc(x.end || '')}"></div></div>
+      <div class="it-row"><div><label class="fl">支払い</label><select id="it-cycle" style="width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);margin:2px 0 12px"><option value="month" ${x.cycle !== 'year' ? 'selected' : ''}>毎月</option><option value="year" ${x.cycle === 'year' ? 'selected' : ''}>毎年</option></select></div><div><label class="fl">金額（任意・円）</label><input type="number" id="it-price" value="${esc(x.price || '')}" min="0" style="width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);margin:2px 0 12px"></div></div>
+      <p id="it-info" style="font-size:13px;color:var(--fg2);margin:0 0 12px;line-height:1.6"></p>
+      <label class="fl">メモ</label><input type="text" id="it-note" value="${esc(x.note || '')}" placeholder="例: 家族プラン、解約の方法">`
     : `
       <div class="it-row"><div><label class="fl">始まった日</label><input type="date" id="it-start" value="${esc(x.start || date)}"></div><div><label class="fl">終わった日（まだなら空欄）</label><input type="date" id="it-end" value="${esc(x.end || '')}"></div></div>
       <label class="fl">メモ（任意）</label><input type="text" id="it-note" value="${esc(x.note || '')}">`;
   let del = false;
-  const p = dialog(`${T}を${item ? '編集' : '追加'}`, body, { okText: '保存', focus: type === 'period' ? '#it-start' : '#it-title', validate: () => {
-    if (type !== 'period' && !$('#it-title').value.trim()) { toast(type === 'birthday' ? '名前を入れてください' : 'タイトルを入れてください'); return false; }
+  const p = dialog(`${T}を${isNew ? '追加' : '編集'}`, body, { okText: '保存', focus: type === 'period' ? '#it-start' : '#it-title', validate: () => {
+    if (type !== 'period' && !$('#it-title').value.trim()) { toast(`${titleLabel}を入れてください`); return false; }
     if (yearly && !$('#it-date').value) { toast('日付を入れてください'); return false; }
     if (!yearly && !$('#it-start').value) { toast('日付を入れてください'); return false; }
-    if (!yearly && $('#it-end').value && $('#it-end').value < $('#it-start').value) { toast('終了日が開始日より前です'); return false; }
+    if (!yearly && $('#it-end').value && $('#it-end').value < $('#it-start').value) { toast('終わりの日が始まりの日より前です'); return false; }
     return true; } });
-  if (item) { $('#dlg-cancel').insertAdjacentHTML('beforebegin', '<button type="button" id="it-del" style="margin-right:auto;color:#d33">削除</button>'); $('#it-del').onclick = () => { del = true; $('#dlg-cancel').click(); }; }
+  if (!isNew) { $('#dlg-cancel').insertAdjacentHTML('beforebegin', '<button type="button" id="it-del" style="margin-right:auto;color:#d33">削除</button>'); $('#it-del').onclick = () => { del = true; $('#dlg-cancel').click(); }; }
+  // 種類の切り替え（例: 誕生日 → 命日。生年月日は命日の「生年月日」に引き継ぐ）
+  let switchTo = null;
+  if ($('#it-kind')) $('#it-kind').onchange = () => {
+    const to = $('#it-kind').value; const v = $('#it-date').value; const ny = $('#it-noyear').checked; const cur = ny && v ? '0000' + v.slice(4) : v;
+    const c = { ...x, title: $('#it-title').value.trim(), note: $('#it-note').value.trim(), date: cur };
+    if ($('#it-birth')) c.birth = $('#it-birth').value;
+    if ($('#it-tag')) { c.tag = $('#it-tag').value.trim(); c.emoji = $('#it-emoji').value.trim(); }
+    if (to === 'memorial' && type !== 'memorial') { if (type === 'birthday' && cur && !ny) c.birth = cur; c.date = ''; }
+    if (type === 'memorial' && to === 'birthday') c.date = c.birth || '';
+    if (to !== 'anniv') { delete c.tag; delete c.emoji; }
+    if (isNew) c._new = true;
+    switchTo = [to, c]; $('#dlg-cancel').click();
+  };
+  const today = todayYmd(), ty = +today.slice(0, 4);
   if (yearly) { const info = () => {
     const v = $('#it-date').value; const ny = $('#it-noyear').checked; if (!v) { $('#it-info').textContent = ''; return; }
     const md = `${+v.slice(5, 7)}月${+v.slice(8)}日`; const e = etoOf(+v.slice(0, 4));
-    $('#it-info').innerHTML = ny ? `毎年 ${md}` : type === 'birthday'
-      ? `${esc(wareki(v))}生まれ・今 <b>${ageOn(v, todayYmd())}歳</b><br>${e[2]} ${e[0]}（${e[1]}）年・${seizaOf(v)}`
-      : `${esc(wareki(v))}から・今年で <b>${+todayYmd().slice(0, 4) - +v.slice(0, 4)}年</b>（${daysBetween(v, todayYmd()).toLocaleString()}日目）`;
-  }; $('#it-date').oninput = info; $('#it-noyear').onchange = info; info(); }
+    let html;
+    if (ny) html = `毎年 ${md}`;
+    else if (type === 'birthday') html = `${esc(wareki(v))}生まれ・今 <b>${ageOn(v, today)}歳</b><br>${e[2]} ${e[0]}（${e[1]}）年・${seizaOf(v)}`;
+    else if (type === 'memorial') {
+      const b = $('#it-birth').value; const nk = nextKaiki(v, today);
+      html = `${esc(wareki(v))}・没後 <b>${ageOn(v, today)}年</b>${b ? `・享年 ${kyonen(b, v)}（満${ageOn(b, v)}歳）` : ''}${nk ? `<br>次は ${nk[1]}（${nk[0]}年・${esc(warekiYear(nk[0]))}）` : ''}`;
+    } else html = `${esc(wareki(v))}から・今年で <b>${ty - +v.slice(0, 4)}年</b>（${daysBetween(v, today).toLocaleString()}日目）`;
+    $('#it-info').innerHTML = html;
+  }; $('#it-date').oninput = info; $('#it-noyear').onchange = info; if ($('#it-birth')) $('#it-birth').oninput = info; info(); }
+  if (type === 'subsc') { const info = () => {
+    const st = $('#it-start').value; if (!st) { $('#it-info').textContent = ''; return; }
+    const end = $('#it-end').value; const y = { ...x, start: st, end, cycle: $('#it-cycle').value, price: $('#it-price').value };
+    const months = monthsBetween(st, end && end < today ? end : today); const nx = end && end < today ? null : subscNext(y, today);
+    const total = y.price ? Math.round(y.price * (y.cycle === 'year' ? Math.floor(months / 12) + 1 : months + 1)) : 0;
+    $('#it-info').innerHTML = `${esc(wareki(st))}から ${end && end < today ? '（やめた）' : ''}<b>${fmtYM(months)}</b>${nx ? `・次の更新 ${fmtMD(nx)}` : ''}${total ? `<br>これまでの支払い およそ ${yen(total)}` : ''}`;
+  }; ['#it-start', '#it-end', '#it-cycle', '#it-price'].forEach(q => $(q).oninput = info); $('#it-cycle').onchange = info; info(); }
   const ok = await p; $('#it-del')?.remove();
+  if (switchTo) { setTimeout(() => itemDialog(switchTo[0], switchTo[1], date), 30); return; }
   if (del) { if (await confirmDlg('削除', `「${type === 'period' ? '月のもの' : x.title}」を削除します。`)) { await calRemove(x); refreshCal(); toast('削除しました'); } return; }
   if (!ok) return;
   if (type === 'event') Object.assign(x, { title: $('#it-title').value.trim(), start: $('#it-start').value, end: $('#it-end').value && $('#it-end').value !== $('#it-start').value ? $('#it-end').value : '', time: $('#it-time').value, color: $('input[name=it-color]:checked')?.value || 'blue', note: $('#it-note').value.trim() });
-  else if (yearly) { const v = $('#it-date').value; Object.assign(x, { title: $('#it-title').value.trim(), date: $('#it-noyear').checked ? '0000' + v.slice(4) : v, note: $('#it-note').value.trim() }); delete x.start; }
+  else if (yearly) {
+    const v = $('#it-date').value; Object.assign(x, { title: $('#it-title').value.trim(), date: $('#it-noyear').checked ? '0000' + v.slice(4) : v, note: $('#it-note').value.trim() }); delete x.start;
+    if (type === 'anniv') { x.tag = $('#it-tag').value.trim(); x.emoji = [...new Intl.Segmenter().segment($('#it-emoji').value.trim())].map(z => z.segment).slice(0, 1).join(''); }
+    if (type === 'memorial') x.birth = $('#it-birth').value;
+  }
+  else if (type === 'subsc') Object.assign(x, { title: $('#it-title').value.trim(), start: $('#it-start').value, end: $('#it-end').value, cycle: $('#it-cycle').value, price: $('#it-price').value ? +$('#it-price').value : '', note: $('#it-note').value.trim() });
   else Object.assign(x, { title: '月のもの', start: $('#it-start').value, end: $('#it-end').value, note: $('#it-note').value.trim() });
   await calUpsert(x); refreshCal(); toast('保存しました');
 }
@@ -2675,9 +2813,21 @@ async function birthdayList() {
   const t = todayYmd();
   const list = calLive().filter(isYearly).map(x => { const md = x.date.slice(5); let next = `${t.slice(0, 4)}-${md}`; if (next < t) next = `${+t.slice(0, 4) + 1}-${md}`; return [next, x]; }).sort((a, b) => a[0].localeCompare(b[0]));
   let pick = null;
-  const p = dialog('誕生日・記念日の一覧', `<div class="home-list">${list.map(([n, x]) => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${yIcon(x)}</span><span class="hi-t">${esc(x.title)}<small style="display:block;color:var(--fg3);font-size:11.5px">${!hasYear(x) ? '年なし' : `${x.date.replace(/-/g, '/')}・${wareki(x.date)}${x.type === 'birthday' ? '生まれ' : 'から'}`}</small></span><span class="hi-m">${fmtMD(n)}${hasYear(x) ? `<br>${x.type === 'birthday' ? ageOn(x.date, t) + '歳' : ageOn(x.date, t) + '年'}` : ''}</span></button>`).join('') || '<p class="home-empty">まだ登録がありません</p>'}</div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  const p = dialog('誕生日・記念日・命日の一覧', `<div class="home-list">${list.map(([n, x]) => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${yIcon(x)}</span><span class="hi-t">${esc(x.title)}<small style="display:block;color:var(--fg3);font-size:11.5px">${x.tag ? `#${esc(x.tag)}・` : ''}${!hasYear(x) ? '年なし' : `${x.date.replace(/-/g, '/')}・${wareki(x.date)}${x.type === 'birthday' ? '生まれ' : x.type === 'memorial' ? '没' : 'から'}`}</small></span><span class="hi-m">${fmtMD(n)}${hasYear(x) ? `<br>${x.type === 'birthday' ? ageOn(x.date, t) + '歳' : x.type === 'memorial' ? '没後' + ageOn(x.date, t) + '年' : ageOn(x.date, t) + '年'}` : ''}</span></button>`).join('') || '<p class="home-empty">まだ登録がありません</p>'}</div>`, { okText: '閉じる', focus: '#dlg-ok' });
   $$('#dlg .home-item').forEach(b => b.onclick = () => { pick = S.cal.items.find(i => i.id === b.dataset.id); $('#dlg-cancel').click(); });
   await p; if (pick) setTimeout(() => itemDialog(pick.type, pick, todayYmd()), 30);
+}
+async function subscList() {
+  const t = todayYmd(); const list = calLive().filter(x => x.type === 'subsc').sort((a, b) => (!!a.end && a.end < t) - (!!b.end && b.end < t) || a.start.localeCompare(b.start));
+  const active = list.filter(x => !(x.end && x.end < t)); const per = active.reduce((a, x) => a + subscMonthly(x), 0);
+  let pick = null;
+  const p = dialog('サブスクの一覧', `<p style="margin:-4px 0 10px;color:var(--fg2);font-size:13px">続けているもの ${active.length} 件${per ? `・月あたり およそ <b>${yen(Math.round(per))}</b>（年 ${yen(Math.round(per * 12))}）` : ''}</p>
+    <div class="home-list">${list.map(x => { const done = x.end && x.end < t; const nx = done ? null : subscNext(x, t); return `<button class="home-item" data-id="${esc(x.id)}"${done ? ' style="opacity:.55"' : ''}><span class="hi-ic">💳</span><span class="hi-t">${esc(x.title)}<small style="display:block;color:var(--fg3);font-size:11.5px">${x.start.replace(/-/g, '/')}から ${fmtYM(monthsBetween(x.start, done ? x.end : t))}${done ? '・やめた' : ''}</small></span><span class="hi-m">${x.price ? yen(x.price) + (x.cycle === 'year' ? '/年' : '/月') : ''}${nx ? `<br>次 ${fmtMD(nx)}` : ''}</span></button>`; }).join('') || '<p class="home-empty">まだ登録がありません</p>'}</div>
+    <div class="home-btns"><button type="button" data-a="subsc">＋ サブスク</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
+  let add = false;
+  $$('#dlg .home-item').forEach(b => b.onclick = () => { pick = S.cal.items.find(i => i.id === b.dataset.id); $('#dlg-cancel').click(); });
+  $('#dlg .home-btns button').onclick = () => { add = true; $('#dlg-cancel').click(); };
+  await p; if (pick) setTimeout(() => itemDialog('subsc', pick, t), 30); else if (add) setTimeout(() => itemDialog('subsc', null, t), 30);
 }
 async function periodList() {
   const list = calLive().filter(x => x.type === 'period').sort((a, b) => b.start.localeCompare(a.start));
@@ -2691,8 +2841,11 @@ async function periodList() {
 function drawWarekiList(scrollToNow) {
   const h = $('#home'); const ty = +todayYmd().slice(0, 4); const only = localStorage.getItem('notes:wkOnly') === '1';
   const byYear = new Map(); // '昭和19' → items
-  for (const x of calLive().filter(x => isYearly(x) && hasYear(x))) { const w = wareki(x.date, false); if (!byYear.has(w)) byYear.set(w, []); byYear.get(w).push(x); }
-  for (const l of byYear.values()) l.sort((a, b) => a.date.localeCompare(b.date));
+  const flt = localStorage.getItem('notes:wkFilter') || '';
+  const pass = x => !flt || (flt.startsWith('#') ? x.tag === flt.slice(1) : x.type === flt);
+  const dOf = x => x.type === 'subsc' ? x.start : x.date;
+  for (const x of calLive().filter(x => isYearly(x) && hasYear(x) && pass(x))) { const w = wareki(dOf(x), false); if (!byYear.has(w)) byYear.set(w, []); byYear.get(w).push(x); }
+  for (const l of byYear.values()) l.sort((a, b) => dOf(a).localeCompare(dOf(b)));
   const eras = [...ERAS].reverse(); let html = '';
   eras.forEach(([era, start], i) => {
     const next = eras[i + 1]; const endDate = next ? addDays(next[1], -1) : null; const y0 = +start.slice(0, 4), y1 = next ? +next[1].slice(0, 4) : ty + 1;
@@ -2705,16 +2858,19 @@ function drawWarekiList(scrollToNow) {
       rows += `<div class="wk-row${items.length ? ' has' : ''}${y === ty ? ' now' : ''}" data-y="${y}" data-era="${era}" id="wk-${era}-${y}">
         <div class="wk-main"><b>${key}</b><span class="wk-eq">⇔</span><b>西暦${y}年</b></div>
         <div class="wk-sub"><span>${e[2]} ${e[0]}（${e[1]}）</span><span>${a2 > 0 ? `${a1}歳/${a2}歳` : a2 === 0 ? '今年' : ''}</span></div>
-        ${items.map(x => `<button class="wk-item" data-id="${esc(x.id)}"><span class="wk-n">${yIcon(x)} ${esc(x.title)}</span> ${+x.date.slice(5, 7)}月${+x.date.slice(8)}日${x.type === 'birthday' ? `生まれ <b>${ageOn(x.date, todayYmd())}歳</b>` : `から <b>${ageOn(x.date, todayYmd())}年</b>`}${x.type === 'birthday' ? `<small>${seizaOf(x.date)}</small>` : ''}${x.note ? `<small class="wk-memo">${esc(x.note)}</small>` : ''}</button>`).join('')}
+        ${items.map(wkItemHtml).join('')}
       </div>`;
     }
     if (rows) html += `<div class="wk-era"><div class="wk-era-h">${era}（${start.replace(/-0?/g, '/').replace(/^(\d+)\//, '$1/')}〜${endDate ? endDate.replace(/-0?/g, '/') : ''}）</div>${rows}</div>`;
   });
-  h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ ホーム</button><h1>和暦 ⇔ 西暦</h1><span style="flex:1"></span><button class="wk-now">今年</button></div>
-    <div class="wk-tools"><label><input type="checkbox" id="wk-only" ${only ? 'checked' : ''}> 登録がある年だけ</label><span style="flex:1"></span><button data-a="birthday">＋ 誕生日</button><button data-a="anniv">＋ 記念日</button></div>
+  h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ ホーム</button><h1>和暦 ⇔ 西暦</h1><span style="flex:1"></span><button class="wk-csv" title="表（CSV）で書き出す">⤓ CSV</button><button class="wk-now">今年</button></div>
+    <div class="wk-tools"><label><input type="checkbox" id="wk-only" ${only ? 'checked' : ''}> 登録がある年だけ</label><span style="flex:1"></span><button data-a="birthday">＋ 誕生日</button><button data-a="anniv">＋ 記念日</button><button data-a="memorial">＋ 命日</button></div>
+    <div class="wk-chips">${[['', 'すべて'], ...Object.entries(KINDS).filter(([k]) => k !== 'subsc').map(([k, [i, n]]) => [k, i + ' ' + n]), ...tagsInUse().map(t => ['#' + t, '#' + t])].map(([k, n]) => `<button data-f="${esc(k)}" class="${flt === k ? 'on' : ''}">${esc(n)}</button>`).join('')}</div>
     <div class="wk-list">${html || '<p class="home-empty" style="padding:20px">まだ誕生日・記念日の登録がありません</p>'}</div>`;
   h.querySelector('.wk-back').onclick = () => { HOME.mode = 'home'; showHome(); };
   h.querySelector('.wk-now').onclick = () => { const r = h.querySelector('.wk-row.now') || [...h.querySelectorAll('.wk-row')].pop(); r?.scrollIntoView({ block: 'center' }); };
+  h.querySelectorAll('.wk-chips button').forEach(b => b.onclick = () => { localStorage.setItem('notes:wkFilter', b.dataset.f); drawWarekiList(true); });
+  h.querySelector('.wk-csv').onclick = exportCalCsv;
   h.querySelector('#wk-only').onchange = e => { localStorage.setItem('notes:wkOnly', e.target.checked ? '1' : '0'); drawWarekiList(true); };
   h.querySelectorAll('.wk-tools button[data-a]').forEach(b => b.onclick = () => itemDialog(b.dataset.a, null, todayYmd()));
   h.querySelectorAll('.wk-item').forEach(b => b.onclick = e => { e.stopPropagation(); const x = S.cal.items.find(i => i.id === b.dataset.id); if (x) itemDialog(x.type, x, todayYmd()); });
@@ -2728,9 +2884,436 @@ function drawWarekiList(scrollToNow) {
 async function yearDialog(y, era, d0) {
   let next = null; const e = etoOf(y);
   const p = dialog(`${wareki(d0, false)}（西暦${y}年）`, `<p style="margin:-4px 0 12px;color:var(--fg2);font-size:13px">${e[2]} ${e[0]}（${e[1]}）年・今年で ${+todayYmd().slice(0, 4) - y} 年前</p>
-    <div class="home-btns"><button type="button" data-a="birthday">＋ この年の誕生日</button><button type="button" data-a="anniv">＋ この年の記念日</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
+    <div class="home-btns"><button type="button" data-a="birthday">＋ 誕生日</button><button type="button" data-a="anniv">＋ 記念日</button><button type="button" data-a="memorial">＋ 命日</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
   $$('#dlg .home-btns button').forEach(b => b.onclick = () => { next = () => itemDialog(b.dataset.a, null, d0); $('#dlg-cancel').click(); });
   await p; if (next) setTimeout(next, 30);
+}
+
+function wkItemHtml(x) {
+  const t = todayYmd(), d = x.type === 'subsc' ? x.start : x.date, md = `${+d.slice(5, 7)}月${+d.slice(8)}日`;
+  let main, small = '';
+  if (x.type === 'birthday') { main = `${md}生まれ <b>${ageOn(d, t)}歳</b>`; small = seizaOf(d); }
+  else if (x.type === 'memorial') { const nk = nextKaiki(d, t); main = `${md} 没${x.birth ? `（享年${kyonen(x.birth, d)}）` : ''} <b>没後${ageOn(d, t)}年</b>`; small = nk ? `次は ${nk[1]}（${nk[0]}年）` : ''; }
+  else if (x.type === 'subsc') { const done = x.end && x.end < t; main = `${md}から <b>${fmtYM(monthsBetween(d, done ? x.end : t))}</b>${done ? '（やめた）' : ''}`; small = x.price ? yen(x.price) + (x.cycle === 'year' ? '/年' : '/月') : ''; }
+  else { main = `${md}から <b>${ageOn(d, t)}年</b>`; small = x.tag ? '#' + x.tag : ''; }
+  return `<button class="wk-item k-${x.type}" data-id="${esc(x.id)}"><span class="wk-n">${yIcon(x)} ${esc(x.title)}</span> ${main}${small ? `<small>${esc(small)}</small>` : ''}${x.note ? `<small class="wk-memo">${esc(x.note)}</small>` : ''}</button>`;
+}
+
+// ---- 表（CSV）で書き出す。Excel でもそのまま開けるように BOM 付き UTF-8 ----
+async function exportCalCsv() {
+  const KIND_ALL = [['event', '📅 予定'], ['birthday', '🎂 誕生日'], ['anniv', '🎉 記念日'], ['memorial', '🕯️ 命日'], ['period', '● 月のもの']];
+  const counts = Object.fromEntries(KIND_ALL.map(([k]) => [k, calLive().filter(x => x.type === k).length]));
+  const ok = await dialog('表（CSV）で書き出す', `<p style="margin:-4px 0 10px;color:var(--fg2);font-size:13px">書き出すものを選んでください。Excel やスプレッドシートでそのまま開けます。</p>
+    ${KIND_ALL.map(([k, n]) => `<label class="exp-opt" style="align-items:center"><input type="checkbox" name="csv-k" value="${k}" ${k !== 'period' && counts[k] ? 'checked' : ''} ${counts[k] ? '' : 'disabled'}><span><b style="display:inline">${n}</b> <small style="display:inline">${counts[k]} 件</small></span></label>`).join('')}`, { okText: '書き出す', focus: '#dlg-ok', validate: () => $$('input[name=csv-k]:checked').map(i => i.value) });
+  if (!ok || !ok.length) return;
+  const t = todayYmd(), ty = +t.slice(0, 4);
+  const head = ['種類', '名前・タイトル', 'タグ', '日付', '和暦', '終わりの日', '生年月日', '年齢・経過', '次の日', '回忌・更新', '金額', '支払い', '時刻', 'メモ'];
+  const rows = [];
+  const order = Object.fromEntries(KIND_ALL.map(([k], i) => [k, i]));
+  for (const x of calLive().filter(x => ok.includes(x.type)).sort((a, b) => order[a.type] - order[b.type] || (a.date || a.start || '').localeCompare(b.date || b.start || ''))) {
+    const kind = (KIND_ALL.find(k => k[0] === x.type) || ['', x.type])[1].replace(/^\S+\s/, '');
+    const d = x.type === 'subsc' || x.type === 'event' || x.type === 'period' ? x.start : x.date;
+    const dShow = d && d.startsWith('0000') ? d.slice(5) : d || '';
+    let elapsed = '', next = '', note2 = '';
+    if (isYearly(x) && d) {
+      const md = d.slice(5); let n = `${ty}-${md}`; if (n < t) n = `${ty + 1}-${md}`; next = n;
+      if (hasYear(x)) {
+        const k = ageOn(d, t);
+        elapsed = x.type === 'birthday' ? `${k}歳` : x.type === 'memorial' ? `没後${k}年` : `${k}年`;
+        if (x.type === 'memorial') { const nk = nextKaiki(d, t); note2 = nk ? `${nk[1]}（${nk[0]}年）` : ''; if (x.birth) elapsed += `・享年${kyonen(x.birth, d)}`; }
+        if (x.type === 'anniv') note2 = `${ageOn(d, n)}周年`;
+      }
+    } else if (x.type === 'subsc') {
+      const done = x.end && x.end < t; elapsed = fmtYM(monthsBetween(x.start, done ? x.end : t)) + (done ? '（やめた）' : '');
+      next = done ? '' : subscNext(x, t) || ''; note2 = done ? '' : '更新';
+    } else if (x.type === 'period') elapsed = x.end ? `${daysBetween(x.start, x.end) + 1}日間` : '記録中';
+    rows.push([kind, x.title || '', x.tag || '', dShow, d && !d.startsWith('0000') ? wareki(d) : '', x.end || '', x.birth || '', elapsed, next, note2, x.price || '', x.type === 'subsc' ? (x.cycle === 'year' ? '毎年' : '毎月') : '', x.time || '', x.note || '']);
+  }
+  const cell = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = '﻿' + [head, ...rows].map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';
+  const name = `${S.root.name}_カレンダー_${t.replace(/-/g, '')}.csv`;
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast(`${rows.length} 件を書き出しました（${name}）`, 3500);
+}
+
+// ---- 表（CSV）から取り込む（書き出した CSV と同じ列。足りない列があってもよい） ----
+function parseCsv(text) {
+  const rows = []; let row = [], cur = '', q = false;
+  text = text.replace(/^﻿/, '');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(v => v.trim()));
+}
+function importCalCsv() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv,text/csv';
+  inp.onchange = async () => {
+    const f = inp.files[0]; if (!f) return;
+    const rows = parseCsv(await f.text()); if (rows.length < 2) { toast('取り込めるデータがありません'); return; }
+    const head = rows[0].map(h => h.trim()); const col = n => head.indexOf(n);
+    const get = (r, ...names) => { for (const n of names) { const i = col(n); if (i >= 0 && r[i] !== undefined && String(r[i]).trim()) return String(r[i]).trim(); } return ''; };
+    const TYPE = { '誕生日': 'birthday', '記念日': 'anniv', '命日': 'memorial', '予定': 'event', '月のもの': 'period' };
+    const normDate = v => { if (!v) return ''; v = v.replace(/[年月\/.]/g, '-').replace(/日/g, '').trim(); let m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); if (m) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`; m = v.match(/^(\d{1,2})-(\d{1,2})$/); if (m) return `0000-${pad2(m[1])}-${pad2(m[2])}`; return ''; };
+    const items = [], skipped = [], fixed = [];
+    const parseCycle = v => { if (!v || v === '毎月') return ['month', 1]; if (v === '毎年') return ['year', 12]; const m = v.match(/(\d+)\s*(か月|ヶ月|ケ月|カ月|年)ごと/); if (m) { const n = +m[1] * (m[2] === '年' ? 12 : 1); return n === 12 ? ['year', 12] : n === 1 ? ['month', 1] : ['nmonth', n]; } return ['month', 1]; };
+    for (const r of rows.slice(1)) {
+      if (get(r, '種類') === '固定費') { // お金の固定費（サブスクなど）
+        const title = get(r, '名前・タイトル', '名前');
+        const since = normDate(get(r, '始めた日')) || (get(r, '更新日') ? '' : normDate(get(r, '日付'))); // 「不明」や空欄なら分からない
+        const st = normDate(get(r, '更新日')) || normDate(get(r, '日付')) || since;
+        if (!title || (st && st.startsWith('0000'))) { skipped.push(`${title || '（名前なし）'}: 名前がないか、日付の形がちがう`); continue; } // 日付なし（更新日が分からない）でも入れる
+        if (MONEY.live().some(y => y.type === 'fixed' && y.title === title && y.start === st) || fixed.some(y => y.title === title && y.start === st)) { skipped.push(`${title}: もう登録されている`); continue; }
+        const [cycle, every] = parseCycle(get(r, 'くり返し'));
+        fixed.push({ id: calId(), type: 'fixed', title, start: st, since: since || '', sinceUnknown: !since, end: normDate(get(r, 'やめた日')), endUnknown: /不明|わから/.test(get(r, 'やめた日')), day: st ? +st.slice(8) : '', amount: get(r, '金額') ? +get(r, '金額').replace(/[^\d.]/g, '') || '' : '', cycle, every, account: get(r, '口座・カード'), category: get(r, '分類') || 'サブスク', scope: get(r, '区分') === '仕事' ? 'work' : 'personal', note: get(r, 'メモ') });
+        continue;
+      }
+      const type = TYPE[get(r, '種類')] || (get(r, '種類') ? null : 'birthday');
+      const title = get(r, '名前・タイトル', '名前', 'タイトル'); const d = normDate(get(r, '日付', '生年月日'));
+      if (!type) { skipped.push(`${get(r, '種類')}（種類が分からない）: ${title}`); continue; }
+      if ((type !== 'period' && !title) || !d) { skipped.push(`${title || '（名前なし）'}: 名前か日付がない`); continue; }
+      const x = { id: calId(), type, title: type === 'period' ? '月のもの' : title, note: get(r, 'メモ') };
+      if (type === 'event' || type === 'period') { x.start = d.startsWith('0000') ? '' : d; x.end = normDate(get(r, '終わりの日')); x.time = get(r, '時刻'); if (!x.start) { skipped.push(`${title}: 年のない日付`); continue; } }
+      else { x.date = d; if (type === 'anniv') x.tag = get(r, 'タグ'); if (type === 'memorial') x.birth = normDate(get(r, '生年月日')); }
+      const same = calLive().find(y => y.type === x.type && y.title === x.title && (y.date || y.start) === (x.date || x.start));
+      if (same || items.some(y => y.type === x.type && y.title === x.title && (y.date || y.start) === (x.date || x.start))) { skipped.push(`${title}: もう登録されている`); continue; }
+      items.push(x);
+    }
+    const ok = await dialog('表（CSV）から取り込む', `<p style="margin:-4px 0 10px;color:var(--fg2);font-size:13px">「${esc(f.name)}」から <b>${items.length + fixed.length} 件</b>を取り込みます${fixed.length ? `（うち固定費 ${fixed.length} 件はお金のページへ）` : ''}。</p>
+      <div class="home-list" style="max-height:260px;overflow:auto">${items.map(x => `<div class="home-item" style="cursor:default"><span class="hi-ic">${yIcon(x)}</span><span class="hi-t">${esc(x.title)}</span><span class="hi-m">${esc((x.date || x.start).replace(/^0000-/, '').replace(/-/g, '/'))}${x.note ? '・' + esc(x.note) : ''}</span></div>`).join('')}${fixed.map(x => `<div class="home-item" style="cursor:default"><span class="hi-ic">💳</span><span class="hi-t">${esc(x.title)}</span><span class="hi-m">${esc(x.start.replace(/-/g, '/'))}${x.amount ? '・' + yen(x.amount) : ''}</span></div>`).join('')}${items.length + fixed.length ? '' : '<p class="home-empty" style="padding:10px">新しく取り込むものはありません</p>'}</div>
+      ${skipped.length ? `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--fg2);font-size:12.5px">取り込まないもの（${skipped.length}）</summary><pre style="font-size:11.5px;white-space:pre-wrap;max-height:160px;overflow:auto;background:var(--bg2);padding:8px;border-radius:8px">${esc(skipped.join('\n'))}</pre></details>` : ''}`, { okText: items.length ? '取り込む' : '閉じる', focus: '#dlg-ok' });
+    if (!ok || !(items.length + fixed.length)) return;
+    const now = Date.now(); for (const x of items) { x.updatedAt = now; S.cal.items.push(x); }
+    for (const x of fixed) { x.updatedAt = now; MONEY.items.push(x); }
+    if (items.length) await calSave(); if (fixed.length) await MONEY.save();
+    refreshCal(); if (S.view === 'home' && HOME.mode !== 'money' && HOME.mode !== 'wareki') drawMoneyHome(); toast(`${items.length + fixed.length} 件を取り込みました`, 3000);
+  };
+  inp.click();
+}
+
+// ---------- お金（固定費・立て替え・入出金）。保管庫の _money.json に保存 ----------
+// 記録と合計だけ。銀行やカードとはつながない。仕事用と個人用を分けて見られる
+function makeStore(file) {
+  const st = { items: [], saving: Promise.resolve() };
+  st.read = async () => {
+    try {
+      const fh = await S.root.getFileHandle(file);
+      let text;
+      if (fh.isDrive && fh.id) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
+      else text = await (await fh.getFile()).text();
+      const d = JSON.parse(text); return Array.isArray(d.items) ? d.items : [];
+    } catch { return []; }
+  };
+  st.load = async () => { st.items = S.root ? await st.read() : []; };
+  st.save = () => (st.saving = st.saving.then(async () => { // ドライブの最新と混ぜてから書く（2 台で同時に足しても消えない）
+    const remote = await st.read(); st.items = calMerge(remote, st.items);
+    const fh = await S.root.getFileHandle(file, { create: true }); fh.force = true;
+    const w = await fh.createWritable(); await w.write(JSON.stringify({ version: 1, items: st.items }, null, 1)); await w.close();
+  }).catch(e => { console.error(e); toast('保存できませんでした: ' + e.message, 4000); }));
+  st.upsert = x => { x.updatedAt = Date.now(); const i = st.items.findIndex(y => y.id === x.id); if (i >= 0) st.items[i] = x; else st.items.push(x); return st.save(); };
+  st.remove = x => st.upsert({ id: x.id, deleted: true });
+  st.live = () => st.items.filter(x => !x.deleted);
+  return st;
+}
+const MONEY = makeStore('_money.json');
+
+const SCOPES = { personal: ['🏠', '個人'], work: ['💼', '仕事'] };
+const FIXED_CATS = ['サブスク', '住まい', '光熱費', '通信', '保険', 'ローン', '税金・年金', '習いごと', 'その他'];
+const WHO_KINDS = { company: ['🏢', '会社'], family: ['👪', '家族'], other: ['🙂', 'その他'] };
+const mScope = () => localStorage.getItem('notes:mscope') || '';
+const inScope = x => !mScope() || (x.scope || 'personal') === mScope();
+const showMoney = () => localStorage.getItem('notes:showMoney') !== '0';
+const ymOf = s => s.slice(0, 7);
+const ymLabel = ym => `${+ym.slice(0, 4)}年${+ym.slice(5)}月`;
+const addMonths = (ym, n) => { let [y, m] = ym.split('-').map(Number); m += n; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return `${y}-${pad2(m)}`; };
+const usedValues = key => [...new Set(MONEY.live().map(x => x[key]).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ja'));
+const cycleLabel = x => x.cycle === 'year' ? '毎年' : x.cycle === 'nmonth' ? `${x.every || 2}か月ごと` : '毎月';
+const everyOf = x => x.cycle === 'year' ? 12 : x.cycle === 'nmonth' ? Math.max(1, +x.every || 2) : 1;
+
+// ---- 固定費: その日が引き落とし日か・その月の金額 ----
+function fixedOn(x, s) {
+  if (x.endUnknown) return false; // やめた日が分からないものは、引き落としを数えない
+  if (!x.start || s < x.start || (x.end && s > x.end)) return false;
+  const [y, m, d] = s.split('-').map(Number); const sy = +x.start.slice(0, 4), sm = +x.start.slice(5, 7);
+  if (((y - sy) * 12 + (m - sm)) % everyOf(x)) return false;
+  return d === Math.min(+x.day || +x.start.slice(8), lastDay(y, m));
+}
+// start は「更新日（引き落としのあった日のどれか）」。本当に始めた日は since（分からなければ sinceUnknown）
+const sinceOf = x => x.sinceUnknown ? '' : (x.since || x.start || '');
+// 金額: その月だけの上書き → 金額の履歴（値上げ・値下げ）→ 今の金額 の順に見る
+const fixedAmount = (x, ym) => {
+  const o = x.overrides && x.overrides[ym]; if (o !== undefined && o !== '') return +o || 0;
+  if (x.prices && x.prices.length) { const d = fixedDateIn(x, ym) || `${ym}-31`; let a = x.prices[0].amount; for (const pr of x.prices) if (!pr.from || pr.from <= d) a = pr.amount; return +a || 0; }
+  return +x.amount || 0;
+};
+const priceHistText = x => (x.prices || []).map((pr, i, l) => `${pr.from ? pr.from.replace(/-/g, '/') : ''}${i === 0 && !pr.from ? 'はじめ' : 'から'} ${yen(pr.amount)}`).join(' → ');
+const fixedDateIn = (x, ym) => { if (!x.start) return null; const [y, m] = ym.split('-').map(Number); const s = `${ym}-${pad2(Math.min(+x.day || +x.start.slice(8), lastDay(y, m)))}`; return fixedOn(x, s) ? s : null; };
+const fixedNext = (x, from) => { for (let i = 0; i < 25; i++) { const ym = addMonths(ymOf(from), i); const s = fixedDateIn(x, ym); if (s && s >= from) return s; if (x.end && ym > ymOf(x.end)) return null; } return null; };
+const fixedMonthly = x => (+x.amount || 0) / everyOf(x);
+const isActive = (x, t = todayYmd()) => !x.endUnknown && !(x.end && x.end < t);
+const endLabel = x => x.endUnknown ? 'やめた日は不明' : (x.end || '').replace(/-/g, '/');
+// ---- 立て替え ----
+const paidOf = x => (x.payments || []).reduce((a, p) => a + (+p.amount || 0), 0);
+const remainOf = x => Math.max(0, (+x.amount || 0) - paidOf(x));
+// ---- その日のお金（カレンダー用）: 固定費の引き落とし、立て替えた日、返ってきた日、入出金 ----
+function moneyOn(s) {
+  const out = [];
+  for (const x of MONEY.live().filter(inScope)) {
+    if (x.type === 'fixed' && fixedOn(x, s)) out.push({ x, icon: '💳', label: x.title, amount: fixedAmount(x, ymOf(s)), dir: 'out' });
+    else if (x.type === 'advance') {
+      if (x.date === s) out.push({ x, icon: '🧾', label: `立替 ${x.title || x.who || ''}`, amount: +x.amount || 0, dir: 'out' });
+      for (const p of x.payments || []) if (p.date === s) out.push({ x, icon: '💰', label: `返金 ${x.who || x.title || ''}`, amount: +p.amount || 0, dir: 'in' });
+    } else if (x.type === 'flow' && x.date === s) out.push({ x, icon: x.dir === 'in' ? '💰' : '💸', label: x.title || x.who || (x.dir === 'in' ? '入金' : '出金'), amount: +x.amount || 0, dir: x.dir });
+  }
+  return out;
+}
+// 月のまとめ
+function monthSum(ym) {
+  const r = { fixed: 0, advOut: 0, advIn: 0, in: 0, out: 0 };
+  for (const x of MONEY.live().filter(inScope)) {
+    if (x.type === 'fixed') { if (fixedDateIn(x, ym)) r.fixed += fixedAmount(x, ym); }
+    else if (x.type === 'advance') { if (ymOf(x.date || '') === ym) r.advOut += +x.amount || 0; for (const p of x.payments || []) if (ymOf(p.date || '') === ym) r.advIn += +p.amount || 0; }
+    else if (x.type === 'flow' && ymOf(x.date || '') === ym) r[x.dir === 'in' ? 'in' : 'out'] += +x.amount || 0;
+  }
+  return r;
+}
+
+// ---- 古いサブスク（カレンダーに入っていたもの）を固定費に移す ----
+async function moneyMigrate() {
+  const old = (S.cal.items || []).filter(x => x.type === 'subsc' && !x.deleted); if (!old.length) return;
+  for (const x of old) {
+    if (!MONEY.items.some(y => y.id === x.id)) MONEY.items.push({ id: x.id, type: 'fixed', title: x.title, category: 'サブスク', scope: 'personal', amount: x.price || '', cycle: x.cycle === 'year' ? 'year' : 'month', start: x.start, end: x.end || '', day: +(x.start || '').slice(8) || 1, account: '', note: x.note || '', updatedAt: Date.now() });
+    const i = S.cal.items.indexOf(x); S.cal.items[i] = { id: x.id, deleted: true, updatedAt: Date.now() };
+  }
+  await MONEY.save(); await calSave();
+}
+
+// ---- ホームの「お金」欄 ----
+function drawMoneyHome() {
+  const box = $('#home-money'); if (!box) return;
+  const t = todayYmd(), ym = ymOf(t); const sum = monthSum(ym);
+  const fixed = MONEY.live().filter(x => x.type === 'fixed' && inScope(x));
+  const upcoming = fixed.map(x => [fixedDateIn(x, ym), x]).filter(([d]) => d && d >= t).sort((a, b) => a[0].localeCompare(b[0]));
+  const unpaid = MONEY.live().filter(x => x.type === 'advance' && inScope(x) && remainOf(x) > 0);
+  const byKind = k => unpaid.filter(x => (x.whoKind || 'other') === k).reduce((a, x) => a + remainOf(x), 0);
+  box.innerHTML = `<div class="m-head"><h2>お金</h2>${scopeChips()}<span style="flex:1"></span><button class="m-open">お金のページ ›</button></div>
+    <div class="m-tiles">
+      <button class="m-tile" data-tab="fixed"><span>今月の固定費</span><b>${yen(sum.fixed) || '¥0'}</b><small>${upcoming.length ? `これから ${upcoming.length} 件・${yen(upcoming.reduce((a, [, x]) => a + fixedAmount(x, ym), 0))}` : 'これからの引き落としはなし'}</small></button>
+      <button class="m-tile" data-tab="advance"><span>未精算の立て替え</span><b>${yen(unpaid.reduce((a, x) => a + remainOf(x), 0)) || '¥0'}</b><small>${unpaid.length} 件${unpaid.length ? `（会社 ${yen(byKind('company')) || '¥0'}・家族 ${yen(byKind('family')) || '¥0'}）` : ''}</small></button>
+      <button class="m-tile" data-tab="flow"><span>今月の入金</span><b>${yen(sum.in + sum.advIn) || '¥0'}</b><small>${sum.out ? `出金 ${yen(sum.out)}` : ''}${sum.advIn ? `${sum.out ? '・' : ''}返金 ${yen(sum.advIn)}` : ''}</small></button>
+    </div>
+    ${upcoming.length ? `<div class="m-up">${upcoming.slice(0, 5).map(([d, x]) => `<button class="m-row" data-id="${esc(x.id)}"><span class="m-d">${fmtMD(d)}</span><span class="m-t">💳 ${esc(x.title)}${x.account ? `<small>${esc(x.account)}</small>` : ''}</span><span class="m-a">${yen(fixedAmount(x, ym))}</span></button>`).join('')}</div>` : ''}
+    <div class="home-btns"><button data-m="fixed">＋ 固定費</button><button data-m="advance">＋ 立て替え</button><button data-m="in">＋ 入金</button><button data-m="out">＋ 出金</button></div>`;
+  bindScopeChips(box, drawMoneyHome);
+  box.querySelector('.m-open').onclick = () => { HOME.mode = 'money'; showHome(); };
+  box.querySelectorAll('.m-tile').forEach(b => b.onclick = () => { HOME.mode = 'money'; HOME.mtab = b.dataset.tab; showHome(); });
+  box.querySelectorAll('.m-row').forEach(b => b.onclick = () => moneyEdit(MONEY.items.find(x => x.id === b.dataset.id)));
+  box.querySelectorAll('[data-m]').forEach(b => b.onclick = () => moneyNew(b.dataset.m, t));
+}
+const scopeChips = () => `<div class="m-scope">${[['', 'すべて'], ['work', '💼 仕事'], ['personal', '🏠 個人']].map(([k, n]) => `<button data-s="${k}" class="${mScope() === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+const bindScopeChips = (box, redraw) => box.querySelectorAll('.m-scope button').forEach(b => b.onclick = () => { localStorage.setItem('notes:mscope', b.dataset.s); redraw(); if (S.view === 'home' && HOME.mode !== 'money') drawCal(); });
+
+// ---- お金のページ ----
+function drawMoneyPage() {
+  const h = $('#home'); const tab = HOME.mtab || 'fixed'; const t = todayYmd(), ym = ymOf(t);
+  const tabs = [['fixed', '💳 固定費'], ['advance', '🧾 立て替え'], ['flow', '💰 入出金'], ['month', '📊 月ごと']];
+  let body = '';
+  if (tab === 'fixed') {
+    const all = MONEY.live().filter(x => x.type === 'fixed' && inScope(x));
+    const act = all.filter(x => isActive(x, t)).sort((a, b) => (+a.day || 0) - (+b.day || 0));
+    const done = all.filter(x => !isActive(x, t)).sort((a, b) => (b.end || '').localeCompare(a.end || ''));
+    const per = act.reduce((a, x) => a + fixedMonthly(x), 0);
+    const byAcc = new Map(); for (const x of act) { const k = x.account || '（口座の指定なし）'; byAcc.set(k, (byAcc.get(k) || 0) + fixedMonthly(x)); }
+    const byCat = new Map(); for (const x of act) { const k = x.category || 'その他'; byCat.set(k, (byCat.get(k) || 0) + fixedMonthly(x)); }
+    const row = x => { const nx = isActive(x, t) ? fixedNext(x, t) : null; return `<button class="m-row${isActive(x, t) ? '' : ' done'}" data-id="${esc(x.id)}"><span class="m-d">${!x.start && isActive(x, t) ? '日付不明' : isActive(x, t) ? `${x.cycle === 'year' ? `${+x.start.slice(5, 7)}/` : ''}${x.day || +x.start.slice(8)}日` : 'やめた'}</span><span class="m-t">${SCOPES[x.scope || 'personal'][0]} ${esc(x.title)}<small>${esc(x.category || 'その他')}・${cycleLabel(x)}${x.account ? '・' + esc(x.account) : ''}${isActive(x, t) ? (x.end ? `・${fmtMD(x.end)}まで（解約済み）` : nx ? `・次 ${fmtMD(nx)}` : '') : `・${sinceOf(x) ? sinceOf(x).replace(/-/g, '/') : '始めた日は不明'}〜${endLabel(x)}${sinceOf(x) && x.end && !x.endUnknown ? `（${fmtYM(monthsBetween(sinceOf(x), x.end))}）` : ''}`}</small></span><span class="m-a">${yen(x.amount) || '−'}${x.prices && x.prices.length > 1 ? `<small style="display:block">前は ${yen(x.prices[x.prices.length - 2].amount)}</small>` : ''}<small>${x.cycle === 'month' || !x.cycle ? '/月' : x.cycle === 'year' ? '/年' : `/${x.every}か月`}</small></span></button>`; };
+    body = `<div class="m-sum"><div><span>月あたり</span><b>${yen(Math.round(per)) || '¥0'}</b></div><div><span>年あたり</span><b>${yen(Math.round(per * 12)) || '¥0'}</b></div><div><span>続けている</span><b>${act.length} 件</b></div></div>
+      ${byAcc.size ? `<h3>引き落とし口座ごと（月あたり）</h3><div class="m-break">${[...byAcc].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<span>${esc(k)} <b>${yen(Math.round(v))}</b></span>`).join('')}</div>` : ''}
+      ${byCat.size ? `<h3>分類ごと（月あたり）</h3><div class="m-break">${[...byCat].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<span>${esc(k)} <b>${yen(Math.round(v))}</b></span>`).join('')}</div>` : ''}
+      <h3>続けているもの</h3><div class="home-list">${act.map(row).join('') || '<p class="home-empty" style="padding:10px 14px">まだありません</p>'}</div>
+      ${done.length ? `<h3>やめたもの（記録として残しています）</h3><div class="home-list">${done.map(row).join('')}</div>` : ''}
+      <div class="home-btns"><button data-m="fixed">＋ 固定費</button></div>`;
+  } else if (tab === 'advance') {
+    const all = MONEY.live().filter(x => x.type === 'advance' && inScope(x)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const open = all.filter(x => remainOf(x) > 0), closed = all.filter(x => remainOf(x) <= 0);
+    const tot = k => open.filter(x => (x.whoKind || 'other') === k).reduce((a, x) => a + remainOf(x), 0);
+    const row = x => { const r = remainOf(x), paid = paidOf(x); const wk = WHO_KINDS[x.whoKind || 'other']; return `<button class="m-row${r > 0 ? '' : ' done'}" data-id="${esc(x.id)}"><span class="m-d">${fmtMD(x.date)}</span><span class="m-t">${wk[0]} ${esc(x.who || wk[1])}・${esc(x.title || '')}<small>${SCOPES[x.scope || 'personal'][1]}${x.account ? '・' + esc(x.account) : ''}${paid ? `・入金 ${yen(paid)}${r > 0 ? `（残り ${yen(r)}）` : `・${fmtMD(x.payments[x.payments.length - 1].date)} 精算済み`}` : '・未精算'}</small></span><span class="m-a">${yen(x.amount)}</span></button>`; };
+    body = `<div class="m-sum"><div><span>未精算の合計</span><b>${yen(open.reduce((a, x) => a + remainOf(x), 0)) || '¥0'}</b></div><div><span>🏢 会社</span><b>${yen(tot('company')) || '¥0'}</b></div><div><span>👪 家族</span><b>${yen(tot('family')) || '¥0'}</b></div><div><span>🙂 その他</span><b>${yen(tot('other')) || '¥0'}</b></div></div>
+      <h3>未精算</h3><div class="home-list">${open.map(row).join('') || '<p class="home-empty" style="padding:10px 14px">未精算はありません</p>'}</div>
+      ${closed.length ? `<h3>精算済み</h3><div class="home-list">${closed.slice(0, 60).map(row).join('')}</div>` : ''}
+      <div class="home-btns"><button data-m="advance">＋ 立て替え</button></div>`;
+  } else if (tab === 'flow') {
+    const rows = [];
+    for (const x of MONEY.live().filter(inScope)) {
+      if (x.type === 'flow') rows.push({ d: x.date, x, icon: x.dir === 'in' ? '💰' : '💸', t: x.title || x.who || '', sub: [x.who && x.title ? x.who : '', x.account].filter(Boolean).join('・'), a: (x.dir === 'in' ? '+' : '−') + yen(x.amount), cls: x.dir });
+      if (x.type === 'advance') for (const p of x.payments || []) rows.push({ d: p.date, x, icon: '💰', t: `立て替えの返金（${x.who || ''}）`, sub: x.title || '', a: '+' + yen(p.amount), cls: 'in' });
+    }
+    rows.sort((a, b) => (b.d || '').localeCompare(a.d || ''));
+    const months = [...new Set(rows.map(r => ymOf(r.d || '')))];
+    body = months.map(m => { const s = monthSum(m); return `<h3>${ymLabel(m)}<small>入金 ${yen(s.in + s.advIn) || '¥0'}・出金 ${yen(s.out) || '¥0'}</small></h3><div class="home-list">${rows.filter(r => ymOf(r.d || '') === m).map(r => `<button class="m-row" data-id="${esc(r.x.id)}"><span class="m-d">${fmtMD(r.d)}</span><span class="m-t">${r.icon} ${esc(r.t)}${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</span><span class="m-a ${r.cls}">${r.a}</span></button>`).join('')}</div>`; }).join('') || '<p class="home-empty">まだ記録がありません</p>';
+    body += `<div class="home-btns"><button data-m="in">＋ 入金</button><button data-m="out">＋ 出金</button></div>`;
+  } else {
+    const list = Array.from({ length: 12 }, (_, i) => addMonths(ym, -i));
+    body = `<div class="m-table-wrap"><table class="m-table"><thead><tr><th>月</th><th>固定費</th><th>立て替え</th><th>返金</th><th>入金</th><th>出金</th></tr></thead><tbody>${list.map(m => { const s = monthSum(m); return `<tr><td>${ymLabel(m)}</td><td>${yen(s.fixed) || '−'}</td><td>${yen(s.advOut) || '−'}</td><td>${yen(s.advIn) || '−'}</td><td>${yen(s.in) || '−'}</td><td>${yen(s.out) || '−'}</td></tr>`; }).join('')}</tbody></table></div>
+      <p class="home-empty" style="margin-top:8px">固定費は、その月に引き落とされる予定の金額です（毎年・数か月ごとのものは、その月だけに入ります）。</p>`;
+  }
+  h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ ホーム</button><h1>お金</h1><span style="flex:1"></span><button class="m-csv" title="表（CSV）で書き出す">⤓ CSV</button></div>
+    <div class="m-head">${scopeChips()}</div>
+    <div class="m-tabs">${tabs.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+    <div class="m-body">${body}</div>`;
+  h.querySelector('.wk-back').onclick = () => { HOME.mode = 'home'; showHome(); };
+  h.querySelector('.m-csv').onclick = exportMoneyCsv;
+  h.querySelectorAll('.m-tabs button').forEach(b => b.onclick = () => { HOME.mtab = b.dataset.tab; drawMoneyPage(); });
+  bindScopeChips(h, drawMoneyPage);
+  h.querySelectorAll('.m-row').forEach(b => b.onclick = () => moneyEdit(MONEY.items.find(x => x.id === b.dataset.id)));
+  h.querySelectorAll('[data-m]').forEach(b => b.onclick = () => moneyNew(b.dataset.m, t));
+}
+const refreshMoney = () => { if (S.view !== 'home') return; if (HOME.mode === 'money') drawMoneyPage(); else if (HOME.mode !== 'wareki') { drawMoneyHome(); drawCal(); } };
+
+// ---- 入力 ----
+function moneyNew(kind, date) {
+  const scope = mScope() || 'personal';
+  if (kind === 'fixed') return fixedDialog({ id: calId(), type: 'fixed', scope, cycle: 'month', start: date, day: +date.slice(8), category: '', _new: true });
+  if (kind === 'advance') return advanceDialog({ id: calId(), type: 'advance', scope, date, whoKind: 'company', payments: [], _new: true });
+  return flowDialog({ id: calId(), type: 'flow', scope, date, dir: kind === 'out' ? 'out' : 'in', _new: true });
+}
+function moneyEdit(x) { if (!x) return; if (x.type === 'fixed') fixedDialog({ ...x }); else if (x.type === 'advance') advanceDialog({ ...x, payments: [...(x.payments || [])] }); else flowDialog({ ...x }); }
+const scopeField = x => `<div class="m-radio">${Object.entries(SCOPES).map(([k, [i, n]]) => `<label><input type="radio" name="m-scope" value="${k}" ${(x.scope || 'personal') === k ? 'checked' : ''}><span>${i} ${n}</span></label>`).join('')}</div>`;
+const dl = (id, vals) => `<datalist id="${id}">${vals.map(v => `<option value="${esc(v)}">`).join('')}</datalist>`;
+const numIn = (id, v, ph = '') => `<input type="number" id="${id}" value="${esc(v ?? '')}" min="0" placeholder="${ph}" class="m-num">`;
+async function moneySaveDel(x, isNew, save) {
+  // 共通: 削除ボタン
+  let del = false;
+  if (!isNew) { $('#dlg-cancel').insertAdjacentHTML('beforebegin', '<button type="button" id="m-del" style="margin-right:auto;color:#d33">削除</button>'); $('#m-del').onclick = () => { del = true; $('#dlg-cancel').click(); }; }
+  const ok = await save; $('#m-del')?.remove();
+  if (del) { if (await confirmDlg('削除', `「${x.title || x.who || '記録'}」を削除します。`)) { await MONEY.remove(x); refreshMoney(); toast('削除しました'); } return null; }
+  return ok;
+}
+async function fixedDialog(x) {
+  const isNew = !!x._new; const t = todayYmd();
+  const p = dialog(`固定費を${isNew ? '追加' : '編集'}`, `
+    ${scopeField(x)}
+    <label class="fl">名前</label><input type="text" id="m-title" value="${esc(x.title || '')}" placeholder="例: 家賃、スマホ、動画配信">
+    <div class="it-row"><div><label class="fl">分類</label><input type="text" id="m-cat" list="m-cats" value="${esc(x.category || '')}" placeholder="例: サブスク">${dl('m-cats', [...new Set([...FIXED_CATS, ...usedValues('category')])])}</div>
+      <div><label class="fl">金額（円）</label>${numIn('m-amount', x.amount, '例: 1490')}<div id="m-pchg" style="display:none;margin:-8px 0 12px;font-size:12.5px;color:var(--fg2)">値上げ・値下げした日 <input type="date" id="m-pfrom" value="${t}" style="width:auto;margin:2px 0 0;padding:4px 6px"><br><span style="color:var(--fg3)">前の金額は履歴に残ります</span></div></div></div>
+    <div id="m-phist" style="font-size:12.5px;color:var(--fg2);margin:-6px 0 12px"></div>
+    <div class="it-row"><div><label class="fl">くり返し</label><select id="m-cycle" class="m-sel"><option value="month" ${x.cycle === 'month' ? 'selected' : ''}>毎月</option><option value="nmonth" ${x.cycle === 'nmonth' ? 'selected' : ''}>◯か月ごと</option><option value="year" ${x.cycle === 'year' ? 'selected' : ''}>毎年</option></select></div>
+      <div><label class="fl">引き落とし日</label><div style="display:flex;gap:6px;align-items:center"><input type="number" id="m-day" value="${esc(x.day || '')}" min="1" max="31" class="m-num" style="width:80px">日<span id="m-every-w" style="display:${x.cycle === 'nmonth' ? 'flex' : 'none'};gap:4px;align-items:center">・<input type="number" id="m-every" value="${esc(x.every || 2)}" min="2" max="24" class="m-num" style="width:64px">か月ごと</span></div></div></div>
+    <label class="fl">引き落とし口座・カード</label><input type="text" id="m-acc" list="m-accs" value="${esc(x.account || '')}" placeholder="例: ◯◯銀行、◯◯カード">${dl('m-accs', usedValues('account'))}
+    <div class="it-row"><div><label class="fl">更新日（引き落としの日をどれか1回。分からなければ空欄）</label><input type="date" id="m-start" value="${esc(x.start ?? t)}"></div><div><label class="fl">始めた日（分かれば）</label><input type="date" id="m-since" value="${esc(x.sinceUnknown ? '' : (x.since || (x._new ? '' : x.start) || ''))}"></div></div>
+    <label class="fl">やめた日（続けているなら空欄）</label><input type="date" id="m-end" value="${esc(x.end || '')}" ${x.endUnknown ? 'disabled' : ''}>
+    <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-6px 0 12px"><input type="checkbox" id="m-endunk" ${x.endUnknown ? 'checked' : ''}> やめた（やめた日は分からない）</label>
+    <details style="margin:-4px 0 12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--fg2)">この月だけ金額がちがう（電気代など）</summary>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="month" id="m-ovm" value="${ymOf(t)}" class="m-num" style="width:150px">${numIn('m-ova', '', '金額')}<button type="button" id="m-ovadd" class="m-mini">決める</button></div>
+      <div id="m-ovlist" style="font-size:12.5px;color:var(--fg2);margin-top:6px"></div></details>
+    <p id="m-info" style="font-size:13px;color:var(--fg2);margin:0 0 12px;line-height:1.6"></p>
+    <label class="fl">メモ</label><input type="text" id="m-note" value="${esc(x.note || '')}" placeholder="例: 家族プラン、解約の方法">`, { okText: '保存', focus: '#m-title', validate: () => {
+      if (!$('#m-title').value.trim()) { toast('名前を入れてください'); return false; }
+
+      if ($('#m-since').value && $('#m-since').value > $('#m-start').value) { toast('始めた日が更新日より後になっています'); return false; }
+      return true; } });
+  delete x._new; x.overrides = { ...(x.overrides || {}) };
+  const read = () => ({ ...x, title: $('#m-title').value.trim(), category: $('#m-cat').value.trim(), amount: $('#m-amount').value === '' ? '' : +$('#m-amount').value, cycle: $('#m-cycle').value, every: +$('#m-every').value || 2, day: $('#m-day').value ? Math.min(31, Math.max(1, +$('#m-day').value)) : ($('#m-start').value ? +$('#m-start').value.slice(8) : ''), account: $('#m-acc').value.trim(), start: $('#m-start').value, since: $('#m-since').value, sinceUnknown: !$('#m-since').value, end: $('#m-endunk').checked ? '' : $('#m-end').value, endUnknown: $('#m-endunk').checked, note: $('#m-note').value.trim(), scope: $('input[name=m-scope]:checked').value });
+  const info = () => {
+    $('#m-every-w').style.display = $('#m-cycle').value === 'nmonth' ? 'flex' : 'none';
+    const y = read(); const done = !isActive(y, t); const nx = done || !y.start ? null : fixedNext(y, t);
+    $('#m-end').disabled = $('#m-endunk').checked;
+    const sc = sinceOf(y);
+    if (!y.start && !y.endUnknown && !y.end) { $('#m-info').innerHTML = `更新日がまだ分からないので、カレンダーには出ません。分かったら上に入れてください${y.amount ? `<br>月あたり ${yen(Math.round(fixedMonthly(y)))}・年あたり ${yen(Math.round(fixedMonthly(y) * 12))}` : ''}`; } else
+    $('#m-info').innerHTML = `${y.endUnknown ? `やめた（やめた日は不明）${sc ? `・${sc.replace(/-/g, '/')}から` : ''}` : sc ? `${done ? 'やめるまで' : '始めてから'} <b>${fmtYM(monthsBetween(sc, done ? y.end : t))}</b>` : '始めた日は不明'}${nx ? `・次の引き落とし ${fmtMD(nx)}` : ''}${y.amount ? `<br>月あたり ${yen(Math.round(fixedMonthly(y)))}・年あたり ${yen(Math.round(fixedMonthly(y) * 12))}` : ''}`;
+    $('#m-ovlist').innerHTML = Object.entries(x.overrides).sort().map(([k, v]) => `<span class="m-ov">${ymLabel(k)} ${yen(v)} <a href="#" data-k="${k}">×</a></span>`).join(' ');
+    $$('#m-ovlist a').forEach(a => a.onclick = e => { e.preventDefault(); delete x.overrides[a.dataset.k]; info(); });
+  };
+  const origAmount = isNew ? null : x.amount;
+  const drawHist = () => {
+    $('#m-pchg').style.display = origAmount !== null && origAmount !== '' && $('#m-amount').value !== '' && +$('#m-amount').value !== +origAmount ? 'block' : 'none';
+    $('#m-phist').innerHTML = x.prices && x.prices.length ? `金額の履歴：${x.prices.map((pr, i) => `<span class="m-ov">${pr.from ? pr.from.replace(/-/g, '/') + 'から' : 'はじめ'} ${yen(pr.amount)}${i ? ` <a href="#" data-i="${i}">×</a>` : ''}</span>`).join(' → ')}` : '';
+    $$('#m-phist a').forEach(a => a.onclick = e => { e.preventDefault(); x.prices.splice(+a.dataset.i, 1); if (x.prices.length < 2) delete x.prices; drawHist(); });
+  };
+  $('#m-amount').addEventListener('input', drawHist); drawHist();
+  ['#m-title', '#m-amount', '#m-day', '#m-every', '#m-start', '#m-since', '#m-end', '#m-endunk'].forEach(q => $(q).oninput = info); $('#m-cycle').onchange = info;
+  $('#m-start').addEventListener('change', () => { if ($('#m-start').value) { $('#m-day').value = +$('#m-start').value.slice(8); info(); } });
+  $('#m-ovadd').onclick = () => { const k = $('#m-ovm').value, v = $('#m-ova').value; if (k && v !== '') { x.overrides[k] = +v; $('#m-ova').value = ''; info(); } };
+  info();
+  const ok = await moneySaveDel(x, isNew, p); if (!ok) return;
+  const y = read(); if (!Object.keys(x.overrides).length) delete y.overrides; else y.overrides = x.overrides;
+  // 金額が変わったら、前の金額を履歴に残す
+  if (origAmount !== null && origAmount !== '' && y.amount !== '' && +y.amount !== +origAmount) {
+    const from = $('#m-pfrom').value || t;
+    const hist = x.prices && x.prices.length ? [...x.prices] : [{ from: sinceOf(y) || '', amount: +origAmount }];
+    y.prices = [...hist.filter(pr => pr.from !== from), { from, amount: +y.amount }].sort((a, b) => (a.from || '').localeCompare(b.from || ''));
+  } else if (x.prices) y.prices = x.prices; else delete y.prices;
+  await MONEY.upsert(y); refreshMoney(); toast('保存しました');
+}
+async function advanceDialog(x) {
+  const isNew = !!x._new; delete x._new; const t = todayYmd();
+  const p = dialog(`立て替えを${isNew ? '追加' : '編集'}`, `
+    ${scopeField(x)}
+    <div class="m-radio">${Object.entries(WHO_KINDS).map(([k, [i, n]]) => `<label><input type="radio" name="m-wk" value="${k}" ${(x.whoKind || 'company') === k ? 'checked' : ''}><span>${i} ${n}</span></label>`).join('')}</div>
+    <div class="it-row"><div><label class="fl">だれの分（返してくれる相手）</label><input type="text" id="m-who" list="m-whos" value="${esc(x.who || '')}" placeholder="例: 会社、母、弟">${dl('m-whos', usedValues('who'))}</div><div><label class="fl">立て替えた日</label><input type="date" id="m-date" value="${esc(x.date || t)}"></div></div>
+    <label class="fl">なにの分</label><input type="text" id="m-title" value="${esc(x.title || '')}" placeholder="例: 出張の新幹線、母の通院代">
+    <div class="it-row"><div><label class="fl">金額（円）</label>${numIn('m-amount', x.amount, '例: 13800')}</div><div><label class="fl">払った口座・カード（任意）</label><input type="text" id="m-acc" list="m-accs" value="${esc(x.account || '')}">${dl('m-accs', usedValues('account'))}</div></div>
+    <label class="fl">返ってきたお金</label>
+    <div id="m-pays" class="m-pays"></div>
+    <div style="display:flex;gap:6px;align-items:center;margin:4px 0 12px;flex-wrap:wrap"><input type="date" id="m-pd" value="${t}" style="width:auto;margin:0">${numIn('m-pa', '', '金額')}<button type="button" id="m-padd" class="m-mini">入金を記録</button><button type="button" id="m-pall" class="m-mini">残りぜんぶ</button></div>
+    <label class="fl">メモ</label><input type="text" id="m-note" value="${esc(x.note || '')}" placeholder="例: 経費精算の申請済み、レシートはノート「◯◯」">`, { okText: '保存', focus: '#m-who', validate: () => {
+      if (!$('#m-amount').value) { toast('金額を入れてください'); return false; }
+      if (!$('#m-date').value) { toast('日付を入れてください'); return false; }
+      return true; } });
+  const drawPays = () => {
+    const amount = +$('#m-amount').value || 0; const paid = x.payments.reduce((a, q) => a + (+q.amount || 0), 0); const r = Math.max(0, amount - paid);
+    $('#m-pays').innerHTML = (x.payments.length ? x.payments.map((q, i) => `<div class="m-pay">💰 ${q.date.replace(/-/g, '/')}　${yen(q.amount)} <a href="#" data-i="${i}">×</a></div>`).join('') : '<div class="m-pay" style="color:var(--fg3)">まだ返ってきていません</div>') + `<div class="m-pay"><b>${r > 0 ? `残り ${yen(r)}` : amount ? '✓ 精算済み' : ''}</b></div>`;
+    $$('#m-pays a').forEach(a => a.onclick = e => { e.preventDefault(); x.payments.splice(+a.dataset.i, 1); drawPays(); });
+    if (!$('#m-pa').value && r) $('#m-pa').placeholder = String(r);
+  };
+  $('#m-amount').oninput = drawPays;
+  $('#m-padd').onclick = () => { const v = +$('#m-pa').value || +$('#m-pa').placeholder || 0; if (!v || !$('#m-pd').value) { toast('日付と金額を入れてください'); return; } x.payments.push({ date: $('#m-pd').value, amount: v }); x.payments.sort((a, b) => a.date.localeCompare(b.date)); $('#m-pa').value = ''; drawPays(); };
+  $('#m-pall').onclick = () => { const r = Math.max(0, (+$('#m-amount').value || 0) - x.payments.reduce((a, q) => a + (+q.amount || 0), 0)); if (!r) return; x.payments.push({ date: $('#m-pd').value || t, amount: r }); drawPays(); };
+  drawPays();
+  const ok = await moneySaveDel(x, isNew, p); if (!ok) return;
+  Object.assign(x, { scope: $('input[name=m-scope]:checked').value, whoKind: $('input[name=m-wk]:checked').value, who: $('#m-who').value.trim(), date: $('#m-date').value, title: $('#m-title').value.trim(), amount: +$('#m-amount').value, account: $('#m-acc').value.trim(), note: $('#m-note').value.trim() });
+  await MONEY.upsert(x); refreshMoney(); toast(remainOf(x) > 0 ? '保存しました' : '保存しました（精算済み）');
+}
+async function flowDialog(x) {
+  const isNew = !!x._new; delete x._new; const t = todayYmd();
+  const p = dialog(`${x.dir === 'out' ? '出金' : '入金'}を${isNew ? '記録' : '編集'}`, `
+    ${scopeField(x)}
+    <div class="m-radio"><label><input type="radio" name="m-dir" value="in" ${x.dir !== 'out' ? 'checked' : ''}><span>💰 入金</span></label><label><input type="radio" name="m-dir" value="out" ${x.dir === 'out' ? 'checked' : ''}><span>💸 出金</span></label></div>
+    <div class="it-row"><div><label class="fl">日付</label><input type="date" id="m-date" value="${esc(x.date || t)}"></div><div><label class="fl">金額（円）</label>${numIn('m-amount', x.amount, '例: 50000')}</div></div>
+    <div class="it-row"><div><label class="fl">なにのお金</label><input type="text" id="m-title" value="${esc(x.title || '')}" placeholder="例: 給料、原稿料、返金"></div><div><label class="fl">相手（任意）</label><input type="text" id="m-who" list="m-whos" value="${esc(x.who || '')}">${dl('m-whos', usedValues('who'))}</div></div>
+    <label class="fl">口座（任意）</label><input type="text" id="m-acc" list="m-accs" value="${esc(x.account || '')}" placeholder="例: ◯◯銀行">${dl('m-accs', usedValues('account'))}
+    <label class="fl">メモ</label><input type="text" id="m-note" value="${esc(x.note || '')}">`, { okText: '保存', focus: '#m-amount', validate: () => { if (!$('#m-amount').value) { toast('金額を入れてください'); return false; } return true; } });
+  const ok = await moneySaveDel(x, isNew, p); if (!ok) return;
+  Object.assign(x, { scope: $('input[name=m-scope]:checked').value, dir: $('input[name=m-dir]:checked').value, date: $('#m-date').value || t, amount: +$('#m-amount').value, title: $('#m-title').value.trim(), who: $('#m-who').value.trim(), account: $('#m-acc').value.trim(), note: $('#m-note').value.trim() });
+  await MONEY.upsert(x); refreshMoney(); toast('保存しました');
+}
+
+// ---- CSV ----
+function exportMoneyCsv() {
+  const t = todayYmd(); const scope = mScope();
+  const head = ['区分', '種類', '日付', '名前・内容', '相手', '分類', '金額', '入出', 'くり返し', '引き落とし日', '口座・カード', '状態', '返ってきた額', '残り', '始めた日', 'やめた日', 'メモ'];
+  const rows = [];
+  for (const x of MONEY.live().filter(inScope)) {
+    const sc = SCOPES[x.scope || 'personal'][1];
+    if (x.type === 'fixed') rows.push([sc, '固定費', x.start, x.title, '', x.category || '', x.amount, '出', cycleLabel(x), x.day || '', x.account || '', isActive(x, t) ? '続けている' : 'やめた', '', '', sinceOf(x) || '不明', x.endUnknown ? '不明' : (x.end || ''), [x.note, x.prices && x.prices.length > 1 ? '金額の履歴: ' + priceHistText(x) : ''].filter(Boolean).join('／')]);
+    else if (x.type === 'advance') {
+      rows.push([sc, '立て替え', x.date, x.title || '', x.who || '', WHO_KINDS[x.whoKind || 'other'][1], x.amount, '出', '', '', x.account || '', remainOf(x) > 0 ? '未精算' : '精算済み', paidOf(x), remainOf(x), '', '', x.note || '']);
+      for (const p of x.payments || []) rows.push([sc, '立て替えの返金', p.date, x.title || '', x.who || '', WHO_KINDS[x.whoKind || 'other'][1], p.amount, '入', '', '', '', '', '', '', '', '', '']);
+    } else rows.push([sc, x.dir === 'out' ? '出金' : '入金', x.date, x.title || '', x.who || '', '', x.amount, x.dir === 'out' ? '出' : '入', '', '', x.account || '', '', '', '', '', '', x.note || '']);
+  }
+  rows.sort((a, b) => String(a[2]).localeCompare(String(b[2])));
+  const cell = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = '﻿' + [head, ...rows].map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';
+  const name = `${S.root.name}_お金${scope ? '_' + SCOPES[scope][1] : ''}_${t.replace(/-/g, '')}.csv`;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast(`${rows.length} 行を書き出しました（${name}）`, 3500);
 }
 
 const ICON_SET = ['📁','📂','🗂️','📌','⭐','❤️','✅','📝','📒','📕','📗','📘','📙','📚','🔖','💡','🎯','🚀','🧪','🔬','💻','🖥️','📱','🤖','🧠','🎨','🖌️','✏️','📷','🎬','🎵','🎮','🧩','🛠️','⚙️','🔧','📊','📈','💰','🧾','🏢','🏠','✈️','🗺️','🍙','☕','🌱','🌸','🐱','🐶','🐹','🦊','🔥','✨','🌙','☀️','🔒','📥','📤','🗓️','⏰','❓','❗','🟥','🟧','🟨','🟩','🟦','🟪'];
