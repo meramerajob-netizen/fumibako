@@ -1808,6 +1808,7 @@ const GD = {
   files: new Map(),   // id → {id,name,mimeType,parents,modifiedTime,md5Checksum,size}
   kids: new Map(),    // 親 id → Set(子 id)
   listedAt: 0, listing: null,
+  changeToken: '',    // ドライブの「ここまでの変更は見た」印。次はこれ以降の変更だけを聞く
   mem: new Map(),     // id → {md5, blob}（このタブの中だけのキャッシュ）
   folderCreating: new Map(),
   pending: new Map(), // '親id/名前' → まだドライブに無い（作成中の）DriveFile
@@ -1815,6 +1816,7 @@ const GD = {
 const GD_FOLDER = 'application/vnd.google-apps.folder';
 const GD_API = 'https://www.googleapis.com/drive/v3/files';
 const GD_UP = 'https://www.googleapis.com/upload/drive/v3/files';
+const GD_CH = 'https://www.googleapis.com/drive/v3/changes';
 const GD_FIELDS = 'id,name,mimeType,parents,modifiedTime,md5Checksum,size';
 const gdClientId = () => (window.NOTES_CONFIG && window.NOTES_CONFIG.googleClientId) || localStorage.getItem('notes:gClientId') || '';
 const gdOnline = () => location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -1867,17 +1869,17 @@ function gdLogout() {
   const t = GD.token; GD.token = null; GD.exp = 0;
   try { if (t) google.accounts.oauth2.revoke(t, () => {}); } catch {}
   try { localStorage.removeItem('notes:gLogged'); localStorage.removeItem('notes:gTok'); localStorage.removeItem('notes:gHint'); } catch {}
-  GD.tokenClient = null;
+  GD.tokenClient = null; gdCache.set('__snap', null); // 別のアカウントで開いたときに、前の一覧を出さない
 }
 // 通行証は 1 時間で切れる。切れる少し前に、次のクリックやキー操作のついでに取り直す
 ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => {
   if (GD.token && Date.now() > GD.exp - 5 * 60e3 && !GD.refreshing) gdLogin().catch(() => {});
 }, true));
-function showReauth() {
+function showReauth(msg) {
   if ($('#gd-reauth')) return;
   const b = document.createElement('div'); b.id = 'gd-reauth';
-  b.innerHTML = '<span>Google ドライブのログインが切れました。保存されていない変更は、ログインし直すと保存されます。</span><button class="primary">ログインし直す</button>';
-  b.querySelector('button').onclick = () => gdLogin().then(() => { toast('ログインしました'); if (S.dirty) saveCurrent(); }).catch(e => toast(e.message, 4000));
+  b.innerHTML = `<span>${msg || 'Google ドライブのログインが切れました。保存されていない変更は、ログインし直すと保存されます。'}</span><button class="primary">ログインし直す</button>`;
+  b.querySelector('button').onclick = () => gdLogin().then(() => { toast('ログインしました'); if (S.dirty) saveCurrent(); setTimeout(() => gdSync(true), 300); }).catch(e => toast(e.message, 4000));
   document.body.appendChild(b);
 }
 function hideReauth() { $('#gd-reauth')?.remove(); }
@@ -1924,26 +1926,66 @@ function gdPut(m) {
   if (old) for (const p of old.parents || []) GD.kids.get(p)?.delete(m.id);
   GD.files.set(m.id, m);
   for (const p of m.parents || []) { if (!GD.kids.has(p)) GD.kids.set(p, new Set()); GD.kids.get(p).add(m.id); }
+  gdSnap.later();
 }
 function gdDrop(id) {
   const m = GD.files.get(id); if (!m) return;
   for (const k of [...(GD.kids.get(id) || [])]) gdDrop(k);
   GD.kids.delete(id); for (const p of m.parents || []) GD.kids.get(p)?.delete(id); GD.files.delete(id);
+  gdSnap.later();
 }
 // アプリが触れるファイルを一度にまとめて取る（drive.file なのでこのアプリのファイルだけが返る）
 async function gdListAll() {
   if (GD.listing) return GD.listing;
   GD.listing = (async () => {
+    // 一覧を取る前に「今」の印をもらっておく（取っている間の変更も、次の差分で拾える）
+    const tok = await gdFetch(`${GD_CH}/startPageToken`).catch(e => { if (e.name === 'AuthError') throw e; return null; });
     const files = new Map(); let page = '';
     do {
       const u = `${GD_API}?pageSize=1000&spaces=drive&q=${encodeURIComponent('trashed=false')}&fields=${encodeURIComponent('nextPageToken,files(' + GD_FIELDS + ')')}` + (page ? '&pageToken=' + encodeURIComponent(page) : '');
       const j = await gdFetch(u); for (const f of j.files || []) files.set(f.id, f); page = j.nextPageToken || '';
     } while (page);
     GD.files.clear(); GD.kids.clear(); for (const f of files.values()) gdPut(f);
-    GD.listedAt = Date.now();
+    GD.listedAt = Date.now(); GD.changeToken = (tok && tok.startPageToken) || '';
   })().finally(() => { GD.listing = null; });
   return GD.listing;
 }
+// 前回からの変更だけを聞いて、手元の一覧に反映する（一覧を全部取り直すより、ずっと軽い）
+async function gdChangesInner() {
+  let page = GD.changeToken, n = 0;
+  while (page) {
+    const j = await gdFetch(`${GD_CH}?pageToken=${encodeURIComponent(page)}&pageSize=1000&spaces=drive&includeRemoved=true&fields=${encodeURIComponent('nextPageToken,newStartPageToken,changes(fileId,removed,file(' + GD_FIELDS + ',trashed))')}`);
+    for (const c of j.changes || []) {
+      n++;
+      if (c.removed || !c.file || c.file.trashed) gdDrop(c.fileId);
+      else { const { trashed, ...f } = c.file; gdPut(f); }
+    }
+    if (j.newStartPageToken) { GD.changeToken = j.newStartPageToken; page = ''; } else page = j.nextPageToken || '';
+  }
+  GD.listedAt = Date.now();
+  return n;
+}
+async function gdPullChanges() {
+  if (GD.listing) return GD.listing;
+  if (GD.changeToken) {
+    const p = GD.listing = gdChangesInner();
+    try { return await p; }
+    catch (e) { if (e.name === 'AuthError') throw e; console.warn('changes', e); GD.changeToken = ''; } // 印が古すぎるなどのときは、全部取り直す
+    finally { if (GD.listing === p) GD.listing = null; }
+  }
+  return gdListAll();
+}
+// ---- 前回の一覧を端末に覚えておく。次に開くときは、これを使ってすぐ画面を出し、変更は後から差分で取る ----
+const gdSnap = {
+  t: null,
+  async load(rootId) { const v = await gdCache.get('__snap'); return v && v.v === 1 && v.token && v.files.some(f => f.id === rootId) ? v : null; },
+  apply(v) { GD.files.clear(); GD.kids.clear(); for (const f of v.files) gdPut(f); GD.changeToken = v.token; GD.listedAt = 1; }, // listedAt=1: 一覧はあるが、まだ確かめていない
+  later() {
+    if (!GD.changeToken || !GD.listedAt) return;
+    clearTimeout(this.t); this.t = setTimeout(() => this.save(), 1500);
+  },
+  save() { clearTimeout(this.t); if (!GD.changeToken || !GD.listedAt) return Promise.resolve(); return gdCache.set('__snap', { v: 1, files: [...GD.files.values()], token: GD.changeToken, at: Date.now() }); },
+};
 const gdEnsureListed = () => GD.listedAt ? Promise.resolve() : gdListAll();
 function gdChild(parentId, name, folder) {
   for (const id of GD.kids.get(parentId) || []) { const m = GD.files.get(id); if (m && m.name === name && (folder === undefined || (m.mimeType === GD_FOLDER) === folder)) return m; }
@@ -1956,24 +1998,40 @@ const gdCache = {
   open() { return this.db || (this.db = new Promise((res, rej) => { const r = indexedDB.open('notes-drive-cache', 1); r.onupgradeneeded = () => r.result.createObjectStore('files'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); },
   async get(id) { try { const db = await this.open(); return await new Promise(res => { const t = db.transaction('files').objectStore('files').get(id); t.onsuccess = () => res(t.result || null); t.onerror = () => res(null); }); } catch { return null; } },
   async set(id, v) { try { const db = await this.open(); await new Promise(res => { const t = db.transaction('files', 'readwrite').objectStore('files').put(v, id); t.onsuccess = t.onerror = () => res(); }); } catch {} },
+  async getMany(ids) { // まとめて 1 回で読む（1 件ずつ待つと、ノートが多いほど遅くなる）
+    try { const db = await this.open(); return await new Promise(res => { const tx = db.transaction('files'); const st = tx.objectStore('files'); const out = new Map(); for (const id of ids) { const r = st.get(id); r.onsuccess = () => { if (r.result) out.set(id, r.result); }; } tx.oncomplete = () => res(out); tx.onerror = tx.onabort = () => res(out); }); } catch { return new Map(); }
+  },
   async clear() { try { const db = await this.open(); await new Promise(res => { const t = db.transaction('files', 'readwrite').objectStore('files').clear(); t.onsuccess = t.onerror = () => res(); }); } catch {} },
 };
+// Markdown・JSON は文字のまま覚える（Blob のままだと、読むたびに端末のディスクから取り出すので遅い）
+const gdIsText = name => /\.(md|json)$/i.test(name);
+// 文字のものは text を持ち、Blob は使うときに作る（ノートの一覧づくりは text だけで済む）
+const gdTextEntry = (md5, text, type) => ({ md5, text, _b: null, get blob() { return this._b || (this._b = new Blob([this.text], { type })); } });
+const gdFromCache = (m, c) => c && c.md5 && c.md5 === m.md5Checksum && (c.text !== undefined || c.blob) ? (c.text !== undefined ? gdTextEntry(c.md5, c.text, mimeOf(m.name)) : { md5: c.md5, blob: c.blob }) : null;
+async function gdRemember(m, blob) {
+  if (gdIsText(m.name)) { const text = await blob.text(); const v = gdTextEntry(m.md5Checksum, text, mimeOf(m.name)); GD.mem.set(m.id, v); gdCache.set(m.id, { md5: m.md5Checksum, text }); return v; }
+  const v = { md5: m.md5Checksum, blob: blob.type ? blob : new Blob([blob], { type: mimeOf(m.name) }) }; GD.mem.set(m.id, v); gdCache.set(m.id, v); return v;
+}
 async function gdContent(m) {
   const mem = GD.mem.get(m.id); if (mem && mem.md5 === m.md5Checksum) return mem.blob;
-  const c = await gdCache.get(m.id);
-  if (c && c.md5 && c.md5 === m.md5Checksum && c.blob) { GD.mem.set(m.id, c); return c.blob; }
+  const c = gdFromCache(m, await gdCache.get(m.id));
+  if (c) { GD.mem.set(m.id, c); return c.blob; }
   const blob = await gdFetch(`${GD_API}/${m.id}?alt=media`, {}, 'blob');
-  const v = { md5: m.md5Checksum, blob: blob.type ? blob : new Blob([blob], { type: mimeOf(m.name) }) };
-  GD.mem.set(m.id, v); gdCache.set(m.id, v); return v.blob;
+  return (await gdRemember(m, blob)).blob;
 }
 // 開くときに、まだ手元に無い Markdown をまとめて先読み（並列）
-async function gdPrefetch(rootId, onProgress) {
+async function gdPrefetch(rootId, onProgress, onlyCount) { // onlyCount: 読まずに「足りない数」だけ返す
   const todo = [];
   const walk = id => { for (const k of GD.kids.get(id) || []) { const m = GD.files.get(k); if (!m) continue; if (m.mimeType === GD_FOLDER) { if (!m.name.startsWith('.')) walk(k); } else if (/\.(md|json)$/i.test(m.name)) todo.push(m); } };
   walk(rootId);
   const need = [];
-  for (const m of todo) { const mem = GD.mem.get(m.id); if (mem && mem.md5 === m.md5Checksum) continue; const c = await gdCache.get(m.id); if (c && c.md5 === m.md5Checksum) { GD.mem.set(m.id, c); continue; } need.push(m); }
-  let done = 0; const total = need.length;
+  const look = todo.filter(m => { const mem = GD.mem.get(m.id); return !(mem && mem.md5 === m.md5Checksum); });
+  const cached = look.length ? await gdCache.getMany(look.map(m => m.id)) : new Map();
+  const old = []; // 前の版で Blob のまま覚えたものは、文字にして覚え直す（1 回だけ）
+  for (const m of look) { const raw = cached.get(m.id); const c = gdFromCache(m, raw); if (c) { GD.mem.set(m.id, c); if (raw.text === undefined) old.push([m, raw.blob]); continue; } need.push(m); }
+  if (old.length) await Promise.all(old.map(([m, b]) => gdRemember(m, b).catch(() => {})));
+  if (onlyCount) return need.length;
+  let done = 0; const total = need.length; GD.lastFetched = total;
   const worker = async () => { while (need.length) { const m = need.shift(); try { await gdContent(m); } catch (e) { if (e.name === 'AuthError') throw e; } done++; onProgress && onProgress(done, total); } };
   await Promise.all(Array.from({ length: Math.min(6, total) }, worker));
 }
@@ -2047,6 +2105,13 @@ class DriveFile {
     this._readMd5 = m.md5Checksum; if (/\.md$/i.test(this.name)) this._readText = await blob.text();
     return new File([blob], this.name, { type: blob.type || mimeOf(this.name), lastModified: Date.parse(m.modifiedTime) || Date.now() });
   }
+  // 文字だけ欲しいとき（ノートの一覧づくり）。File を作らないぶん速い
+  async readText() {
+    const m = GD.files.get(this.id) || this.meta; this.meta = m;
+    const mem = GD.mem.get(m.id);
+    const text = mem && mem.md5 === m.md5Checksum && mem.text !== undefined ? mem.text : await (await gdContent(m)).text();
+    this._readMd5 = m.md5Checksum; this._readText = text; return text;
+  }
   async createWritable() {
     const chunks = []; const self = this;
     return {
@@ -2078,7 +2143,7 @@ class DriveFile {
   }
   _done(f, blob) {
     gdPut(f); this.meta = f; this._readMd5 = f.md5Checksum;
-    const v = { md5: f.md5Checksum, blob: new Blob([blob], { type: mimeOf(this.name) }) }; GD.mem.set(f.id, v); gdCache.set(f.id, v);
+    gdRemember(f, new Blob([blob], { type: mimeOf(this.name) }));
     if (/\.md$/i.test(this.name)) blob.text().then(t => { this._readText = t; });
   }
   async _checkConflict(blob) {
@@ -2172,10 +2237,10 @@ async function gdSync(force = false) {
     const before = new Map(); const rootId = S.root.id;
     const walk = (id, out) => { for (const k of GD.kids.get(id) || []) { const m = GD.files.get(k); if (!m) continue; out.set(k, m.md5Checksum + '|' + m.name + '|' + (m.parents || []).join()); if (m.mimeType === GD_FOLDER) walk(k, out); } };
     walk(rootId, before);
-    await gdListAll();
+    await gdPullChanges();
     const after = new Map(); walk(rootId, after);
     let changed = before.size !== after.size; if (!changed) for (const [k, v] of after) if (before.get(k) !== v) { changed = true; break; }
-    if (!changed || S.dirty || S.saving) return;
+    if (!changed || S.dirty || S.saving) { gdSnap.save(); return; }
     await gdPrefetch(rootId);
     const st = $('#content').scrollTop;
     await rescan(); $('#content').scrollTop = st;
@@ -2266,27 +2331,38 @@ async function gdCleanDupsDialog() {
 
 // ---------- フォルダを読む ----------
 // 開く・読み直すは同時に走らせない（2 回押したり、同期と重なったりすると一覧が二重になるため）
-function openFolder(handle) {
+function openFolder(handle, opts = {}) {
   if (S.opening) { toast('読み込み中です。少しお待ちください'); return S.opening; }
-  S.opening = openFolderInner(handle).finally(() => { S.opening = null; });
+  S.opening = openFolderInner(handle, opts).finally(() => {
+    S.opening = null;
+    if (S.syncAfterOpen) { S.syncAfterOpen = false; setTimeout(() => gdSync(true), 50); } // 前回の内容で出したので、裏で変更を確かめる
+  });
   return S.opening;
 }
-async function openFolderInner(handle) {
+async function openFolderInner(handle, opts = {}) {
   if (!handle) {
     try { handle = await window.showDirectoryPicker({ mode: 'readwrite' }); } catch { return; }
   }
-  if ((await handle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+  const T0 = performance.now(), tm = {}; let fromSnap = false, fetched = 0; // 読み込みにかかった時間（内訳）
+  const lap = k => { tm[k] = Math.round(performance.now() - T0 - Object.values(tm).reduce((a, b) => a + b, 0)); };
+  if (opts.cached && handle.isDrive) { /* ログイン前でも、前回の内容で開く（保存や最新の取り込みはログイン後） */ }
+  else if ((await handle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
     if ((await handle.requestPermission({ mode: 'readwrite' })) !== 'granted') { toast('フォルダへのアクセスが許可されませんでした'); return; }
   }
   await flushSave();
   if (handle.isDrive) {
     $('#side-hint').textContent = 'ドライブを読み込み中…';
     try {
-      await gdListAll();
+      // 1) 一覧: 前回の一覧が端末にあればそれを使う（変更は開いたあとに差分で取る）。無ければドライブから取る
+      if (!GD.listedAt) { const snap = await gdSnap.load(handle.id); if (snap) { gdSnap.apply(snap); fromSnap = true; } }
+      if (!fromSnap) { if (opts.cached) return; await (GD.changeToken ? gdPullChanges() : gdListAll()); }
+      lap('一覧');
+      if (!GD.token && await gdPrefetch(handle.id, null, true)) { GD.files.clear(); GD.kids.clear(); GD.listedAt = 0; GD.changeToken = ''; return; } // ログイン前で、手元に無い中身があるときは開かない
       if (!GD.files.has(handle.id)) { toast('ドライブにこの保管庫が見つかりません（削除されたか、別の Google アカウントです）', 5000); return; }
-      toast('ドライブから読み込み中…', 60000);
+      // 2) 中身: 端末のキャッシュに無いものだけドライブから読む
       await gdPrefetch(handle.id, (d, t) => { $('#side-hint').textContent = `ドライブから読み込み中… ${d} / ${t}`; toast(`ドライブから読み込み中… ${d} / ${t}`, 60000); });
-      toast('読み込みました', 1200);
+      lap('中身'); fetched = GD.lastFetched || 0;
+      if (GD.lastFetched) toast('読み込みました', 1200);
     } catch (e) { toast(e.message, 5000); $('#side-hint').textContent = '読み込めませんでした'; return; }
   }
   S.root = handle; S.dirs.clear(); S.notes = []; S.byPath.clear(); S.urlCache.forEach(u => URL.revokeObjectURL(u)); S.urlCache.clear(); S.current = null;
@@ -2296,13 +2372,24 @@ async function openFolderInner(handle) {
   S.scope = localStorage.getItem('notes:scope:' + handle.name) || '';
   await loadVaultData(); S._themeStore = null; installCustomThemes(); saveThemeStore(); // 保管庫とブラウザの見た目を合成して両方に書き戻す
   await calLoad(); HOME.q = ''; HOME.mode = 'home';
+  if (handle.isDrive) lap('設定・予定・お金');
   await scanDir(handle, '');
+  if (handle.isDrive) lap('ノートを読む');
   S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
   $('#vault-count').textContent = `${S.notes.length} ノート`;
   $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`;
   if (S.scope && !S.dirs.has(S.scope)) S.scope = '';
   renderTree(); updateInboxBadge();
   showHome(); // 開いたらまずホーム
+  if (handle.isDrive) {
+    lap('表示');
+    const total = Math.round(performance.now() - T0);
+    const txt = `${fromSnap ? '前回の一覧から' : 'ドライブから'}開きました ${(total / 1000).toFixed(1)}秒（${Object.entries(tm).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}秒`).join('・')}・取り直したファイル ${fetched}件）`;
+    $('#side-hint').title = txt; console.info('[Fumibako]', txt); try { localStorage.setItem('notes:openTiming', txt); } catch {}
+    gdSnap.save();
+    if (fromSnap && GD.token) S.syncAfterOpen = true;
+    if (!GD.token) showReauth('前回の内容を表示しています。最新の内容を読み込んだり保存したりするには、ログインしてください。');
+  }
   if (handle.isDrive) { const n = gdFindDups(handle.id).length; if (n) setTimeout(() => toast(`同じ名前のファイルが ${n} 組あります。「開く」→「重複したファイルを片付ける…」で整理できます`, 6000), 1500); }
 }
 
@@ -2342,12 +2429,13 @@ async function scanDir(dh, path) {
   S.dirs.set(path, dh);
   const entries = [];
   for await (const [name, h] of dh.entries()) entries.push([name, h]);
-  for (const [name, h] of entries) {
+  // 中身はまとめて並行して読む（1 件ずつ待つと、ノートが多いほど遅くなる）
+  const read = await Promise.all(entries.map(async ([name, h]) => { if (h.kind === 'directory' || !/\.md$/i.test(name) || name.startsWith('.') || name.startsWith('_')) return null; if (h.readText) { const text = await h.readText(); return [{ lastModified: Date.parse(h.meta.modifiedTime) || Date.now() }, text]; } const file = await h.getFile(); return [file, await file.text()]; }));
+  for (const [i, [name, h]] of entries.entries()) {
     if (name.startsWith('.') || name.startsWith('_')) continue;
     if (h.kind === 'directory') { if (!SKIP_DIRS.has(name)) await scanDir(h, join(path, name)); continue; }
     if (!/\.md$/i.test(name)) continue;
-    const file = await h.getFile();
-    const text = await file.text();
+    const [file, text] = read[i];
     const note = { path: join(path, name), dir: path, name, handle: h, mtime: file.lastModified, order: 9999, title: name.replace(/\.md$/i, ''), text, fm: '', body: text };
     parseFrontmatter(note);
     if (S.byPath.has(note.path)) continue; // 同じ名前のファイルが 2 つあるときは 1 つだけ出す（「重複を片付ける」で整理できる）
@@ -2409,11 +2497,12 @@ S.vaultData = { settings: {}, ogp: {} };
 async function loadVaultData() {
   S.vaultData = { settings: {}, ogp: {} };
   try { const fh = await S.root.getFileHandle('_notes.json'); const d = JSON.parse(await (await fh.getFile()).text()); S.vaultData = Object.assign({ settings: {}, ogp: {} }, d); } catch {}
+  S._vaultText = JSON.stringify(S.vaultData, null, 1);
 }
 let vaultSaveTimer = null;
 function saveVaultData() {
   clearTimeout(vaultSaveTimer);
-  vaultSaveTimer = setTimeout(async () => { try { const fh = await S.root.getFileHandle('_notes.json', { create: true }); const w = await fh.createWritable(); await w.write(JSON.stringify(S.vaultData, null, 1)); await w.close(); } catch (e) { console.warn(e); } }, 800);
+  vaultSaveTimer = setTimeout(async () => { const txt = JSON.stringify(S.vaultData, null, 1); if (txt === S._vaultText) return; try { const fh = await S.root.getFileHandle('_notes.json', { create: true }); const w = await fh.createWritable(); await w.write(txt); await w.close(); S._vaultText = txt; } catch (e) { console.warn(e); } }, 800);
 }
 const setting = k => S.vaultData.settings[k] || localStorage.getItem('notes:' + k) || '';
 // ---------- フォルダのアイコン（絵文字）。フォルダ名は変えずに保管庫の _notes.json に覚える ----------
@@ -2520,11 +2609,11 @@ S.cal = { items: [] };
 const CAL_FILE = '_calendar.json';
 const calId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const calLive = () => S.cal.items.filter(x => !x.deleted);
-async function calReadFile() {
+async function calReadFile(fresh) { // fresh: 保存の前に、ドライブの最新を確かめてから読む（開くときは一覧が新しいので要らない）
   try {
     const fh = await S.root.getFileHandle(CAL_FILE);
     let text;
-    if (fh.isDrive && fh.id) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
+    if (fh.isDrive && fh.id && fresh) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
     else text = await (await fh.getFile()).text();
     const d = JSON.parse(text); return Array.isArray(d.items) ? d.items : [];
   } catch { return []; }
@@ -2535,7 +2624,7 @@ const calMerge = (a, b) => { const m = new Map(); for (const x of [...a, ...b]) 
 let calSaving = Promise.resolve();
 function calSave() {
   calSaving = calSaving.then(async () => {
-    const remote = await calReadFile();
+    const remote = await calReadFile(true);
     S.cal.items = calMerge(remote, S.cal.items);
     const fh = await S.root.getFileHandle(CAL_FILE, { create: true }); fh.force = true;
     const w = await fh.createWritable(); await w.write(JSON.stringify({ version: 1, items: S.cal.items }, null, 1)); await w.close();
@@ -3021,18 +3110,18 @@ function importCalCsv() {
 // 記録と合計だけ。銀行やカードとはつながない。仕事用と個人用を分けて見られる
 function makeStore(file) {
   const st = { items: [], saving: Promise.resolve() };
-  st.read = async () => {
+  st.read = async fresh => { // fresh: 保存の前だけドライブの最新を確かめる
     try {
       const fh = await S.root.getFileHandle(file);
       let text;
-      if (fh.isDrive && fh.id) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
+      if (fh.isDrive && fh.id && fresh) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
       else text = await (await fh.getFile()).text();
       const d = JSON.parse(text); return Array.isArray(d.items) ? d.items : [];
     } catch { return []; }
   };
   st.load = async () => { st.items = S.root ? await st.read() : []; };
   st.save = () => (st.saving = st.saving.then(async () => { // ドライブの最新と混ぜてから書く（2 台で同時に足しても消えない）
-    const remote = await st.read(); st.items = calMerge(remote, st.items);
+    const remote = await st.read(true); st.items = calMerge(remote, st.items);
     const fh = await S.root.getFileHandle(file, { create: true }); fh.force = true;
     const w = await fh.createWritable(); await w.write(JSON.stringify({ version: 1, items: st.items }, null, 1)); await w.close();
   }).catch(e => { console.error(e); toast('保存できませんでした: ' + e.message, 4000); }));
@@ -4869,6 +4958,7 @@ document.execCommand('defaultParagraphSeparator', false, 'p');
   if (h && h.isDrive && !gdOnline()) h = null;
   S._lastRoot = h;
   if (h && h.isDrive && gdRestoreToken()) { openFolder(h); return; } // 1 時間以内に開いていれば、そのまま開く
+  if (h && h.isDrive && gdClientId() && gdOnline() && await gdSnap.load(h.id)) { gdLoadGis().catch(() => {}); await openFolder(h, { cached: true }); if (S.root) return; } // ログインが切れていても、前回の内容ですぐ開く
   if (h) { $('#btn-reopen').style.display = ''; $('#btn-reopen').textContent = h.isDrive ? `前回の保管庫を開く（☁ ${h.name}）` : `前回のフォルダを開く（${h.name}）`; if (!h.isDrive && (await h.queryPermission({ mode: 'readwrite' })) === 'granted') openFolder(h); }
 })();
 
