@@ -1977,8 +1977,13 @@ function gdLogout() {
   const t = GD.token; GD.token = null; GD.exp = 0;
   try { if (t) google.accounts.oauth2.revoke(t, () => {}); } catch {}
   try { localStorage.removeItem('notes:gLogged'); localStorage.removeItem('notes:gTok'); localStorage.removeItem('notes:gHint'); } catch {}
-  GD.tokenClient = null; gdCache.set('__snap', null); // 別のアカウントで開いたときに、前の一覧を出さない
+  GD.tokenClient = null;
+  // この端末に残したノートの控え（中身と一覧）も全部消す。ログアウトしたあとに中身が見えないように
+  GD.mem.clear(); GD.files.clear(); GD.kids.clear(); GD.listedAt = 0; GD.changeToken = ''; clearTimeout(gdSnap.t);
+  return gdCache.clear();
 }
+// この端末では「ログインしないと中身を出さない」（共用の PC など用）
+const gdRequireLogin = () => localStorage.getItem('notes:requireLogin') === '1';
 // 通行証は 1 時間で切れる。切れる少し前に、次のクリックやキー操作のついでに取り直す
 ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => {
   if (GD.token && Date.now() > GD.exp - 5 * 60e3 && !GD.refreshing) gdLogin().catch(() => {});
@@ -2517,7 +2522,16 @@ async function openMenu(e) {
   const list = await getRecents(); const items = [{ hd: 'Google ドライブ（PC とスマホで同じ内容）' }, { label: 'ドライブの保管庫を開く・作る…', run: gdOpenVaultDialog }];
   if (window.showDirectoryPicker) items.push({ label: 'PC のフォルダをドライブへコピー…', run: gdCopyLocalDialog });
   if (S.root && S.root.isDrive) items.push({ label: '重複したファイルを片付ける…', run: gdCleanDupsDialog });
-  if (GD.token) items.push({ label: 'Google からログアウト', run: () => { gdLogout(); toast('ログアウトしました'); } });
+  if (GD.token) items.push({ label: 'Google からログアウト（この端末の控えも消す）', run: async () => {
+    if (!(await confirmDlg('Google からログアウト', 'ログアウトして、この端末に残しているノートの控えも消します。次に開くときは、ドライブから読み直します。'))) return;
+    await flushSave().catch(() => {}); await gdLogout();
+    if (S.root && S.root.isDrive) { S.root = null; S.notes = []; S.byPath.clear(); S.dirs.clear(); S.current = null; S.dirty = false; S.cal = { items: [] }; MONEY.items = []; ARC.items = []; ARC.loaded = false; ARC.urls.forEach(u => URL.revokeObjectURL(u)); ARC.urls.clear(); S.urlCache.forEach(u => URL.revokeObjectURL(u)); S.urlCache.clear(); $('#tree').innerHTML = ''; $('#vault-label').textContent = ''; $('#vault-count').textContent = ''; $('#side-hint').textContent = 'ログアウトしました'; ['#home', '#gallery', '#editor', '#title', '#crumb'].forEach(q => { const el = $(q); if (el) el.innerHTML = ''; }); setView('empty'); }
+    toast('ログアウトして、この端末の控えを消しました', 3000);
+  } });
+  if (gdOnline()) items.push({ label: (gdRequireLogin() ? '✓ ' : '　') + 'この端末では、ログインしないと中身を出さない', run: () => {
+    const on = !gdRequireLogin(); try { localStorage.setItem('notes:requireLogin', on ? '1' : '0'); } catch {}
+    toast(on ? 'この端末では、ログインが切れたらログインしてから開きます' : 'この端末では、ログインが切れていても前回の内容ですぐ開きます', 3500);
+  } });
   if (window.showDirectoryPicker) items.push({ hd: 'PC のフォルダを開く' }, { label: '別のフォルダを選ぶ…', run: () => openFolder() });
   if (list.length) {
     items.push({ hd: '最近開いたフォルダ（右クリックでピン留め / 一覧から外す）' });
@@ -3835,8 +3849,23 @@ async function pickFolderIcon(d) {
 
 // ---------- OGP（リンクカードの見出し・説明・画像） ----------
 const ogpQueue = []; let ogpRunning = 0;
+// 秘密になりやすいリンク（共有リンク・社内のアドレス・鍵の入った URL）は、外のサービス（microlink）に送らない。カードにはドメイン名だけ出す
+const PRIVATE_HOSTS = /(^|\.)(docs\.google\.com|drive\.google\.com|mail\.google\.com|calendar\.google\.com|meet\.google\.com|photos\.google\.com|photos\.app\.goo\.gl|script\.google\.com|sites\.google\.com|forms\.gle|sharepoint\.com|onedrive\.live\.com|1drv\.ms|dropbox\.com|box\.com|notion\.so|notion\.site|figma\.com|miro\.com|canva\.com|slack\.com|zoom\.us|teams\.microsoft\.com|trello\.com|airtable\.com|claude\.ai|chatgpt\.com|chat\.openai\.com|github\.io)$/i;
+const SECRET_PARAMS = /^(token|access_token|id_token|key|api_?key|sig|signature|x-amz-signature|x-goog-signature|auth|code|pass(word)?|pwd|secret|invite|share|usp)$/i;
+function privateLink(url) {
+  let u; try { u = new URL(url); } catch { return true; }
+  if (!/^https?:$/.test(u.protocol)) return true;
+  const h = u.hostname.toLowerCase();
+  if (!h.includes('.') || /\.(local|lan|internal|intranet|corp|home|test)$/.test(h)) return true; // 社内・手元のアドレス
+  if (/^[\d.]+$/.test(h) || h.includes(':')) return true; // IP アドレスで書かれたもの
+  if (PRIVATE_HOSTS.test(h)) return true;
+  if (u.username || u.password) return true;
+  for (const k of u.searchParams.keys()) if (SECRET_PARAMS.test(k)) return true;
+  return false;
+}
 function fetchOgp(url) {
   const c = S.vaultData.ogp[url]; if (c && (c.title || c.failed > Date.now() - 86400e3)) return Promise.resolve(c);
+  if (!(setting('gasUrl') && setting('gasToken')) && privateLink(url)) return Promise.resolve(null); // 自分の GAS が無いときは送らない
   return new Promise(resolve => { ogpQueue.push({ url, resolve }); pumpOgp(); });
 }
 async function pumpOgp() {
@@ -3992,6 +4021,18 @@ function renderTree(filter = '') {
   }
   build(scope, tree);
   if (!tree.children.length || (scope && tree.children.length === 1)) tree.innerHTML = `<div style="padding:12px;color:var(--fg3);font-size:13px">${q ? '見つかりません' : 'ノートがありません'}</div>`;
+  // いちばん下に「アーカイブ」（ドライブの保管庫だけ）。ノートをここへドラッグしてもアーカイブできる
+  if (!q && !scope && S.root && S.root.isDrive) {
+    const f = document.createElement('div'); f.className = 'folder arc-folder';
+    const row = document.createElement('div'); row.className = 'row' + (S.view === 'home' && HOME.mode === 'archive' ? ' active' : '');
+    row.innerHTML = '<span class="caret" style="visibility:hidden">▾</span><span class="ficon">🗄️</span><span class="name">アーカイブ</span>';
+    row.title = 'アーカイブしたノートの一覧（ノートをここへドラッグするとアーカイブ）';
+    row.onclick = () => { HOME.mode = 'archive'; ARC.view = null; showHome(); };
+    row.ondragover = e => { if (S.dragNote) { e.preventDefault(); row.classList.add('drop'); } };
+    row.ondragleave = () => row.classList.remove('drop');
+    row.ondrop = e => { e.preventDefault(); row.classList.remove('drop'); const list = S.dragNotes || (S.dragNote ? [S.dragNote] : []); S.dragNote = null; if (list.length) archiveNotes(list); };
+    f.appendChild(row); tree.appendChild(f);
+  }
 }
 function setScope(d) { S.scope = d || ''; if (S.root) localStorage.setItem('notes:scope:' + S.root.name, S.scope); renderTree($('#search').value); $('#side-hint').textContent = S.scope ? `${baseOf(S.scope)} の中を表示中` : `${S.dirs.size} フォルダ / ${S.notes.length} ノート`; }
 function noteRow(n) {
@@ -5316,7 +5357,7 @@ document.execCommand('defaultParagraphSeparator', false, 'p');
   if (h && h.isDrive && !gdOnline()) h = null;
   S._lastRoot = h;
   if (h && h.isDrive && gdRestoreToken()) { openFolder(h); return; } // 1 時間以内に開いていれば、そのまま開く
-  if (h && h.isDrive && gdClientId() && gdOnline() && await gdSnap.load(h.id)) { gdLoadGis().catch(() => {}); await openFolder(h, { cached: true }); if (S.root) return; } // ログインが切れていても、前回の内容ですぐ開く
+  if (h && h.isDrive && gdClientId() && gdOnline() && !gdRequireLogin() && await gdSnap.load(h.id)) { gdLoadGis().catch(() => {}); await openFolder(h, { cached: true }); if (S.root) return; } // ログインが切れていても、前回の内容ですぐ開く
   if (h) { $('#btn-reopen').style.display = ''; $('#btn-reopen').textContent = h.isDrive ? `前回の保管庫を開く（☁ ${h.name}）` : `前回のフォルダを開く（${h.name}）`; if (!h.isDrive && (await h.queryPermission({ mode: 'readwrite' })) === 'granted') openFolder(h); }
 })();
 
