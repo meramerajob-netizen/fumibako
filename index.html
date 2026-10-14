@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- 通信先を絞る（スクリプトからの送信は Google・GAS・microlink だけ）。プラグインと base 書き換えは禁止 -->
-<meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://script.google.com https://script.googleusercontent.com https://api.microlink.io; object-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://sheets.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://script.google.com https://script.googleusercontent.com https://api.microlink.io; object-src 'none'; base-uri 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="apple-mobile-web-app-title" content="Fumibako">
 <script>window.NOTES_CONFIG = {"googleClientId": "414631147543-8jbu7joil26mtn4vdeep44vr9ebsdtt4.apps.googleusercontent.com"};</script>
@@ -440,6 +440,19 @@ dialog input[type=date],dialog input[type=time]{width:100%;padding:7px 10px;bord
 .m-head .m-open,.m-mini{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:4px 12px;font-size:12.5px;cursor:pointer;color:var(--fg)}
 .m-scope{display:flex;gap:4px}
 .m-scope button,.m-tabs button{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:4px 11px;font-size:12.5px;cursor:pointer;color:var(--fg2)}
+.arc-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 6px}
+.arc-q{flex:1 1 240px;margin:0}
+.arc-sel{width:auto;margin:0;padding:6px 10px;border:1px solid var(--line);border-radius:100px;background:var(--card);color:var(--fg);font-size:12.5px}
+.arc-link{border:1px solid var(--line);background:var(--card);border-radius:100px;padding:5px 12px;color:var(--fg);font-size:13px;text-decoration:none}
+.arc-h{font-size:13px;color:var(--fg2);font-weight:600;margin:22px 0 10px;display:flex;gap:8px;align-items:baseline}
+.arc-h small{font-weight:400;color:var(--fg3)}
+.arc-card .hm{font-size:11px;color:var(--fg3);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.arc-tags span{font-size:11px;color:var(--accent);background:var(--accent-bg);border-radius:100px;padding:1px 7px}
+.arc-warn{font-size:13px;color:var(--fg2);background:var(--bg2);border-radius:10px;padding:8px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.arc-meta{font-size:12.5px;color:var(--fg3);margin:6px 0 4px}
+.arc-title{font-size:calc(28px * var(--fs));margin:0 0 18px;line-height:1.35}
+#arc-doc{max-width:var(--doc-w);line-height:1.8}
 .m-scope button.on,.m-tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .m-tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 14px;padding-bottom:2px}
 .m-tabs button{flex:none;font-size:13.5px;padding:6px 14px}
@@ -553,6 +566,100 @@ body.presenting #app{visibility:hidden}
 .pr-body .bookmark .bm-body{flex:1;min-width:0;padding:12px 14px;display:flex;flex-direction:column;gap:3px}
 .pr-body .bookmark .t{font-weight:600;line-height:1.4}.pr-body .bookmark .d{font-size:.8em;color:var(--fg2);line-height:1.5}.pr-body .bookmark .u{font-size:.75em;color:var(--fg3)}
 .pr-body .bookmark .bm-img{flex:none;width:170px;background:var(--bg3) center/cover no-repeat;border-left:1px solid var(--line)}
+/* アーカイブの表示（#editor の写し） */
+[data-theme="ice"] #title,[data-theme="ice"] #arc-doc h1,[data-theme="ice"] #arc-doc h2,[data-theme="ice"] #arc-doc h3,[data-theme="ice"] .pr-title,[data-theme="ice"] .pr-h,[data-theme="ice"] .pr-body h1,[data-theme="ice"] .pr-body h2,[data-theme="ice"] .pr-body h3{font-weight:900;letter-spacing:.005em}
+[data-theme="ice"] #arc-doc h2,[data-theme="ice"] .pr-body h2{position:relative;padding-left:20px;color:var(--fg)}
+[data-theme="ice"] #arc-doc h2:before,[data-theme="ice"] .pr-body h2:before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:50%;background:var(--terra);box-shadow:0 0 0 3px rgba(217,140,95,.2)}
+[data-theme="ice"] #arc-doc h3,[data-theme="ice"] .pr-body h3{color:var(--accent)}
+[data-theme="ice"] #arc-doc strong,[data-theme="ice"] .pr-body strong{color:#3d5568}
+[data-theme="ice"] #arc-doc blockquote,[data-theme="ice"] .pr-body blockquote{background:#fff;border-left-color:var(--terra);color:var(--fg2);border-radius:0 14px 14px 0;box-shadow:var(--shadow)}
+[data-theme="ice"] #arc-doc pre,[data-theme="ice"] .pr-body pre{background:#fff;border-radius:14px}
+[data-theme="ice"] #arc-doc .bookmark,[data-theme="ice"] .pr-body .bookmark{border-radius:16px;box-shadow:var(--shadow);border-color:rgba(110,139,168,.2)}
+[data-theme="ice"] #arc-doc img,[data-theme="ice"] .pr-body img{border-radius:16px}
+[data-theme="ice"] #arc-doc a.wiki,[data-theme="ice"] .pr-body .wiki{border-radius:100px;padding:.05em .6em;background:#fff;border:1px solid var(--line);color:var(--accent)}
+[data-theme="ice"] #arc-doc input[type=checkbox]{accent-color:var(--terra)}
+[data-theme="bold"] #arc-doc h1,[data-theme="bold"] #arc-doc h2,[data-theme="bold"] #arc-doc h3,[data-theme="bold"] .pr-h,[data-theme="bold"] .pr-body h1,[data-theme="bold"] .pr-body h2,[data-theme="bold"] .pr-body h3{font-weight:900;letter-spacing:.01em;line-height:1.45}
+[data-theme="bold"] #arc-doc h1,[data-theme="bold"] .pr-body h1{font-size:1.85em;padding-bottom:.25em;border-bottom:3px solid var(--ink)}
+[data-theme="bold"] #arc-doc h2,[data-theme="bold"] .pr-body h2{font-size:1.45em;background:linear-gradient(transparent 62%,rgba(217,138,68,.42) 62%);width:fit-content;max-width:100%;padding:0 .15em}
+[data-theme="bold"] #arc-doc h3,[data-theme="bold"] .pr-body h3{color:var(--teal);font-size:1.15em}
+[data-theme="bold"] #arc-doc h3:before,[data-theme="bold"] .pr-body h3:before{content:"■ ";color:var(--orange);font-size:.7em;vertical-align:.15em}
+[data-theme="bold"] #arc-doc strong,[data-theme="bold"] .pr-body strong{font-weight:900;color:var(--orange-deep)}
+[data-theme="bold"] #arc-doc em,[data-theme="bold"] .pr-body em{font-style:normal;font-weight:900;color:var(--teal);background:linear-gradient(transparent 60%,rgba(110,139,168,.28) 60%)}
+[data-theme="bold"] #arc-doc del,[data-theme="bold"] #arc-doc s,[data-theme="bold"] .pr-body del{color:var(--fg3);text-decoration-color:var(--orange)}
+[data-theme="bold"] #arc-doc blockquote,[data-theme="bold"] .pr-body blockquote{border-left:4px solid var(--ink);background:#fff;border-radius:0;color:var(--fg);font-weight:700;box-shadow:4px 4px 0 rgba(35,43,54,.1)}
+[data-theme="bold"] #arc-doc pre,[data-theme="bold"] .pr-body pre{border:2px solid var(--ink);border-radius:0;background:#fff;box-shadow:5px 5px 0 var(--ink)}
+[data-theme="bold"] #arc-doc code,[data-theme="bold"] .pr-body code{border-radius:0;background:#fff;border:1px solid var(--line)}
+[data-theme="bold"] #arc-doc pre code{border:0}
+[data-theme="bold"] #arc-doc .bookmark,[data-theme="bold"] .pr-body .bookmark{border:2px solid var(--ink);border-radius:0;box-shadow:5px 5px 0 var(--ink)}
+[data-theme="bold"] #arc-doc .bookmark:hover{box-shadow:7px 7px 0 var(--ink)}
+[data-theme="bold"] #arc-doc .bookmark .t,[data-theme="bold"] .pr-body .bookmark .t{font-weight:900}
+[data-theme="bold"] #arc-doc img:not(.fav),[data-theme="bold"] .pr-body img,[data-theme="bold"] #arc-doc .img-grid img{border-radius:0;box-shadow:6px 6px 0 var(--ink);border:2px solid var(--ink)}
+[data-theme="bold"] #arc-doc .bookmark img,[data-theme="ice"] #arc-doc .bookmark img{border:0;box-shadow:none;border-radius:3px}
+[data-theme="bold"] #arc-doc hr,[data-theme="bold"] .pr-body hr{border-top:3px solid var(--ink)}
+[data-theme="bold"] #arc-doc th,[data-theme="bold"] .pr-body th{background:var(--ink);color:#fff;border-color:var(--ink)}
+[data-theme="bold"] #arc-doc td,[data-theme="bold"] .pr-body td{border-color:var(--ink)}
+[data-theme="bold"] #arc-doc a.wiki,[data-theme="bold"] .pr-body .wiki{border-radius:0;background:transparent;border-bottom:2px solid var(--orange);padding:0 .1em;color:var(--fg);font-weight:700}
+[data-theme="bold"] #arc-doc li::marker{color:var(--orange);font-weight:900}
+[data-theme="bold"] #arc-doc input[type=checkbox]{accent-color:var(--orange)}
+#arc-doc{outline:none;min-height:40vh;font-size:calc(16px * var(--fs));line-height:1.8}
+#arc-doc:empty:before{content:"ここに書き始める…";color:var(--fg3)}
+#arc-doc h1{font-size:1.625em;margin:1.6em 0 .5em;line-height:1.3;letter-spacing:-.01em}
+#arc-doc h2{font-size:1.3125em;margin:1.5em 0 .5em;line-height:1.35}
+#arc-doc h3{font-size:1.1em;margin:1.3em 0 .4em}
+#arc-doc h4,#arc-doc h5,#arc-doc h6{font-size:1em;margin:1.2em 0 .3em}
+#arc-doc p{margin:0 0 .9em}
+#arc-doc ul,#arc-doc ol{padding-left:1.4em;margin:0 0 .9em}
+#arc-doc li{margin:.15em 0}
+#arc-doc li>p{margin:0}
+#arc-doc input[type=checkbox]{margin-right:.4em;vertical-align:-1px;accent-color:var(--accent)}
+#arc-doc li:has(> input[type=checkbox]){list-style:none;margin-left:-1.3em}
+#arc-doc li:has(> input[type=checkbox]:checked){color:var(--fg3);text-decoration:line-through}
+#arc-doc img.missing{min-height:48px;background:var(--bg2);border:1px dashed var(--line);box-shadow:none;padding:12px;color:var(--fg3);font-size:13px}
+#arc-doc blockquote{margin:0 0 1em;padding:.2em 1em;border-left:3px solid var(--accent);background:var(--bg2);border-radius:0 8px 8px 0;color:var(--fg2)}
+#arc-doc a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+#arc-doc a:hover{border-bottom-color:var(--accent)}
+#arc-doc a.wiki{background:var(--accent-bg);padding:.05em .35em;border-radius:5px;cursor:pointer}
+#arc-doc img{max-width:100%;height:auto;border-radius:10px;display:block;margin:.4em 0 1em;box-shadow:var(--shadow)}
+#arc-doc img.selected{outline:3px solid var(--accent)}
+#arc-doc .img-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:.4em 0 1em}
+#arc-doc .img-grid[data-n="2"]{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+#arc-doc .img-grid img{width:100%;height:100%;min-height:160px;max-height:320px;object-fit:cover;margin:0;border-radius:10px;cursor:pointer;box-shadow:none;border:1px solid var(--line)}
+#arc-doc .img-grid img:hover{filter:brightness(.96)}
+#arc-doc .img-grid.selected{outline:none}
+#arc-doc .img-grid img.selected{outline:3px solid var(--accent);outline-offset:-3px}
+#arc-doc hr{border:0;border-top:1px solid var(--line);margin:1.6em 0}
+#arc-doc code{font-family:var(--mono);font-size:.9em;background:var(--bg2);padding:.15em .4em;border-radius:5px}
+#arc-doc pre{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 1em;overflow:auto;position:relative}
+#arc-doc pre code{background:none;padding:0;font-size:.82em;line-height:1.6;white-space:pre;display:block;outline:none;min-height:1.2em}
+#arc-doc pre .lang{position:absolute;top:6px;right:10px;font-size:11px;color:var(--fg3);font-family:var(--mono);display:flex;gap:6px;align-items:center}
+#arc-doc pre .lang button{padding:1px 7px;font-size:11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);display:inline-flex;align-items:center}
+#arc-doc pre .lang button.copy{padding:2px 6px}
+#arc-doc pre .lang button.copy svg{width:14px;height:14px}
+#arc-doc pre .lang button.copy.done{color:#2a9d5c;border-color:#2a9d5c}
+#arc-doc pre .lang{opacity:.55;transition:opacity .15s}
+#arc-doc pre:hover .lang{opacity:1}
+#arc-doc table{border-collapse:collapse;margin:0 0 1em;font-size:.875em;display:block;overflow:auto;max-width:100%}
+#arc-doc th,#arc-doc td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+#arc-doc th{background:var(--bg2)}
+#arc-doc .bookmark{display:block;padding:10px 14px;border:1px solid var(--line);border-radius:10px;margin:0 0 .9em;background:var(--card);color:var(--fg);text-decoration:none}
+#arc-doc .bookmark:hover{box-shadow:var(--shadow);border-bottom-color:var(--line)}
+#arc-doc .bookmark .u{display:block;font-size:.72em;color:var(--fg3);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:2px}
+#arc-doc .bookmark{position:relative;cursor:default;display:flex;align-items:stretch;gap:0;padding:0;overflow:hidden}
+#arc-doc .bookmark .bm-body{flex:1;min-width:0;padding:12px 40px 12px 14px;display:flex;flex-direction:column;gap:3px}
+#arc-doc .bookmark .t{font-weight:600;line-height:1.4;font-size:.94em}
+#arc-doc .bookmark .d{font-size:.78em;color:var(--fg2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#arc-doc .bookmark .u{margin-top:2px;display:flex;align-items:center;gap:6px}
+#arc-doc .bookmark .fav{width:14px;height:14px;border-radius:3px;display:inline-block;box-shadow:none;margin:0}
+#arc-doc .bookmark .bm-img{flex:none;width:150px;background:var(--bg3) center/cover no-repeat;border-left:1px solid var(--line)}
+#arc-doc .bookmark.has-img .open,#arc-doc .bookmark.has-img .edit{background:rgba(255,255,255,.85);color:#333}
+#arc-doc .bookmark .open,#arc-doc .bookmark .edit{position:absolute;right:8px;top:8px;font-size:14px;color:var(--fg3);padding:2px 8px;border-radius:6px;cursor:pointer}
+#arc-doc .bookmark .edit{right:40px;opacity:0;transition:opacity .15s}
+#arc-doc .bookmark:hover .edit{opacity:1}
+#arc-doc .bookmark .open:hover,#arc-doc .bookmark .edit:hover{background:var(--accent-bg);color:var(--accent)}
+#arc-doc .selected{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+#arc-doc .dragging{opacity:.4}
+#arc-doc .drop-before{box-shadow:0 -3px 0 0 var(--accent)}
+#arc-doc .drop-after{box-shadow:0 3px 0 0 var(--accent)}
 </style>
 </head>
 <body>
@@ -1749,6 +1856,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const SKIP_DIRS = new Set(['attachments', 'assets', 'node_modules']);
+const hiddenDir = path => path.split('/').some(s => SKIP_DIRS.has(s) || s.startsWith('.') || s.startsWith('_'));
 const IMG_EXT = /\.(png|jpe?g|gif|webp|svg|heic|avif)$/i;
 
 // ---------- 状態 ----------
@@ -2020,9 +2128,10 @@ async function gdContent(m) {
   return (await gdRemember(m, blob)).blob;
 }
 // 開くときに、まだ手元に無い Markdown をまとめて先読み（並列）
+// '_' で始まるフォルダ（アーカイブなど）は、開くときには読まない
 async function gdPrefetch(rootId, onProgress, onlyCount) { // onlyCount: 読まずに「足りない数」だけ返す
   const todo = [];
-  const walk = id => { for (const k of GD.kids.get(id) || []) { const m = GD.files.get(k); if (!m) continue; if (m.mimeType === GD_FOLDER) { if (!m.name.startsWith('.')) walk(k); } else if (/\.(md|json)$/i.test(m.name)) todo.push(m); } };
+  const walk = id => { for (const k of GD.kids.get(id) || []) { const m = GD.files.get(k); if (!m) continue; if (m.mimeType === GD_FOLDER) { if (!m.name.startsWith('.') && !m.name.startsWith('_')) walk(k); } else if (/\.(md|json)$/i.test(m.name)) todo.push(m); } };
   walk(rootId);
   const need = [];
   const look = todo.filter(m => { const mem = GD.mem.get(m.id); return !(mem && mem.md5 === m.md5Checksum); });
@@ -2484,7 +2593,7 @@ async function getDirByPath(path, create = false) {
   if (S.dirs.has(path)) return S.dirs.get(path);
   const parent = path.includes('/') ? await getDirByPath(dirOf(path), create) : S.root;
   if (!parent) return null;
-  try { const h = await parent.getDirectoryHandle(baseOf(path), { create }); S.dirs.set(path, h); return h; } catch { return null; }
+  try { const h = await parent.getDirectoryHandle(baseOf(path), { create }); if (!hiddenDir(path)) S.dirs.set(path, h); return h; } catch { return null; } // 画像のフォルダなどは左の一覧に出さない
 }
 async function urlFor(abs) {
   if (S.urlCache.has(abs)) return S.urlCache.get(abs);
@@ -2690,6 +2799,7 @@ async function showHome() {
   const h = $('#home');
   if (HOME.mode === 'wareki') { drawWarekiList(true); return; }
   if (HOME.mode === 'money') { drawMoneyPage(); return; }
+  if (HOME.mode === 'archive') { drawArchivePage(); return; }
   if (!HOME.ym) { const t = new Date(); HOME.ym = [t.getFullYear(), t.getMonth()]; }
   const recent = recentNotes(12);
   const favs = favList().filter(f => f.type === 'dir' ? S.dirs.has(f.path) : S.byPath.has(f.path));
@@ -2715,6 +2825,7 @@ async function showHome() {
       ? `<button class="home-item" data-dir="${esc(f.path)}"><span class="hi-ic">${esc(folderIcon(f.path) || '📁')}</span><span class="hi-t">${esc(baseOf(f.path))}</span><span class="hi-m">${countIn(f.path)}</span></button>`
       : `<button class="home-item" data-note="${esc(f.path)}"><span class="hi-ic">📄</span><span class="hi-t">${esc(S.byPath.get(f.path).fmTitle || S.byPath.get(f.path).title)}</span><span class="hi-m">${esc(S.byPath.get(f.path).dir ? crumbOf(S.byPath.get(f.path).dir) : '')}</span></button>`).join('')}</div></section>` : ''}
     <section class="home-sec"><h2>フォルダ</h2><div class="home-list">${tops.map(d => `<button class="home-item" data-dir="${esc(d)}"><span class="hi-ic">${esc(folderIcon(d) || '📁')}</span><span class="hi-t">${esc(d)}</span><span class="hi-m">${countIn(d)}</span></button>`).join('') || '<p class="home-empty">フォルダはまだありません</p>'}
+      ${S.root.isDrive ? `<button class="home-item" data-arc="1"><span class="hi-ic">🗄️</span><span class="hi-t">アーカイブ</span><span class="hi-m">${ARC.loaded ? arcLive().length : ''}</span></button>` : ''}
       ${S.notes.some(n => !n.dir) ? `<button class="home-item" data-dir=""><span class="hi-ic">🗒️</span><span class="hi-t">すべてのノート</span><span class="hi-m">${S.notes.length}</span></button>` : ''}</div></section>`;
   // 最近
   const rw = h.querySelector('.home-recent');
@@ -2727,6 +2838,7 @@ async function showHome() {
     rw.appendChild(c);
   }
   h.querySelectorAll('.home-item').forEach(b => {
+    if (b.dataset.arc) { b.onclick = () => { HOME.mode = 'archive'; ARC.view = null; showHome(); }; return; }
     if (b.dataset.note !== undefined) { const n = S.byPath.get(b.dataset.note); b.onclick = () => openNote(n); b.oncontextmenu = e => { e.preventDefault(); noteMenu(e, n); }; onLongPress(b, e => noteMenu(e, n)); }
     else { const d = b.dataset.dir; b.onclick = () => showGallery(d); if (d) { b.oncontextmenu = e => { e.preventDefault(); folderMenu(e, d); }; onLongPress(b, e => folderMenu(e, d)); } }
   });
@@ -2803,7 +2915,7 @@ function drawUpcoming() {
   }).join('') : '<p class="home-empty">60 日以内の予定はありません</p>';
   box.querySelectorAll('.up-row').forEach(b => b.onclick = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); if (x) itemDialog(x.type, x, b.dataset.d); });
 }
-const refreshCal = () => { if (S.view !== 'home') return; if (HOME.mode === 'wareki') drawWarekiList(false); else if (HOME.mode === 'money') drawMoneyPage(); else { drawCal(); drawUpcoming(); } };
+const refreshCal = () => { if (S.view !== 'home' || HOME.mode === 'archive') return; if (HOME.mode === 'wareki') drawWarekiList(false); else if (HOME.mode === 'money') drawMoneyPage(); else { drawCal(); drawUpcoming(); } };
 
 // その日のもの → 選んで編集、または追加
 async function dayDialog(s) {
@@ -3282,7 +3394,7 @@ function drawMoneyPage() {
   h.querySelectorAll('.m-row').forEach(b => b.onclick = () => moneyEdit(MONEY.items.find(x => x.id === b.dataset.id)));
   h.querySelectorAll('[data-m]').forEach(b => b.onclick = () => moneyNew(b.dataset.m, t));
 }
-const refreshMoney = () => { if (S.view !== 'home') return; if (HOME.mode === 'money') drawMoneyPage(); else if (HOME.mode !== 'wareki') { drawMoneyHome(); drawCal(); } };
+const refreshMoney = () => { if (S.view !== 'home' || HOME.mode === 'archive') return; if (HOME.mode === 'money') drawMoneyPage(); else if (HOME.mode !== 'wareki') { drawMoneyHome(); drawCal(); } };
 
 // ---- 入力 ----
 function moneyNew(kind, date) {
@@ -3422,6 +3534,248 @@ function exportMoneyCsv() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast(`${rows.length} 行を書き出しました（${name}）`, 3500);
+}
+
+// ---------- アーカイブ（たまったノートをスプレッドシートと _アーカイブ フォルダに移して、保管庫を軽くする） ----------
+// 保管庫/_アーカイブ/
+//   アーカイブ一覧（スプレッドシート。1 ノート = 1 行。画像は非公開のままリンクだけ）
+//   _archive.json（アーカイブのページ用の索引）
+//   2026-10/タイトル/ノート.md と attachments/（元の Markdown と元画像をそのまま。戻すこともできる）
+// '_' で始まるので、起動のときの読み込みにもノートの一覧にも入らない。ドライブの保管庫だけで使える
+const ARC_DIR = '_アーカイブ', ARC_INDEX = '_archive.json', ARC_SHEET = 'アーカイブ一覧', ARC_TAB = 'アーカイブ';
+const GD_SHEET = 'application/vnd.google-apps.spreadsheet';
+const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets';
+const ARC_HEAD = ['アーカイブした日', 'タイトル', '元のフォルダ', 'タグ', '最終更新', '文字数', '本文', '画像の数', '画像（リンク）', '元のノート（リンク）', '状態', 'ID'];
+const ARC = { items: [], loaded: false, q: '', month: '', dir: '', tag: '', view: null, urls: new Map() };
+const gdFileUrl = id => `https://drive.google.com/file/d/${id}/view`;
+const gdFolderUrl = id => `https://drive.google.com/drive/folders/${id}`;
+const sheetUrl = id => `https://docs.google.com/spreadsheets/d/${id}/edit`;
+const arcLive = () => ARC.items.filter(x => !x.deleted);
+const attRefs = body => [...new Set([...body.matchAll(/\]\(attachments\/([^)\s]+)\)/g)].map(m => { try { return decodeURIComponent(m[1]); } catch { return m[1]; } }))];
+
+async function arcDirH(create = false) { try { return await S.root.getDirectoryHandle(ARC_DIR, { create }); } catch { return null; } }
+// 索引: 他の端末と同時に足しても消えないよう、保存の前にドライブの最新と混ぜる（予定やお金と同じ）
+async function arcRead(fresh) {
+  const ad = await arcDirH(); if (!ad) return [];
+  try {
+    const fh = await ad.getFileHandle(ARC_INDEX); let text;
+    if (fresh && fh.isDrive && fh.id) { const cur = await gdFetch(`${GD_API}/${fh.id}?fields=${GD_FIELDS}`); gdPut(cur); text = await (await gdContent(cur)).text(); }
+    else text = await fh.readText();
+    const d = JSON.parse(text); return Array.isArray(d.items) ? d.items : [];
+  } catch { return []; }
+}
+async function arcLoad() { ARC.items = await arcRead(); ARC.loaded = true; }
+let arcSaving = Promise.resolve();
+function arcSave() {
+  arcSaving = arcSaving.then(async () => {
+    const remote = await arcRead(true); ARC.items = calMerge(remote, ARC.items);
+    const ad = await arcDirH(true); const fh = await ad.getFileHandle(ARC_INDEX, { create: true }); fh.force = true;
+    const w = await fh.createWritable(); await w.write(JSON.stringify({ version: 1, items: ARC.items }, null, 1)); await w.close();
+  }).catch(e => { console.error(e); toast('アーカイブの一覧を保存できませんでした: ' + e.message, 4000); });
+  return arcSaving;
+}
+
+// ---- スプレッドシート ----
+async function arcSheet(ad) {
+  await gdEnsureListed();
+  for (const id of GD.kids.get(ad.id) || []) { const m = GD.files.get(id); if (m && m.mimeType === GD_SHEET && m.name === ARC_SHEET) return m.id; }
+  const f = await gdFetch(`${GD_API}?fields=${GD_FIELDS}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: ARC_SHEET, mimeType: GD_SHEET, parents: [ad.id] }) });
+  gdPut(f);
+  // 1 枚目のシートの名前・見出し行の固定・列の幅を整える
+  await gdFetch(`${SHEETS_API}/${f.id}:batchUpdate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: [
+    { updateSheetProperties: { properties: { sheetId: 0, title: ARC_TAB, gridProperties: { frozenRowCount: 1 } }, fields: 'title,gridProperties.frozenRowCount' } },
+    { repeatCell: { range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1 }, cell: { userEnteredFormat: { textFormat: { bold: true }, backgroundColor: { red: .93, green: .93, blue: .93 } } }, fields: 'userEnteredFormat(textFormat,backgroundColor)' } },
+    { updateDimensionProperties: { range: { sheetId: 0, dimension: 'COLUMNS', startIndex: 1, endIndex: 2 }, properties: { pixelSize: 240 }, fields: 'pixelSize' } },
+    { updateDimensionProperties: { range: { sheetId: 0, dimension: 'COLUMNS', startIndex: 6, endIndex: 7 }, properties: { pixelSize: 420 }, fields: 'pixelSize' } },
+    { updateDimensionProperties: { range: { sheetId: 0, dimension: 'COLUMNS', startIndex: 8, endIndex: 10 }, properties: { pixelSize: 260 }, fields: 'pixelSize' } },
+    { repeatCell: { range: { sheetId: 0, startColumnIndex: 6, endColumnIndex: 7 }, cell: { userEnteredFormat: { wrapStrategy: 'CLIP', verticalAlignment: 'TOP' } }, fields: 'userEnteredFormat(wrapStrategy,verticalAlignment)' } },
+  ] }) });
+  await gdFetch(`${SHEETS_API}/${f.id}/values/${encodeURIComponent(ARC_TAB + '!A1')}?valueInputOption=RAW`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ values: [ARC_HEAD] }) });
+  return f.id;
+}
+const arcRow = x => {
+  const body = x.body || ''; const MAX = 45000; // セル 1 つに入るのは 5 万字まで
+  return [x.archivedAt.slice(0, 10).replace(/-/g, '/'), x.title, x.dir || '（ルート）', (x.tags || []).join(' '), x.mtime ? fmtDate(x.mtime) : '', body.length,
+    body.length > MAX ? body.slice(0, MAX) + '\n…（続きは元のノート）' : body, (x.images || []).length,
+    (x.images || []).map(i => `${i.name} ${gdFileUrl(i.id)}`).join('\n'), x.mdId ? gdFileUrl(x.mdId) : '', 'アーカイブ中', x.id];
+};
+// まだシートに書けていないもの（通信が切れたときなど）をまとめて書く
+async function arcFlushSheet() {
+  const todo = arcLive().filter(x => !x.sheetRow); if (!todo.length) return 0;
+  const ad = await arcDirH(true); const sid = await arcSheet(ad); ARC.sheetId = sid;
+  const full = await Promise.all(todo.map(async x => ({ ...x, body: await arcBody(x).catch(() => x.excerpt || '') })));
+  const r = await gdFetch(`${SHEETS_API}/${sid}/values/${encodeURIComponent(ARC_TAB + '!A1')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ values: full.map(arcRow) }) });
+  const m = (r.updates && r.updates.updatedRange || '').match(/!A(\d+)/); let row = m ? +m[1] : 0;
+  const now = Date.now(); for (const x of todo) { x.sheetRow = row ? row++ : -1; x.updatedAt = now; }
+  return todo.length;
+}
+async function arcMarkSheet(x, state) {
+  if (!x.sheetRow || x.sheetRow < 1) return;
+  const ad = await arcDirH(); if (!ad) return; const sid = await arcSheet(ad);
+  await gdFetch(`${SHEETS_API}/${sid}/values/${encodeURIComponent(`${ARC_TAB}!K${x.sheetRow}`)}?valueInputOption=RAW`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ values: [[state]] }) });
+}
+
+// ---- アーカイブする ----
+async function archiveNotes(list) {
+  if (!S.root || !S.root.isDrive) { toast('アーカイブは、Google ドライブの保管庫で使えます', 3500); return; }
+  list = list.filter(Boolean); if (!list.length) return;
+  const imgs = list.reduce((a, n) => a + attRefs(n.body).length, 0);
+  if (!(await confirmDlg(`${list.length} 件をアーカイブ`, `選んだ ${list.length} 件のノート${imgs ? `と画像 ${imgs} 枚` : ''}を、スプレッドシート「${ARC_SHEET}」に書き写し、元のファイルは保管庫の「${ARC_DIR}」フォルダに移します。左の一覧からは消えますが、ホームの「アーカイブ」から見たり、保管庫に戻したりできます。`))) return;
+  await flushSave(); if (!ARC.loaded) await arcLoad();
+  toast('アーカイブしています…', 60000);
+  const moving = new Set(list); const now = new Date(); const month = ymd(now).slice(0, 7); let done = 0;
+  try {
+    const ad = await arcDirH(true); const md = await ad.getDirectoryHandle(month, { create: true });
+    for (const n of list) {
+      // フォルダ名はタイトル。同じ名前があれば (2) を付ける
+      const base = safeName(n.fmTitle || n.title); let fname = base, i = 2;
+      while (gdChild(md.id, fname, true)) fname = `${base} (${i++})`;
+      const nd = await md.getDirectoryHandle(fname, { create: true });
+      const src = S.dirs.get(n.dir) || await getDirByPath(n.dir);
+      const fh = await src.moveEntry(n.name, nd);
+      // 画像: ほかのノート（アーカイブしないもの）も使っている画像はコピー、このノートだけなら移す
+      const refs = attRefs(n.body); const images = [];
+      if (refs.length) { // attachments は直接たどる（左の一覧に出さない）
+        const am = gdChild(src.id, 'attachments', true); const sAtt = am ? new DriveDir(am.id, 'attachments') : null; const dAtt = await nd.getDirectoryHandle('attachments', { create: true });
+        const shared = new Set(S.notes.filter(o => !moving.has(o) && o.dir === n.dir).flatMap(o => attRefs(o.body)));
+        for (const r of refs) {
+          if (!sAtt || !gdChild(sAtt.id, r, false)) continue;
+          const f = shared.has(r) ? await sAtt.copyEntry(r, dAtt) : await sAtt.moveEntry(r, dAtt);
+          images.push({ name: r, id: f.id }); S.urlCache.delete(normalize(join(n.dir, 'attachments/' + r)));
+        }
+      }
+      const fi = firstImageOf(n); const first = fi ? images.find(im => fi.endsWith('/' + im.name) || fi === 'attachments/' + im.name) : null;
+      ARC.items.push({ id: calId(), title: n.fmTitle || n.title, dir: n.dir, name: n.name, tags: n.tags || [], mtime: n.mtime, archivedAt: now.toISOString(), month,
+        folder: `${month}/${fname}`, folderId: nd.id, mdId: fh.id, images, thumb: (first || images[0] || {}).id || '', excerpt: excerptOf(n.body), search: n.body.slice(0, 3000), chars: n.body.length, updatedAt: Date.now() });
+      S.notes = S.notes.filter(x => x !== n); S.byPath.delete(n.path); if (S.current === n) { S.current = null; S.dirty = false; }
+      done++; toast(`アーカイブしています… ${done} / ${list.length}`, 60000);
+    }
+  } catch (e) { console.error(e); toast(`途中で止まりました（${done} / ${list.length} 件まで済み）: ${e.message}`, 6000); }
+  S.multi = null; $('#vault-count').textContent = `${S.notes.length} ノート`; $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`; renderTree($('#search').value);
+  if (!done) return;
+  await arcSave();
+  let sheetMsg = '';
+  try { await arcFlushSheet(); await arcSave(); } catch (e) { console.error(e); sheetMsg = '（シートへの書き写しは、通信が戻ったらアーカイブのページの「シートに書き写す」で続けられます）'; }
+  toast(`${done} 件をアーカイブしました${sheetMsg}`, sheetMsg ? 6000 : 2500);
+  if (S.view === 'gallery') showGallery(S.selectedDir); else if (!S.current) { HOME.mode = HOME.mode === 'archive' ? 'archive' : HOME.mode; showHome(); }
+}
+
+// ---- 中身を読む（アーカイブのフォルダの中の Markdown） ----
+async function arcBody(x) {
+  const m = GD.files.get(x.mdId); if (!m) throw new Error('元のノートが見つかりません');
+  const t = await (await gdContent(m)).text(); const fm = t.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/); return fm ? t.slice(fm[0].length) : t;
+}
+async function arcImgUrl(id) {
+  if (!id) return null; if (ARC.urls.has(id)) return ARC.urls.get(id);
+  const m = GD.files.get(id); if (!m) return null;
+  const u = URL.createObjectURL(await gdContent(m)); ARC.urls.set(id, u); return u;
+}
+
+// ---- 保管庫に戻す ----
+async function arcRestore(x) {
+  if (!(await confirmDlg('保管庫に戻す', `「${x.title}」を元のフォルダ「${x.dir || '（ルート）'}」に戻します。`))) return false;
+  try {
+    const nd = new DriveDir(x.folderId, ''); const dst = await getDirByPath(x.dir, true); if (!dst) throw new Error('元のフォルダを作れませんでした');
+    const m = GD.files.get(x.mdId); if (!m) throw new Error('元のノートが見つかりません');
+    const base = m.name.replace(/\.md$/i, ''); let name = m.name, i = 2;
+    while (gdChild(dst.id, name, false)) name = `${base} (${i++}).md`;
+    await nd.moveEntry(m.name, dst, name);
+    const aAtt = gdChild(x.folderId, 'attachments', true);
+    if (aAtt && (x.images || []).length) {
+      const dAtt = await dst.getDirectoryHandle('attachments', { create: true }); const sAtt = new DriveDir(aAtt.id, 'attachments');
+      for (const im of x.images) if (gdChild(aAtt.id, im.name, false) && !gdChild(dAtt.id, im.name, false)) await sAtt.moveEntry(im.name, dAtt); // 同じ名前があるのはコピーしておいたもの
+    }
+    const fm = GD.files.get(x.folderId); const parent = fm && fm.parents && fm.parents[0];
+    if (parent) await new DriveDir(parent, '').removeEntry(fm.name, { recursive: true }); // 空になったフォルダはゴミ箱へ
+    Object.assign(x, { deleted: true, updatedAt: Date.now() }); await arcSave();
+    arcMarkSheet(x, `保管庫に戻した（${ymd(new Date()).replace(/-/g, '/')}）`).catch(e => console.warn(e));
+    await rescan(); HOME.mode = 'archive'; ARC.view = null; showHome(); toast('保管庫に戻しました');
+    return true;
+  } catch (e) { console.error(e); toast('戻せませんでした: ' + e.message, 5000); return false; }
+}
+
+// ---- まとめてアーカイブ（フォルダと日付で選ぶ） ----
+async function archiveBulkDialog(dir = '') {
+  if (!S.root || !S.root.isDrive) { toast('アーカイブは、Google ドライブの保管庫で使えます', 3500); return; }
+  const before = ymd(new Date(Date.now() - 90 * 864e5));
+  const dirs = [''].concat([...S.dirs.keys()].filter(d => d).sort((a, b) => a.localeCompare(b, 'ja')));
+  const p = dialog('まとめてアーカイブ', `
+    <div class="it-row"><div><label class="fl">フォルダ</label><select id="ab-dir" class="m-sel">${dirs.map(d => `<option value="${esc(d)}" ${d === dir ? 'selected' : ''}>${esc(d ? crumbOf(d) : 'すべてのフォルダ')}</option>`).join('')}</select></div>
+      <div><label class="fl">この日より前に更新したもの</label><input type="date" id="ab-before" value="${before}"></div></div>
+    <label style="font-size:12.5px;color:var(--fg2);display:flex;gap:6px;align-items:center;margin:-4px 0 8px"><input type="checkbox" id="ab-all" checked> 一覧のノートをすべて選ぶ</label>
+    <div id="ab-list" class="home-list" style="max-height:300px;overflow:auto"></div>
+    <p id="ab-info" style="font-size:12.5px;color:var(--fg2);margin:8px 0 0"></p>`, { okText: 'アーカイブする', focus: '#ab-dir', validate: () => $$('#ab-list input:checked').length ? true : (toast('アーカイブするノートを選んでください'), false) });
+  const pick = () => {
+    const d = $('#ab-dir').value, b = $('#ab-before').value;
+    const hits = S.notes.filter(n => (!d || n.dir === d || n.dir.startsWith(d + '/')) && (!b || ymd(new Date(n.mtime)) < b)).sort((a, c) => a.mtime - c.mtime);
+    $('#ab-list').innerHTML = hits.map(n => `<label class="home-item" style="cursor:pointer"><input type="checkbox" data-p="${esc(n.path)}" ${$('#ab-all').checked ? 'checked' : ''} style="width:auto;margin:0"><span class="hi-t">${esc(n.fmTitle || n.title)}</span><span class="hi-m">${esc(ymd(new Date(n.mtime)).replace(/-/g, '/'))}${n.dir ? '・' + esc(crumbOf(n.dir)) : ''}</span></label>`).join('') || '<p class="home-empty" style="padding:10px 14px">当てはまるノートはありません</p>';
+    const count = () => { $('#ab-info').textContent = `${$$('#ab-list input:checked').length} / ${hits.length} 件を選んでいます`; };
+    $$('#ab-list input').forEach(c => c.onchange = count); count();
+  };
+  $('#ab-dir').onchange = pick; $('#ab-before').oninput = pick; $('#ab-all').onchange = pick; pick();
+  const ok = await p; if (!ok) return;
+  const list = $$('#ab-list input:checked').map(c => S.byPath.get(c.dataset.p)).filter(Boolean);
+  await archiveNotes(list);
+}
+
+// ---- アーカイブのページ（ホームから） ----
+async function drawArchivePage() {
+  const h = $('#home');
+  if (!S.root.isDrive) { h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ ホーム</button><h1>アーカイブ</h1></div><p class="home-empty">アーカイブは、Google ドライブの保管庫で使えます。</p>`; h.querySelector('.wk-back').onclick = () => { HOME.mode = 'home'; showHome(); }; return; }
+  if (!ARC.loaded) { h.innerHTML = '<p class="home-empty">読み込み中…</p>'; await arcLoad(); }
+  if (ARC.view) return drawArchiveNote(ARC.items.find(x => x.id === ARC.view));
+  const all = arcLive().sort((a, b) => (b.archivedAt || '').localeCompare(a.archivedAt || '') || (b.mtime || 0) - (a.mtime || 0));
+  const months = [...new Set(all.map(x => x.month))].sort().reverse();
+  const dirs = [...new Set(all.map(x => x.dir || ''))].sort((a, b) => a.localeCompare(b, 'ja'));
+  const tags = [...new Set(all.flatMap(x => x.tags || []))].sort((a, b) => a.localeCompare(b, 'ja'));
+  if (ARC.month && !months.includes(ARC.month)) ARC.month = ''; // 選んでいた月・フォルダ・タグが無くなったら外す
+  if (ARC.dir && !dirs.includes(ARC.dir)) ARC.dir = '';
+  if (ARC.tag && !tags.includes(ARC.tag)) ARC.tag = '';
+  const q = ARC.q.trim().toLowerCase();
+  const hit = all.filter(x => (!ARC.month || x.month === ARC.month) && (!ARC.dir || (x.dir || '') === ARC.dir) && (!ARC.tag || (x.tags || []).includes(ARC.tag))
+    && (!q || [x.title, x.dir, x.excerpt, x.search, (x.tags || []).join(' ')].join('\n').toLowerCase().includes(q)));
+  const ad = await arcDirH(); const sid = ad ? [...(GD.kids.get(ad.id) || [])].map(id => GD.files.get(id)).find(m => m && m.mimeType === GD_SHEET && m.name === ARC_SHEET)?.id : '';
+  const unsheeted = all.filter(x => !x.sheetRow).length;
+  const imgs = all.reduce((a, x) => a + (x.images || []).length, 0);
+  const sel = (id, val, opts, label) => `<select id="${id}" class="arc-sel"><option value="">${label}</option>${opts.map(([v, t]) => `<option value="${esc(v)}" ${val === v ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const groups = []; for (const x of hit) { const g = groups[groups.length - 1]; if (g && g.m === x.month) g.list.push(x); else groups.push({ m: x.month, list: [x] }); }
+  h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ ホーム</button><h1>🗄️ アーカイブ</h1><span style="flex:1"></span>${sid ? `<a class="arc-link" href="${sheetUrl(sid)}" target="_blank" rel="noopener">シートを開く ↗</a>` : ''}${ad ? `<a class="arc-link" href="${gdFolderUrl(ad.id)}" target="_blank" rel="noopener">フォルダ ↗</a>` : ''}</div>
+    <div class="m-sum"><div><span>アーカイブしたノート</span><b>${all.length} 件</b></div><div><span>画像</span><b>${imgs} 枚</b></div><div><span>保管庫に残っているノート</span><b>${S.notes.length} 件</b></div></div>
+    ${unsheeted ? `<p class="arc-warn">シートにまだ書き写していないものが ${unsheeted} 件あります <button class="m-mini" id="arc-flush">シートに書き写す</button></p>` : ''}
+    <div class="arc-tools"><div class="home-search arc-q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="arc-q" type="search" placeholder="タイトル・本文・タグで探す" value="${esc(ARC.q)}"></div>
+      ${sel('arc-month', ARC.month, months.map(m => [m, ymLabel(m)]), 'すべての月')}${sel('arc-dir', ARC.dir, dirs.map(d => [d, d ? crumbOf(d) : '（ルート）']), 'すべてのフォルダ')}${tags.length ? sel('arc-tag', ARC.tag, tags.map(t => [t, '#' + t]), 'すべてのタグ') : ''}
+      <button class="m-mini" id="arc-bulk">＋ まとめてアーカイブ</button></div>
+    ${all.length ? (hit.length ? groups.map(g => `<h3 class="arc-h">${ymLabel(g.m)}にアーカイブ<small>${g.list.length} 件</small></h3><div class="cards arc-cards">${g.list.map(x => `<div class="card arc-card" data-id="${esc(x.id)}"><div class="thumb ${x.thumb ? '' : 'empty'}" ${x.thumb ? `data-img="${esc(x.thumb)}"` : ''}>${x.thumb ? '' : '🗄️'}</div><div class="body"><div class="t">${esc(x.title)}</div><div class="ex">${esc(x.excerpt || '')}</div><div class="hm">${esc(x.dir ? crumbOf(x.dir) : '（ルート）')}${x.mtime ? '・' + esc(fmtDate(x.mtime).slice(0, 10)) : ''}${(x.images || []).length ? `・🖼 ${x.images.length}` : ''}</div>${(x.tags || []).length ? `<div class="arc-tags">${x.tags.map(t => `<span>#${esc(t)}</span>`).join('')}</div>` : ''}</div></div>`).join('')}</div>`).join('') : '<p class="home-empty">当てはまるものはありません</p>')
+      : `<p class="home-empty">まだアーカイブはありません。左の一覧でノートを右クリック（複数なら ⌘ / Ctrl を押しながら選んで右クリック）して「アーカイブ」を選ぶか、上の「まとめてアーカイブ」から移せます。</p>`}`;
+  h.querySelector('.wk-back').onclick = () => { HOME.mode = 'home'; showHome(); };
+  h.querySelector('#arc-bulk').onclick = () => archiveBulkDialog();
+  const qi = h.querySelector('#arc-q'); let tq; qi.oninput = () => { clearTimeout(tq); tq = setTimeout(() => { ARC.q = qi.value; drawArchivePage().then(() => { const n = $('#arc-q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }); }, 250); };
+  for (const [id, k] of [['arc-month', 'month'], ['arc-dir', 'dir'], ['arc-tag', 'tag']]) { const s = h.querySelector('#' + id); if (s) s.onchange = () => { ARC[k] = s.value; drawArchivePage(); }; }
+  h.querySelector('#arc-flush')?.addEventListener('click', async () => { try { toast('シートに書き写しています…', 60000); const n = await arcFlushSheet(); await arcSave(); toast(`${n} 件をシートに書き写しました`); drawArchivePage(); } catch (e) { toast('書き写せませんでした: ' + e.message, 5000); } });
+  h.querySelectorAll('.arc-card').forEach(c => c.onclick = () => { ARC.view = c.dataset.id; drawArchivePage(); $('#content').scrollTop = 0; });
+  // サムネイルは画面に入ったものから読む
+  const io = new IntersectionObserver(es => es.forEach(async e => { if (!e.isIntersecting) return; io.unobserve(e.target); const u = await arcImgUrl(e.target.dataset.img).catch(() => null); if (u) e.target.style.backgroundImage = `url("${u}")`; else { e.target.classList.add('empty'); e.target.textContent = '🗄️'; } }), { rootMargin: '300px' });
+  h.querySelectorAll('.thumb[data-img]').forEach(t => io.observe(t));
+}
+async function drawArchiveNote(x) {
+  const h = $('#home'); if (!x) { ARC.view = null; return drawArchivePage(); }
+  h.innerHTML = `<div class="wk-top"><button class="wk-back">‹ アーカイブ</button><span style="flex:1"></span><button id="arc-restore">保管庫に戻す</button>${x.mdId ? `<a class="arc-link" href="${gdFileUrl(x.mdId)}" target="_blank" rel="noopener">ドライブで開く ↗</a>` : ''}</div>
+    <div class="arc-meta">${esc(x.dir ? crumbOf(x.dir) : '（ルート）')}${x.mtime ? ` · ${esc(fmtDate(x.mtime))} 更新` : ''} · ${esc(String(x.archivedAt || '').slice(0, 10).replace(/-/g, '/'))} にアーカイブ${(x.tags || []).length ? ' · ' + x.tags.map(t => '#' + esc(t)).join(' ') : ''}</div>
+    <h1 class="arc-title">${esc(x.title)}</h1><div id="arc-doc"><p class="home-empty">読み込み中…</p></div>`;
+  h.querySelector('.wk-back').onclick = () => { ARC.view = null; drawArchivePage(); };
+  h.querySelector('#arc-restore').onclick = () => arcRestore(x);
+  let body; try { body = await arcBody(x); } catch (e) { $('#arc-doc').innerHTML = `<p class="home-empty">${esc(e.message)}</p>`; return; }
+  if (ARC.view !== x.id) return;
+  const box = $('#arc-doc'); box.innerHTML = DOMPurify.sanitize(marked.parse(wikiToHtml(body)), { ADD_ATTR: ['data-src', 'data-note', 'target'] });
+  const h1 = box.firstElementChild; if (h1 && h1.tagName === 'H1' && h1.textContent.trim() === x.title.trim()) h1.remove(); // タイトルと同じ見出しは 2 回出さない
+  for (const a of $$('a', box)) { a.target = '_blank'; if (a.classList.contains('wiki')) a.removeAttribute('href'); }
+  for (const img of $$('img', box)) {
+    const src = img.getAttribute('src') || ''; if (/^(https?:|data:|blob:)/.test(src)) continue;
+    let name = ''; try { name = decodeURIComponent(src.replace(/^\.?\/?attachments\//, '')); } catch { name = src; }
+    const im = (x.images || []).find(i => i.name === name); img.removeAttribute('src');
+    const u = im ? await arcImgUrl(im.id).catch(() => null) : null; if (u) img.src = u; else { img.alt = '画像が見つかりません: ' + src; img.classList.add('missing'); }
+  }
+  groupImagesIn(box); decorateColors(box);
 }
 
 const ICON_SET = ['📁','📂','🗂️','📌','⭐','❤️','✅','📝','📒','📕','📗','📘','📙','📚','🔖','💡','🎯','🚀','🧪','🔬','💻','🖥️','📱','🤖','🧠','🎨','🖌️','✏️','📷','🎬','🎵','🎮','🧩','🛠️','⚙️','🔧','📊','📈','💰','🧾','🏢','🏠','✈️','🗺️','🍙','☕','🌱','🌸','🐱','🐶','🐹','🦊','🔥','✨','🌙','☀️','🔒','📥','📤','🗓️','⏰','❓','❗','🟥','🟧','🟨','🟩','🟦','🟪'];
@@ -3693,6 +4047,7 @@ const noteMenu = (e, n) => showMenu(e, [
   { label: 'フォルダへ移動…', run: () => moveNoteDialog(n) },
   { label: 'フォルダにする（中にまとめる）', run: () => noteToFolder(n) },
   { label: 'エクスポート…', run: async () => { await flushSave(); exportDialog([n]); } },
+  { label: '🗄️ アーカイブ（シートと _アーカイブ に移す）…', run: () => archiveNotes([n]) },
   { label: '削除', run: () => deleteNote(n) },
 ]);
 const multiMenu = e => { const list = [...S.multi]; showMenu(e, [
@@ -3700,6 +4055,7 @@ const multiMenu = e => { const list = [...S.multi]; showMenu(e, [
   { label: `${list.length} 件をフォルダへ移動…`, run: () => moveNotesDialog(list) },
   { label: `${list.length} 件を削除`, run: () => deleteNotes(list) },
   { label: `${list.length} 件をエクスポート…`, run: async () => { await flushSave(); exportDialog(list); } },
+  { label: `🗄️ ${list.length} 件をアーカイブ…`, run: () => archiveNotes(list) },
   { label: '選択を解除', run: () => { S.multi = null; renderTree($('#search').value); $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`; } },
 ]); };
 async function moveNotesDialog(list) {
@@ -3723,6 +4079,7 @@ const folderMenu = (e, d) => {
     { label: 'ここに新しいノート', run: () => newNote(d) },
     { label: 'ここに新しいフォルダ', run: () => newFolder(d) },
     { label: 'フォルダごとエクスポート…', run: async () => { await flushSave(); exportDialog(notesInDir(d)); } },
+    { label: '🗄️ このフォルダのノートをまとめてアーカイブ…', run: () => archiveBulkDialog(d) },
     { label: 'フォルダのノートを続けて発表', run: () => presentFolder(d, null) },
     { label: 'ここをルートにして表示（左の一覧を絞り込む）', run: () => setScope(d) },
     { label: 'アイコンを選ぶ…', run: () => pickFolderIcon(d) },
@@ -3735,6 +4092,7 @@ const folderMenu = (e, d) => {
     items.splice(1, 0, { hd: `選択中 ${selected.length} 件` },
       { label: `${selected.length} 件をここに移動`, run: async () => { for (const n of selected) await moveNote(n, d, true); S.multi = null; renderTree($('#search').value); toast(`${selected.length} 件を ${d || '（ルート）'} に移動しました`); } },
       { label: `${selected.length} 件を削除`, run: () => deleteNotes(selected) },
+      { label: `🗄️ ${selected.length} 件をアーカイブ…`, run: () => archiveNotes(selected) },
       { label: '選択を解除', run: () => { S.multi = null; renderTree($('#search').value); $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`; } });
   }
   showMenu(e, items);
