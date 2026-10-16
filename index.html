@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- 通信先を絞る（スクリプトからの送信は Google・GAS・microlink だけ）。プラグインと base 書き換えは禁止 -->
-<meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://sheets.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://script.google.com https://script.googleusercontent.com https://api.microlink.io; object-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://sheets.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://script.google.com https://script.googleusercontent.com https://api.microlink.io https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="apple-mobile-web-app-title" content="Fumibako">
 <script>window.NOTES_CONFIG = {"googleClientId": "414631147543-8jbu7joil26mtn4vdeep44vr9ebsdtt4.apps.googleusercontent.com"};</script>
@@ -491,6 +491,26 @@ dialog input[type=date],dialog input[type=time]{width:100%;padding:7px 10px;bord
 .m-ov{display:inline-block;border:1px solid var(--line);border-radius:100px;padding:2px 10px;margin:2px}
 .cal-chip.mo{background:color-mix(in srgb,#2f9e6b 13%,transparent);border-left-color:#2f9e6b}
 .cal-chip.mo.out{background:color-mix(in srgb,#8a5cf0 12%,transparent);border-left-color:#8a5cf0}
+/* 入出金をまとめて取り込む */
+dialog:has(#bk){max-width:760px;width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow:auto}
+.bk-drop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1.5px dashed var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px;font-size:12.5px;color:var(--fg2)}
+.bk-drop.over{border-color:var(--accent);background:var(--accent-bg)}
+.bk-pick{display:inline-block;border:1px solid var(--accent);color:var(--accent);background:var(--accent-bg);border-radius:100px;padding:7px 14px;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.bk-text{margin:0 0 10px;font-size:13px}.bk-text summary{cursor:pointer;color:var(--fg2);padding:4px 0}
+.bk-text textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;font-size:13px;margin:6px 0 8px;resize:vertical}
+.bk-status{font-size:12.5px;color:var(--accent);margin:0 0 8px}
+.bk-list{display:flex;flex-direction:column;gap:8px;margin:0 0 8px}
+.bk-row{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)}
+.bk-row.off{opacity:.5}
+.bk-on input{width:18px;height:18px;margin:8px 0 0}
+.bk-thumb{width:46px;height:82px;object-fit:cover;object-position:top;border-radius:6px;border:1px solid var(--line);flex:none}
+.bk-f{flex:1;min-width:0}
+.bk-g3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:6px}
+.bk-g3 input,.bk-g3 select{margin:0 0 6px!important;padding:6px 8px!important;font-size:13px}
+.bk-f small{display:block;font-size:11.5px;color:var(--fg3)}.bk-dup{color:#c77a00;font-weight:600}
+.bk-del{border:none;background:none;color:var(--fg3);font-size:18px;cursor:pointer;padding:2px 4px;line-height:1}.bk-del:hover{color:#d33}
+.bk-hint{font-size:11.5px;color:var(--fg3);margin:4px 0 12px}
+@media (max-width:560px){.bk-g3{grid-template-columns:1fr 1fr}.bk-g3 [data-k=dir],.bk-g3 [data-k=account]{grid-column:span 2}.bk-thumb{width:36px;height:64px}}
 @media (max-width:760px){.m-tiles{grid-template-columns:1fr}.m-d{width:60px}}
 @media (max-width:900px){.home-grid{grid-template-columns:1fr}}
 @media (max-width:760px){
@@ -2939,7 +2959,7 @@ async function dayDialog(s) {
   const p = dialog(`${s.replace(/-/g, '/')}（${WD[parseYmd(s).getDay()]}）`, `<p style="margin:-4px 0 10px;color:var(--fg3);font-size:12.5px">${wareki(s)}${hol ? '・' + esc(hol) : ''}</p>
     <div class="home-list" style="margin-bottom:12px">${items.map(x => `<button class="home-item" data-id="${esc(x.id)}"><span class="hi-ic">${isRecord(x) ? yIcon(x) : x.type === 'period' ? '●' : '📅'}</span><span class="hi-t">${esc(x.type === 'period' ? '月のもの' : x.title)}</span><span class="hi-m">${isRecord(x) ? yearlyNote(x, s, false) : x.time ? esc(x.time) : ''}</span></button>`).join('') || (money.length ? '' : '<p class="home-empty">この日の予定はありません</p>')}${money.map((m, i) => `<button class="home-item" data-mi="${i}"><span class="hi-ic">${m.icon}</span><span class="hi-t">${esc(m.label)}</span><span class="hi-m">${m.dir === 'in' ? '+' : ''}${yen(m.amount)}</span></button>`).join('')}</div>
     <div class="home-btns"><button type="button" data-a="event">＋ 予定</button><button type="button" data-a="birthday">＋ 誕生日</button><button type="button" data-a="anniv">＋ 記念日</button><button type="button" data-a="memorial">＋ 命日</button><button type="button" data-a="period">＋ 月のもの</button></div>
-    <div class="home-btns" style="margin-top:6px"><button type="button" data-m="fixed">＋ 固定費</button><button type="button" data-m="advance">＋ 立て替え</button><button type="button" data-m="in">＋ 入金</button><button type="button" data-m="out">＋ 出金</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
+    <div class="home-btns" style="margin-top:6px"><button type="button" data-m="fixed">＋ 固定費</button><button type="button" data-m="advance">＋ 立て替え</button><button type="button" data-m="in">＋ 入金</button><button type="button" data-m="out">＋ 出金</button><button type="button" data-m="bulk">📥 まとめて取り込む</button></div>`, { okText: '閉じる', focus: '#dlg-ok' });
   $$('#dlg .home-item[data-id]').forEach(b => b.onclick = () => { next = () => { const x = S.cal.items.find(i => i.id === b.dataset.id); itemDialog(x.type, x, s); }; $('#dlg-cancel').click(); });
   $$('#dlg .home-item[data-mi]').forEach(b => b.onclick = () => { next = () => moneyEdit(MONEY.items.find(x => x.id === money[+b.dataset.mi].x.id)); $('#dlg-cancel').click(); });
   $$('#dlg .home-btns button[data-a]').forEach(b => b.onclick = () => { next = () => itemDialog(b.dataset.a, null, s); $('#dlg-cancel').click(); });
@@ -3252,6 +3272,7 @@ function makeStore(file) {
     const w = await fh.createWritable(); await w.write(JSON.stringify({ version: 1, items: st.items }, null, 1)); await w.close();
   }).catch(e => { console.error(e); toast('保存できませんでした: ' + e.message, 4000); }));
   st.upsert = x => { x.updatedAt = Date.now(); const i = st.items.findIndex(y => y.id === x.id); if (i >= 0) st.items[i] = x; else st.items.push(x); return st.save(); };
+  st.upsertMany = xs => { const now = Date.now(); for (const x of xs) { x.updatedAt = now; const i = st.items.findIndex(y => y.id === x.id); if (i >= 0) st.items[i] = x; else st.items.push(x); } return st.save(); }; // まとめて足すときは 1 回だけ書く
   st.remove = x => st.upsert({ id: x.id, deleted: true });
   st.live = () => st.items.filter(x => !x.deleted);
   return st;
@@ -3344,7 +3365,7 @@ function drawMoneyHome() {
       <button class="m-tile" data-tab="flow"><span>今月の入金</span><b>${yen(sum.in + sum.advIn) || '¥0'}</b><small>${sum.out ? `出金 ${yen(sum.out)}` : ''}${sum.advIn ? `${sum.out ? '・' : ''}返金 ${yen(sum.advIn)}` : ''}</small></button>
     </div>
     ${upcoming.length ? `<div class="m-up">${upcoming.slice(0, 5).map(([d, x]) => `<button class="m-row" data-id="${esc(x.id)}"><span class="m-d">${fmtMD(d)}</span><span class="m-t">💳 ${esc(x.title)}${x.account ? `<small>${esc(x.account)}</small>` : ''}</span><span class="m-a">${yen(fixedAmount(x, ym))}</span></button>`).join('')}</div>` : ''}
-    <div class="home-btns"><button data-m="fixed">＋ 固定費</button><button data-m="advance">＋ 立て替え</button><button data-m="in">＋ 入金</button><button data-m="out">＋ 出金</button></div>`;
+    <div class="home-btns"><button data-m="fixed">＋ 固定費</button><button data-m="advance">＋ 立て替え</button><button data-m="in">＋ 入金</button><button data-m="out">＋ 出金</button><button data-m="bulk">📥 まとめて取り込む</button></div>`;
   bindScopeChips(box, drawMoneyHome);
   box.querySelector('.m-open').onclick = () => { HOME.mode = 'money'; showHome(); };
   box.querySelectorAll('.m-tile').forEach(b => b.onclick = () => { HOME.mode = 'money'; HOME.mtab = b.dataset.tab; showHome(); });
@@ -3391,7 +3412,7 @@ function drawMoneyPage() {
     rows.sort((a, b) => (b.d || '').localeCompare(a.d || ''));
     const months = [...new Set(rows.map(r => ymOf(r.d || '')))];
     body = months.map(m => { const s = monthSum(m); return `<h3>${ymLabel(m)}<small>入金 ${yen(s.in + s.advIn) || '¥0'}・出金 ${yen(s.out) || '¥0'}</small></h3><div class="home-list">${rows.filter(r => ymOf(r.d || '') === m).map(r => `<button class="m-row" data-id="${esc(r.x.id)}"><span class="m-d">${fmtMD(r.d)}</span><span class="m-t">${r.icon} ${esc(r.t)}${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</span><span class="m-a ${r.cls}">${r.a}</span></button>`).join('')}</div>`; }).join('') || '<p class="home-empty">まだ記録がありません</p>';
-    body += `<div class="home-btns"><button data-m="in">＋ 入金</button><button data-m="out">＋ 出金</button></div>`;
+    body += `<div class="home-btns"><button data-m="in">＋ 入金</button><button data-m="out">＋ 出金</button><button data-m="bulk">📥 まとめて取り込む</button></div>`;
   } else {
     const list = Array.from({ length: 12 }, (_, i) => addMonths(ym, -i));
     body = `<div class="m-table-wrap"><table class="m-table"><thead><tr><th>月</th><th>固定費</th><th>立て替え</th><th>返金</th><th>入金</th><th>出金</th></tr></thead><tbody>${list.map(m => { const s = monthSum(m); return `<tr><td>${ymLabel(m)}</td><td>${yen(s.fixed) || '−'}</td><td>${yen(s.advOut) || '−'}</td><td>${yen(s.advIn) || '−'}</td><td>${yen(s.in) || '−'}</td><td>${yen(s.out) || '−'}</td></tr>`; }).join('')}</tbody></table></div>
@@ -3414,6 +3435,7 @@ const refreshMoney = () => { if (S.view !== 'home' || HOME.mode === 'archive') r
 function moneyNew(kind, date) {
   const scope = mScope() || 'personal';
   if (kind === 'fixed') return fixedDialog({ id: calId(), type: 'fixed', scope, cycle: 'month', start: date, day: +date.slice(8), category: '', _new: true });
+  if (kind === 'bulk') return bulkDialog(date);
   if (kind === 'advance') return advanceDialog({ id: calId(), type: 'advance', scope, date, whoKind: 'company', payments: [], _new: true });
   return flowDialog({ id: calId(), type: 'flow', scope, date, dir: kind === 'out' ? 'out' : 'in', _new: true });
 }
@@ -3548,6 +3570,267 @@ function exportMoneyCsv() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast(`${rows.length} 行を書き出しました（${name}）`, 3500);
+}
+
+// ---------- 入出金をまとめて取り込む（スクショ・貼り付けた文字から） ----------
+// スクショの文字読み取りは、この端末のブラウザの中で行う（画像はどこにも送らない・保存しない）。
+// 読み取りの部品（tesseract.js と日本語の辞書）は、初めて使うときだけ jsDelivr から読み込む
+const OCR_LIB = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+const OCR_LIB_SRI = 'sha384-GJqSu7vueQ9qN0E9yLPb3Wtpd7OrgK8KmYzC8T1IysG1bcvxvIO4qtYR/D3A991F';
+const OCR_OPTS = {
+  workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+  corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',
+  langPath: 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/jpn@1.0.0/4.0.0_best_int',
+};
+
+// よく使うお店・サービス（名前の読み取り用）。[相手, 見つけ方, チャージのときの内容, 支払いのときの内容]
+const BK_SHOPS = [
+  ['スターバックス', /スターバックス|starbucks|スタバ|マイカード[\s\S]*入金額/i, 'スタバカード入金', 'スタバ'],
+  ['モバイルSuica', /suica|スイカ/i, 'Suicaチャージ', 'Suica'],
+  ['PASMO', /pasmo/i], ['ICOCA', /icoca/i], ['PayPay', /paypay/i], ['楽天ペイ', /楽天ペイ|rakuten ?pay/i],
+  ['d払い', /d払い/], ['au PAY', /au ?pay/i], ['nanaco', /nanaco/i], ['WAON', /waon/i],
+  ['Amazon', /amazon|アマゾン/i], ['セブン-イレブン', /セブン-?イレブン|7-?eleven/i], ['ファミリーマート', /ファミリーマート|ファミマ|familymart/i],
+  ['ローソン', /ローソン|lawson/i], ['ドトール', /ドトール|doutor/i], ['タリーズ', /タリーズ|tully/i], ['マクドナルド', /マクドナルド|mcdonald/i],
+  ['Uber Eats', /uber ?eats/i], ['メルカリ', /メルカリ|mercari/i],
+];
+const BK_POS = /入金額|チャージ額|チャージ金額|支払金額|支払い金額|お支払い?金額|ご?利用金額|決済金額|お?会計|合計|請求金額|支払額|引落|引き落とし|出金|購入金額|金額/;
+const BK_NEG = /残高|マイカード|ポイント|前回|残り|上限|限度|割引|残額|獲得|お釣り|おつり|お?預か?り|消費税|内税|税額|小計|有効期限/;
+const BK_CHARGE = /入金額|チャージ/;
+
+// 読み取った文字をそろえる（全角→半角、¥ の読み違い、日本語の間に入る空白）
+function bkNorm(s) {
+  s = String(s || '').normalize('NFKC').replace(/\\/g, '¥').replace(/\r/g, '');
+  const cjk = '[\\u3000-\\u30ff\\u3400-\\u9fff\\uff00-\\uffef]';
+  s = s.replace(new RegExp(`(${cjk})[ \\t]+(?=${cjk})`, 'g'), '$1').replace(new RegExp(`(${cjk})[ \\t]+(?=${cjk})`, 'g'), '$1');
+  return s.replace(/(\d)\s*,\s*(?=\d{3}(?!\d))/g, '$1,');
+}
+// 日付を探す（有効期限などは除く）。見つからなければ ''
+function bkDate(s, today = todayYmd()) {
+  const ok = (y, m, d) => {
+    if (!(m >= 1 && m <= 12 && d >= 1 && d <= 31)) return '';
+    const v = `${y}-${pad2(m)}-${pad2(d)}`; const diff = daysBetween(v, today);
+    return diff >= -1 && diff <= 400 ? v : '';
+  };
+  const ty = +today.slice(0, 4);
+  for (const line of s.split('\n')) {
+    if (/有効期限|期限|exp/i.test(line)) continue;
+    let m = line.match(/(20\d{2})\s*[\/\-.年]\s*(\d{1,2})\s*[\/\-.月]\s*(\d{1,2})(?!\d)/);
+    if (m) { const v = ok(+m[1], +m[2], +m[3]); if (v) return v; }
+    m = line.match(/(?<![\d\/])(\d{1,2})\s*(?:月\s*(\d{1,2})\s*日|\/(\d{1,2})(?![\d\/]))/);
+    if (m) { const mo = +m[1], d = +(m[2] || m[3]); const v = ok(ty, mo, d) || ok(ty - 1, mo, d); if (v) return v; }
+  }
+  return '';
+}
+// 金額を探す。「入金額」「合計」などの近くを優先し、「残高」「ポイント」などの近くは避ける
+function bkAmount(s) {
+  const lines = s.split('\n').map(l => l.trim()).filter(Boolean); const cands = [];
+  lines.forEach((line, i) => {
+    const re = /(?:[¥Y]\s*(\d{1,3}(?:,\d{3})+|\d{1,8})(?![\d,])|(?<![\d,])(\d{1,3}(?:,\d{3})+|\d{1,8})\s*円)/g; let m;
+    while ((m = re.exec(line))) {
+      const v = +(m[1] || m[2]).replace(/,/g, ''); if (!v || v > 1e7) continue;
+      const here = line.replace(m[0], ''), prev = lines[i - 1] || '';
+      const sc = (BK_POS.test(here) ? 10 : 0) + (BK_POS.test(prev) ? 6 : 0) - (BK_NEG.test(here) && !BK_POS.test(here) ? 10 : 0) - (BK_NEG.test(prev) && !BK_POS.test(here) ? 6 : 0);
+      cands.push({ v, sc });
+    }
+  });
+  cands.sort((a, b) => b.sc - a.sc || b.v - a.v);
+  return cands.length ? cands[0].v : 0;
+}
+// 前に入れた入出金（新しい順）。相手が同じなら、内容や口座をそろえる
+const bkHistory = () => MONEY.live().filter(x => x.type === 'flow').sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.updatedAt || 0) - (a.updatedAt || 0));
+const bkKey = s => String(s || '').normalize('NFKC').replace(/\s+/g, '').toLowerCase();
+// 文字から相手を見つける: 前に入れた相手 → よく使うお店 の順
+function bkShop(text, charge) {
+  const t = bkKey(text);
+  for (const x of bkHistory()) {
+    for (const k of [x.who, x.title]) if (k && bkKey(k).length >= 2 && t.includes(bkKey(k))) return bkFromHistory(x.who || x.title, charge);
+  }
+  for (const [who, re, ct, pt] of BK_SHOPS) if (re.test(text) || re.test(t)) return bkFromHistory(who, charge, charge ? (ct || who + 'チャージ') : (pt || who));
+  return null;
+}
+function bkFromHistory(who, charge, title = '') {
+  const isCharge = s => /入金|チャージ/.test(s || '');
+  const hs = bkHistory().filter(x => x.who === who || (!x.who && x.title === who));
+  const same = hs.find(x => isCharge(x.title) === !!charge) || null;
+  return { who, title: (same && same.title) || title || (hs[0] && !charge ? hs[0].title : '') || '', account: (same || hs[0] || {}).account || '' };
+}
+// スクショの文字 → 1 件分
+function bkParseShot(raw, { date = todayYmd(), fileDate = '' } = {}) {
+  const s = bkNorm(raw); const charge = BK_CHARGE.test(s);
+  const shop = bkShop(s, charge) || { who: '', title: charge ? 'チャージ' : '', account: '' };
+  const last4 = (s.match(/(?:[•●・*sS.]{3,})\s*(\d{4})(?!\d)/) || [])[1];
+  return { date: bkDate(s) || fileDate || date, amount: bkAmount(s) || '', title: shop.title, who: shop.who, account: shop.account || (last4 ? `カード下4桁 ${last4}` : ''), dir: 'out' };
+}
+// 貼り付けた文字 → 複数件（1 行 1 件。表（CSV・タブ区切り）なら見出しで列を合わせる）
+const BK_HEAD = {
+  date: /^(日付|年月日|利用日|ご?利用日|取引日|お取引日|日時|date)$/i, out: /^(出金|お?支払い?金額|ご?利用金額|引出|お引出し?|支出|出金額)$/i,
+  in: /^(入金|預入|お預入れ?|収入|入金額)$/i, amount: /^(金額|amount)$/i, title: /^(内容|摘要|名前|ご?利用店名|店名|取引内容|お取引内容|なにのお金|名前・内容|利用先|明細)$/i,
+  who: /^(相手|支払先|振込先)$/i, account: /^(口座|口座・カード|カード)$/i, memo: /^(メモ|備考)$/i,
+};
+function bkCells(line) {
+  const sep = line.includes('\t') ? '\t' : ','; const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') q = false; else cur += c; }
+    else if (c === '"') q = true; else if (c === sep) { out.push(cur.trim()); cur = ''; } else cur += c;
+  }
+  out.push(cur.trim()); return out;
+}
+const bkNum = s => { const t = bkNorm(s).replace(/[¥円,\s]/g, ''); return /^[-−]?\d+(\.\d+)?$/.test(t) ? +t.replace('−', '-') : NaN; };
+function bkParseText(text, { date = todayYmd(), dir = 'out' } = {}) {
+  const lines = String(text || '').replace(/^﻿/, '').split(/\r?\n/).map(l => l.trim()).filter(Boolean); if (!lines.length) return [];
+  const head = bkCells(lines[0]).map(c => c.replace(/^﻿/, ''));
+  const col = {}; head.forEach((h, i) => { for (const [k, re] of Object.entries(BK_HEAD)) if (col[k] === undefined && re.test(h)) col[k] = i; });
+  const rows = [];
+  const finish = r => { if (!r.amount) return; const shop = !r.who && bkShop(r.title, BK_CHARGE.test(r.title)); if (shop) { r.who = shop.who; r.account = r.account || shop.account; if (!r.title) r.title = shop.title; } rows.push(r); };
+  if (col.date !== undefined && (col.amount !== undefined || col.out !== undefined || col.in !== undefined)) { // 見出しのある表
+    for (const line of lines.slice(1)) {
+      const c = bkCells(line); const g = k => col[k] !== undefined ? (c[col[k]] || '') : '';
+      let amount = 0, d = dir;
+      if (bkNum(g('out')) > 0) { amount = bkNum(g('out')); d = 'out'; }
+      else if (bkNum(g('in')) > 0) { amount = bkNum(g('in')); d = 'in'; }
+      else if (!isNaN(bkNum(g('amount')))) { const v = bkNum(g('amount')); amount = Math.abs(v); if (v < 0) d = 'out'; }
+      finish({ date: bkDate(bkNorm(g('date'))) || date, amount, dir: d, title: g('title'), who: g('who'), account: g('account'), note: g('memo') });
+    }
+    return rows;
+  }
+  for (let line of lines) { // 1 行 1 件（「10/16 スタバ 5000」「スタバ 5,000円」「2026-10-16,スタバ,5000」など）
+    let d = dir; line = bkNorm(line);
+    if (/^[+]/.test(line)) { d = 'in'; line = line.slice(1); } else if (/^[-−]/.test(line)) { d = 'out'; line = line.slice(1); }
+    const cells = bkCells(line);
+    if (cells.length >= 3) { // 区切りのある行: 日付・金額の欄を見つけて、残りを 内容・相手・口座 の順に
+      let dt = '', amount = 0; const rest = [];
+      for (const c of cells) { if (!dt && bkDate(c)) dt = bkDate(c); else if (!amount && bkNum(c) > 0) amount = bkNum(c); else if (c) rest.push(c); }
+      finish({ date: dt || date, amount, dir: d, title: rest[0] || '', who: rest[1] || '', account: rest[2] || '' });
+      continue;
+    }
+    let dt = '';
+    const dm = line.match(/(20\d{2})\s*[\/\-.年]\s*(\d{1,2})\s*[\/\-.月]\s*(\d{1,2})日?|(?<![\d\/])(\d{1,2})(?:月(\d{1,2})日|\/(\d{1,2}))(?![\d\/])/);
+    if (dm && (dt = bkDate(dm[0]))) line = line.replace(dm[0], ' ');
+    const nums = [...line.matchAll(/[¥]?\s*(\d{1,3}(?:,\d{3})+|\d+)\s*円?/g)].filter(m => +m[1].replace(/,/g, '') > 0);
+    const m = nums[nums.length - 1]; if (!m) continue;
+    const title = line.replace(m[0], ' ').replace(/[,、\t:：・]+/g, ' ').replace(/\s+/g, ' ').trim();
+    finish({ date: dt || date, amount: +m[1].replace(/,/g, ''), dir: d, title, who: '', account: '' });
+  }
+  return rows;
+}
+
+// 読み取りの部品を読み込む（初回だけ）
+let ocrLoading = null;
+function ocrLoad() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  return ocrLoading = ocrLoading || new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = OCR_LIB; sc.integrity = OCR_LIB_SRI; sc.crossOrigin = 'anonymous';
+    sc.onload = () => window.Tesseract ? res(window.Tesseract) : rej(new Error('読み込めませんでした'));
+    sc.onerror = () => { ocrLoading = null; sc.remove(); rej(new Error('読み取りの部品を読み込めませんでした（ネットにつながっているか確かめてください）')); };
+    document.head.appendChild(sc);
+  });
+}
+
+// ---- 画面 ----
+async function bulkDialog(date = todayYmd()) {
+  const rows = []; let worker = null, busy = 0, closed = false;
+  const accs = usedValues('account'), whos = usedValues('who');
+  const p = dialog('入出金をまとめて取り込む', `
+    <div id="bk">
+      ${scopeField({ scope: mScope() || 'personal' })}
+      <div class="bk-drop" id="bk-drop">
+        <label class="bk-pick"><input type="file" id="bk-files" accept="image/*" multiple hidden>📷 スクショを選ぶ</label>
+        <span>複数まとめて選べます。ここに画像をドロップ・貼り付けしても読み取ります</span>
+      </div>
+      <details class="bk-text" id="bk-text-box"><summary>✍ 金額やメモを貼って入れる</summary>
+        <textarea id="bk-text" rows="4" placeholder="1 行に 1 件。例:&#10;10/16 スタバカード入金 5000&#10;ランチ 1,200円&#10;+10/15 返金 3000（先頭に + で入金）&#10;銀行やカードの明細（CSV）をそのまま貼ってもOK"></textarea>
+        <div class="home-btns" style="margin:0 0 4px"><button type="button" id="bk-add-text">表に入れる</button><button type="button" id="bk-add-blank">＋ 空の行</button></div>
+      </details>
+      <p class="bk-status" id="bk-status"></p>
+      <div class="bk-list" id="bk-list"></div>
+      ${dl('bk-accs', accs)}${dl('bk-whos', whos)}
+      <p class="bk-hint">読み取った内容は保存の前に直せます。スクショは保存しません（文字の読み取りもこの端末の中だけで行います）。</p>
+    </div>`, {
+    okText: '保存', focus: '#dlg-ok',
+    validate: () => {
+      if (busy) { toast('読み取りが終わるまでお待ちください'); return false; }
+      const on = rows.filter(r => r.on); if (!on.length) { toast('取り込むものがありません'); return false; }
+      const bad = on.find(r => !(+r.amount > 0)); if (bad) { toast('金額が入っていない行があります'); return false; }
+      return true;
+    },
+  });
+  const list = $('#bk-list'), status = $('#bk-status');
+  const t = todayYmd();
+  const dupOf = r => MONEY.live().some(x => x.type === 'flow' && x.date === r.date && +x.amount === +r.amount && (x.dir || 'in') === r.dir)
+    || rows.some(o => o !== r && o.on && o.date === r.date && +o.amount === +r.amount && o.dir === r.dir && rows.indexOf(o) < rows.indexOf(r));
+  const okBtn = () => { const n = rows.filter(r => r.on).length; $('#dlg-ok').textContent = n ? `${n} 件を保存` : '保存'; };
+  const draw = () => {
+    list.innerHTML = rows.map((r, i) => {
+      const dup = dupOf(r);
+      return `<div class="bk-row${r.on ? '' : ' off'}" data-i="${i}">
+        <label class="bk-on"><input type="checkbox" data-k="on" ${r.on ? 'checked' : ''}></label>
+        ${r.thumb ? `<img class="bk-thumb" src="${r.thumb}" alt="">` : ''}
+        <div class="bk-f">
+          <div class="bk-g3"><input type="date" data-k="date" value="${esc(r.date)}"><input type="number" data-k="amount" min="0" value="${esc(r.amount)}" placeholder="金額" class="m-num"><select data-k="dir" class="m-sel"><option value="out" ${r.dir === 'out' ? 'selected' : ''}>💸 出金</option><option value="in" ${r.dir === 'in' ? 'selected' : ''}>💰 入金</option></select></div>
+          <div class="bk-g3"><input type="text" data-k="title" value="${esc(r.title)}" placeholder="なにのお金"><input type="text" data-k="who" list="bk-whos" value="${esc(r.who)}" placeholder="相手"><input type="text" data-k="account" list="bk-accs" value="${esc(r.account)}" placeholder="口座・カード"></div>
+          ${r.src || dup ? `<small>${r.src ? esc(r.src) : ''}${dup ? `<b class="bk-dup">${r.src ? '・' : ''}同じ日・同じ金額の記録がもうあります</b>` : ''}</small>` : ''}
+        </div>
+        <button type="button" class="bk-del" title="この行を消す">×</button>
+      </div>`;
+    }).join('');
+    okBtn();
+  };
+  list.addEventListener('input', e => { const row = e.target.closest('.bk-row'); const k = e.target.dataset.k; if (!row || !k) return; const r = rows[+row.dataset.i]; r[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value; if (k === 'on') row.classList.toggle('off', !r.on); okBtn(); });
+  list.addEventListener('change', e => { if (['date', 'amount', 'dir'].includes(e.target.dataset.k)) draw(); });
+  list.addEventListener('click', e => { const b = e.target.closest('.bk-del'); if (!b) return; const r = rows.splice(+b.closest('.bk-row').dataset.i, 1)[0]; if (r && r.thumb) URL.revokeObjectURL(r.thumb); draw(); });
+  const add = (r, src = '', thumb = '') => { const x = { on: true, date: t, amount: '', title: '', who: '', account: '', dir: 'out', note: '', ...r, src, thumb }; rows.push(x); if (dupOf(x)) x.on = false; };
+  const say = s => { status.textContent = s; status.style.display = s ? '' : 'none'; };
+  say('');
+  // スクショ → 読み取り
+  async function readImages(files) {
+    files = [...files].filter(f => /^image\//.test(f.type)); if (!files.length) return;
+    busy++; try {
+      say(worker ? '' : '読み取りの準備をしています（初回だけ少し時間がかかります）…');
+      if (!worker) {
+        const T = await ocrLoad();
+        worker = await T.createWorker('jpn', 1, OCR_OPTS);
+        if (closed) { worker.terminate(); worker = null; return; }
+      }
+      let i = 0;
+      for (const f of files) {
+        say(`読み取り中… ${++i}/${files.length}`);
+        const thumb = URL.createObjectURL(f);
+        try {
+          const { data } = await worker.recognize(f);
+          const fd = f.lastModified ? ymd(new Date(f.lastModified)) : '';
+          const r = bkParseShot(data.text, { date, fileDate: fd && fd !== t && daysBetween(fd, t) <= 60 && daysBetween(fd, t) >= 0 ? fd : '' });
+          add(r, `📷 ${f.name || 'スクショ'}${r.amount ? '' : '・金額を読み取れませんでした'}`, thumb);
+        } catch (e) { console.error(e); add({}, `📷 ${f.name || 'スクショ'}・読み取れませんでした`, thumb); }
+        draw();
+      }
+      say(`${files.length} 枚を読み取りました。内容を確かめてから保存してください`);
+    } catch (e) { console.error(e); say(''); toast(e.message || '読み取りできませんでした', 4500); $('#bk-text-box').open = true; }
+    finally { busy--; }
+  }
+  $('#bk-files').onchange = e => { readImages(e.target.files); e.target.value = ''; };
+  const drop = $('#bk');
+  drop.addEventListener('dragover', e => { e.preventDefault(); $('#bk-drop').classList.add('over'); });
+  drop.addEventListener('dragleave', () => $('#bk-drop').classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); $('#bk-drop').classList.remove('over'); readImages(e.dataTransfer.files); });
+  const onPaste = e => { const fs = [...(e.clipboardData?.files || [])]; if (fs.some(f => /^image\//.test(f.type))) { e.preventDefault(); readImages(fs); } };
+  $('#dlg').addEventListener('paste', onPaste);
+  // 貼り付けた文字 → 表へ
+  $('#bk-add-text').onclick = () => {
+    const ta = $('#bk-text'); const got = bkParseText(ta.value, { date });
+    if (!got.length) { toast('金額の入った行が見つかりませんでした'); return; }
+    got.forEach(r => add(r, '✍ 貼り付け')); ta.value = ''; draw(); toast(`${got.length} 件を表に入れました`);
+  };
+  $('#bk-add-blank').onclick = () => { add({ date }); draw(); list.lastElementChild?.querySelector('[data-k=amount]')?.focus(); };
+
+  const ok = await p; closed = true;
+  $('#dlg').removeEventListener('paste', onPaste);
+  if (worker) { worker.terminate(); worker = null; }
+  const scope = ok ? ($('input[name=m-scope]:checked') || {}).value || 'personal' : '';
+  for (const r of rows) if (r.thumb) URL.revokeObjectURL(r.thumb);
+  if (!ok) return;
+  const items = rows.filter(r => r.on && +r.amount > 0).map(r => ({ id: calId(), type: 'flow', scope, dir: r.dir === 'in' ? 'in' : 'out', date: r.date || t, amount: +r.amount, title: String(r.title || '').trim(), who: String(r.who || '').trim(), account: String(r.account || '').trim(), note: String(r.note || '').trim() }));
+  await MONEY.upsertMany(items); refreshMoney(); toast(`${items.length} 件を保存しました`);
 }
 
 // ---------- アーカイブ（たまったノートをスプレッドシートと _アーカイブ フォルダに移して、保管庫を軽くする） ----------
@@ -5786,7 +6069,7 @@ window.__imp = { entriesFromZip, importEntries, importTextBundles, entriesFromFi
 
 
 // テスト用に公開
-window.__notes = { S, serialize, openFolder, decorate, decorateColors, marked, td, GD, DriveDir, gdSync, saveCurrent, rescan };
+window.__notes = { S, serialize, openFolder, decorate, decorateColors, marked, td, GD, DriveDir, gdSync, saveCurrent, rescan, MONEY, bk: { bkParseShot, bkParseText, bkNorm } };
 window.__exp = { noteToDocx, renderNoteForExport, fullHTML, articleHTML, exportDialog, importInbox, gasCall };
 })();
 
