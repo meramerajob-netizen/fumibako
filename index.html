@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://sheets.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="apple-mobile-web-app-title" content="Fumibako">
-<script>window.NOTES_CONFIG = {"googleClientId": "414631147543-8jbu7joil26mtn4vdeep44vr9ebsdtt4.apps.googleusercontent.com"};</script>
+<script>window.NOTES_CONFIG = {"googleClientId": "414631147543-8jbu7joil26mtn4vdeep44vr9ebsdtt4.apps.googleusercontent.com"};</script><meta name="fumibako-build" content="20261025144238">
 <title>Fumibako｜文箱</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%233b6cf0%22/%3E%3Crect x=%2216%22 y=%2213%22 width=%2232%22 height=%2238%22 rx=%225%22 fill=%22%23fff%22/%3E%3Cpath d=%22M40 13v9h8%22 fill=%22%23dfe7fd%22/%3E%3Cpath d=%22M22 28h20M22 35h20M22 42h12%22 stroke=%22%233b6cf0%22 stroke-width=%223.2%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
 <style>
@@ -347,6 +347,8 @@ dialog .btns{display:flex;justify-content:flex-end;gap:6px}
 kbd{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:1px 5px;border-radius:4px}
 #gd-reauth{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:70;display:flex;gap:12px;align-items:center;background:var(--card);color:var(--fg);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:12px;padding:10px 12px 10px 16px;font-size:13px;max-width:calc(100vw - 32px)}
 #gd-reauth button{flex:none}
+#app-update{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:95;display:flex;gap:12px;align-items:center;background:var(--card);color:var(--fg);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:12px;padding:10px 12px 10px 16px;font-size:13px;max-width:calc(100vw - 24px)}
+#app-update button{flex:none}
 .gd-vault{display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:14px;cursor:pointer}
 .gd-vault:hover{border-color:var(--accent);background:var(--accent-bg)}
 /* ---------- ホーム ---------- */
@@ -5479,6 +5481,31 @@ document.addEventListener('keydown', e => {
 window.addEventListener('beforeunload', e => { if (S.dirty) { saveCurrent(); e.preventDefault(); e.returnValue = ''; } });
 document.execCommand('defaultParagraphSeparator', false, 'p');
 
+// ---------- 新しい版の確認 ----------
+// スマホ（とくにホーム画面に追加したもの）は前の版を覚えていて、開き直しても古いまま出ることがある。
+// 公開中のページをキャッシュなしで読み、版の印が違えば「更新する」を出す。押すと URL に版を付けて開き直す（保存したデータは消さない）
+const APP_BUILD = document.querySelector('meta[name="fumibako-build"]')?.content || '';
+let updLastCheck = 0;
+async function checkAppUpdate(force = false) {
+  if (!APP_BUILD || !/^https?:$/.test(location.protocol) || $('#app-update')) return;
+  if (!force && Date.now() - updLastCheck < 10 * 60e3) return; updLastCheck = Date.now();
+  try {
+    const r = await fetch(location.pathname + '?check=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return;
+    const m = (await r.text()).match(/<meta name="fumibako-build" content="(\d+)">/); const latest = m && m[1];
+    if (!latest || latest <= APP_BUILD) return;
+    const b = document.createElement('div'); b.id = 'app-update';
+    b.innerHTML = '<span>Fumibako の新しい版があります</span><button class="primary">更新する</button><button class="upd-later" title="あとで">×</button>';
+    b.querySelector('.primary').onclick = async () => {
+      b.querySelector('.primary').disabled = true; try { await flushSave(); } catch {}
+      const u = new URL(location.href); u.searchParams.delete('check'); u.searchParams.set('v', latest); location.replace(u.toString());
+    };
+    b.querySelector('.upd-later').onclick = () => b.remove();
+    document.body.appendChild(b);
+  } catch {}
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkAppUpdate(); });
+setTimeout(() => checkAppUpdate(true), 3000);
+
 // ---------- 起動 ----------
 (async () => {
   if (matchMedia('(max-width:760px)').matches) $('#btn-side-hide').click(); // スマホは最初は本文側を見せる（☰ で一覧）
@@ -6114,7 +6141,7 @@ async function quickSend() {
 // テスト用に公開
 window.__notes = { S, serialize, openFolder, decorate, decorateColors, marked, td, GD, DriveDir, gdSync, saveCurrent, rescan, MONEY, bk: { bkParseShot, bkParseText, bkNorm } };
 window.__exp = { noteToDocx, renderNoteForExport, fullHTML, articleHTML, exportDialog };
-window.__quickTest = { gdReloadAll, quickOpen, gdSync };
+window.__quickTest = { gdReloadAll, quickOpen, gdSync, checkAppUpdate };
 })();
 
 </script>
