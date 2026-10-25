@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- 通信先を絞る（スクリプトからの送信は Google・GAS・microlink だけ）。プラグインと base 書き換えは禁止 -->
-<meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://sheets.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://script.google.com https://script.googleusercontent.com https://api.microlink.io https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
+<!-- 通信先を絞る（スクリプトからの送信は Google ドライブとログインだけ）。プラグインと base 書き換えは禁止 -->
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data: https://www.googleapis.com https://sheets.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="apple-mobile-web-app-title" content="Fumibako">
 <script>window.NOTES_CONFIG = {"googleClientId": "414631147543-8jbu7joil26mtn4vdeep44vr9ebsdtt4.apps.googleusercontent.com"};</script>
@@ -2561,7 +2561,7 @@ async function openFolderInner(handle, opts = {}) {
   $('#vault-count').textContent = `${S.notes.length} ノート`;
   $('#side-hint').textContent = `${S.dirs.size} フォルダ / ${S.notes.length} ノート`;
   if (S.scope && !S.dirs.has(S.scope)) S.scope = '';
-  renderTree(); updateInboxBadge();
+  renderTree();
   showHome(); // 開いたらまずホーム
   quickOnVault();
   if (handle.isDrive) {
@@ -2690,6 +2690,8 @@ async function loadVaultData() {
   S.vaultData = { settings: {}, ogp: {} };
   try { const fh = await S.root.getFileHandle('_notes.json'); const d = JSON.parse(await (await fh.getFile()).text()); S.vaultData = Object.assign({ settings: {}, ogp: {} }, d); } catch {}
   S._vaultText = JSON.stringify(S.vaultData, null, 1);
+  if (S.vaultData.settings.gasUrl || S.vaultData.settings.gasToken) { delete S.vaultData.settings.gasUrl; delete S.vaultData.settings.gasToken; saveVaultData(); } // 旧しくみ（GAS）は使わなくなったので消す
+  try { localStorage.removeItem('notes:gasUrl'); localStorage.removeItem('notes:gasToken'); } catch {}
 }
 let vaultSaveTimer = null;
 function saveVaultData() {
@@ -4181,44 +4183,9 @@ async function pickFolderIcon(d) {
 }
 
 // ---------- OGP（リンクカードの見出し・説明・画像） ----------
-const ogpQueue = []; let ogpRunning = 0;
-// 秘密になりやすいリンク（共有リンク・社内のアドレス・鍵の入った URL）は、外のサービス（microlink）に送らない。カードにはドメイン名だけ出す
-const PRIVATE_HOSTS = /(^|\.)(docs\.google\.com|drive\.google\.com|mail\.google\.com|calendar\.google\.com|meet\.google\.com|photos\.google\.com|photos\.app\.goo\.gl|script\.google\.com|sites\.google\.com|forms\.gle|sharepoint\.com|onedrive\.live\.com|1drv\.ms|dropbox\.com|box\.com|notion\.so|notion\.site|figma\.com|miro\.com|canva\.com|slack\.com|zoom\.us|teams\.microsoft\.com|trello\.com|airtable\.com|claude\.ai|chatgpt\.com|chat\.openai\.com|github\.io)$/i;
-const SECRET_PARAMS = /^(token|access_token|id_token|key|api_?key|sig|signature|x-amz-signature|x-goog-signature|auth|code|pass(word)?|pwd|secret|invite|share|usp)$/i;
-function privateLink(url) {
-  let u; try { u = new URL(url); } catch { return true; }
-  if (!/^https?:$/.test(u.protocol)) return true;
-  const h = u.hostname.toLowerCase();
-  if (!h.includes('.') || /\.(local|lan|internal|intranet|corp|home|test)$/.test(h)) return true; // 社内・手元のアドレス
-  if (/^[\d.]+$/.test(h) || h.includes(':')) return true; // IP アドレスで書かれたもの
-  if (PRIVATE_HOSTS.test(h)) return true;
-  if (u.username || u.password) return true;
-  for (const k of u.searchParams.keys()) if (SECRET_PARAMS.test(k)) return true;
-  return false;
-}
-function fetchOgp(url) {
-  const c = S.vaultData.ogp[url]; if (c && (c.title || c.failed > Date.now() - 86400e3)) return Promise.resolve(c);
-  if (!(setting('gasUrl') && setting('gasToken')) && privateLink(url)) return Promise.resolve(null); // 自分の GAS が無いときは送らない
-  return new Promise(resolve => { ogpQueue.push({ url, resolve }); pumpOgp(); });
-}
-async function pumpOgp() {
-  if (ogpRunning >= 2 || !ogpQueue.length) return;
-  const { url, resolve } = ogpQueue.shift(); ogpRunning++;
-  let meta = null;
-  try {
-    const gas = setting('gasUrl'), k = setting('gasToken');
-    if (gas && k) {
-      const r = await fetch(gas + (gas.includes('?') ? '&' : '?') + 'ogp=' + encodeURIComponent(url) + '&k=' + encodeURIComponent(k)); const j = await r.json();
-      if (j && (j.title || j.image)) meta = { title: j.title || '', description: j.description || '', image: j.image || '', site: j.site || '' };
-    } else {
-      const r = await fetch('https://api.microlink.io/?url=' + encodeURIComponent(url)); const j = await r.json();
-      if (j.status === 'success') meta = { title: j.data.title || '', description: j.data.description || '', image: j.data.image?.url || '', site: j.data.publisher || '' };
-    }
-  } catch (e) { console.warn('ogp', url, e); }
-  if (meta) { S.vaultData.ogp[url] = meta; } else { S.vaultData.ogp[url] = Object.assign(S.vaultData.ogp[url] || {}, { failed: Date.now() }); }
-  saveVaultData();
-  ogpRunning--; resolve(S.vaultData.ogp[url]); pumpOgp();
-}
+// リンクカードのタイトル・画像は、外部のサービスには取りに行かない（URL を外に出さないため）。
+// 以前に取ってきて保管庫（_notes.json の ogp）に保存してあるものだけ使う。無ければ URL とサイトのアイコンだけのカードになる
+function fetchOgp(url) { const c = S.vaultData.ogp[url]; return Promise.resolve(c && c.title ? c : null); }
 function fillBookmark(a, meta, keepTitle = true) {
   const url = a.getAttribute('href'); let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch {}
   const cur = a.querySelector('.t')?.textContent || a.textContent.trim();
@@ -4231,76 +4198,6 @@ async function enrichBookmark(a, keepTitle = true) {
   fillBookmark(a, c && c.title ? c : null, keepTitle);
   if (c && c.title) return;
   const meta = await fetchOgp(url); if (meta && meta.title && a.isConnected) { fillBookmark(a, meta, keepTitle); if (!keepTitle) setDirty(true); }
-}
-
-// ---------- スマホからの投げ込み（GAS の inbox）を取り込む ----------
-const gasCall = async (params) => {
-  const gas = setting('gasUrl'), k = setting('gasToken'); if (!gas || !k) throw new Error('設定で GAS の URL と合言葉を入れてください');
-  const u = gas + (gas.includes('?') ? '&' : '?') + new URLSearchParams({ ...params, k }).toString();
-  const r = await fetch(u); const j = await r.json(); if (!j || j.ok === false) throw new Error(j && j.error || '取得に失敗'); return j;
-};
-let inboxImportInFlight = false;
-async function updateInboxBadge() {
-  const b = $('#btn-inbox'); if (!b) return; b.classList.remove('has'); b.querySelector('.badge')?.remove();
-  if (!setting('gasUrl') || !setting('gasToken') || !S.root) return;
-  try { const j = await gasCall({ inbox: 1 }); if (j.items.length) { b.classList.add('has'); const sp = document.createElement('span'); sp.className = 'badge'; sp.textContent = j.items.length; b.appendChild(sp); } } catch {}
-}
-async function importInbox() {
-  if (inboxImportInFlight) { toast('取り込み中です。少し待ってからもう一度お試しください', 2000); return; }
-  if (!S.root) { toast('先にフォルダを開いてください'); return; }
-  if (!setting('gasUrl') || !setting('gasToken')) { toast('「見た目 → 設定…」で GAS の URL と合言葉を入れてください', 4000); openSettings(); return; }
-  inboxImportInFlight = true;
-  const btn = $('#btn-inbox'); if (btn) { btn.disabled = true; btn.classList.add('busy'); }
-  try {
-    await flushSave(); toast('取り込み中…', 60000);
-    let items; try { items = (await gasCall({ inbox: 1 })).items; } catch (e) { toast('取得できませんでした: ' + e.message, 5000); return; }
-    if (!items.length) { toast('新しい投げ込みはありません'); return; }
-    const inboxDir = 'inbox'; const dh = await getDirByPath(inboxDir, true); let att = null; const doneIds = []; let created = 0;
-    for (const it of items) {
-      try {
-        const d = new Date(it.createdAt || Date.now()); const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}_${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
-        const text = String(it.text || '').replace(/\r\n/g, '\n').trim();
-        const firstLine = text.replace(/https?:\/\/\S+/g, ' ').split('\n').map(l => l.replace(/\s+/g, ' ').trim()).find(l => l) || '';
-        const title = (it.title || firstLine.slice(0, 40) || (it.url ? 'リンク' : 'メモ')).trim();
-        const base = safeName(title); let name = `${base}.md`, i = 2;
-        while (await dh.getFileHandle(name).then(() => true, () => false)) name = `${base} (${i++}).md`;
-        // 本文: URL は 1 行ずつに（リンクカードになる）。画像は attachments/ に保存
-        let body = text.replace(/(https?:\/\/\S+)/g, '\n\n$1\n\n').split('\n').map(l => l.trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
-        if (it.url && !body.includes(it.url)) body = (body ? body + '\n\n' : '') + it.url;
-        const imgLines = [];
-        for (const fid of it.files || []) {
-          try {
-            const f = await gasCall({ file: fid }); if (!f.data) continue;
-            att = att || await getDirByPath(join(inboxDir, 'attachments'), true);
-            const ext = (f.name.match(/\.[a-z0-9]+$/i) || [f.mime.includes('png') ? '.png' : '.jpg'])[0].toLowerCase();
-            let fname = `${stamp}_${safeName(f.name.replace(/\.[^.]+$/, '')) || 'img'}${ext}`, j = 2;
-            while (await att.getFileHandle(fname).then(() => true, () => false)) fname = `${stamp}_img_${j++}${ext}`;
-            const bin = Uint8Array.from(atob(f.data), c => c.charCodeAt(0));
-            const fh = await att.getFileHandle(fname, { create: true }); const w = await fh.createWritable(); await w.write(bin); await w.close();
-            imgLines.push(`![${fname}](attachments/${encodeURIComponent(fname)})`);
-          } catch (e) { console.warn('image', fid, e); }
-        }
-        // タグ: frontmatter の tags と、本文末尾の「#タグ」行の両方に入れる（検索で引っかかるように）
-        const tags = (it.tags || []).map(t => String(t).trim().replace(/^#+/, '')).filter(Boolean);
-        const tagFm = tags.length ? `tags: [${tags.map(t => `"${t.replace(/"/g, '\\"')}"`).join(', ')}]\n` : '';
-        const tagLine = tags.length ? 'タグ: ' + tags.map(t => '#' + t.replace(/\s+/g, '_')).join(' ') : ''; // 行頭の # は見出し扱いされる（保存時に \# になる）ので「タグ: 」を前に置く
-        const parts = [body, imgLines.join('\n\n'), tagLine].filter(Boolean);
-        const full = `---\ntitle: "${title.replace(/"/g, '\\"')}"\nsource: "iPhone"\ncreated: ${d.toISOString()}\n${tagFm}---\n\n${parts.join('\n\n')}\n`;
-        // 別の端末で先に取り込み済み（同じ内容のノートがある）なら作らない
-        if (!imgLines.length && S.notes.some(x => x.dir === inboxDir && x.text === full)) { doneIds.push(it.id); continue; }
-        const fh = await dh.getFileHandle(name, { create: true }); const w = await fh.createWritable(); await w.write(full); await w.close();
-        const note = { path: join(inboxDir, name), dir: inboxDir, name, handle: fh, mtime: Date.now(), order: 9999, title: name.replace(/\.md$/i, ''), text: full, fm: '', body: '' };
-        parseFrontmatter(note); S.notes.push(note); S.byPath.set(note.path, note); created++; doneIds.push(it.id);
-      } catch (e) { console.error(e); }
-    }
-    if (doneIds.length) { try { await gasCall({ done: doneIds.join(',') }); } catch {} }
-    S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
-    $('#vault-count').textContent = `${S.notes.length} ノート`; renderTree($('#search').value); updateInboxBadge();
-    toast(`${created} 件を inbox に取り込みました`, 3000); if (created) showGallery(inboxDir);
-  } finally {
-    inboxImportInFlight = false;
-    const btn = $('#btn-inbox'); if (btn) { btn.disabled = false; btn.classList.remove('busy'); }
-  }
 }
 
 // ---------- サイドバー ----------
@@ -5277,76 +5174,6 @@ function installCustomThemes() {
   if (!THEMES.some(t => t[0] === cur) && !themeStore().themes.some(t => t.id === cur)) applyTheme('craft'); // 無い見た目を指していたらライトに
 }
 
-// ---- 色を拾う ----
-const hexOf = (r, g, b) => '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
-function parseColor(s) {
-  s = String(s).trim(); let m;
-  if ((m = s.match(/^#([0-9a-f]{3,4})$/i))) { const h = m[1]; return hexOf(...[0, 1, 2].map(i => parseInt(h[i] + h[i], 16))); }
-  if ((m = s.match(/^#([0-9a-f]{6})([0-9a-f]{2})?$/i))) return (m[2] && m[2].toLowerCase() !== 'ff') ? null : '#' + m[1].toLowerCase(); // 半透明は除外
-  if ((m = s.match(/^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)(?:[\s,\/]+([\d.]+%?))?\s*\)/i))) { if (m[4] && parseFloat(m[4]) < (m[4].endsWith('%') ? 100 : 1)) return null; return hexOf(+m[1], +m[2], +m[3]); }
-  return null;
-}
-function hsl(hex) {
-  const r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2; let s = 0, h = 0;
-  if (max !== min) { const d = max - min; s = l > .5 ? d / (2 - max - min) : d / (max + min); h = max === r ? ((g - b) / d + (g < b ? 6 : 0)) : max === g ? ((b - r) / d + 2) : ((r - g) / d + 4); h /= 6; }
-  return { h, s, l };
-}
-// html と css の文字列から、アクセント・背景・文字色の候補を選ぶ
-function extractPalette(html, cssList) {
-  const text = cssList.join('\n') + '\n' + (html.match(/<style[\s\S]*?<\/style>/gi) || []).join('\n') + '\n' + (html.match(/style="[^"]*"/gi) || []).join('\n');
-  const counts = new Map(); const add = (c, w = 1) => { const h = c && parseColor(c); if (h) counts.set(h, (counts.get(h) || 0) + w); };
-  for (const m of text.matchAll(/#[0-9a-f]{3,8}\b/gi)) add(m[0]);
-  for (const m of text.matchAll(/rgba?\([^)]+\)/gi)) add(m[0]);
-  const hints = []; // [色, 優先度]
-  const attr = (tag, name) => { const m = tag.match(new RegExp(name + '\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\'|([^\\s>]+))', 'i')); return m ? (m[1] ?? m[2] ?? m[3]) : ''; };
-  let metaBg = null;
-  for (const tag of html.match(/<meta[^>]*>/gi) || []) { if (/theme-color/i.test(attr(tag, 'name')) && !/dark/i.test(attr(tag, 'media'))) { const c = parseColor(attr(tag, 'content')); if (c) { if (hsl(c).s > .25 && hsl(c).l > .2 && hsl(c).l < .75) hints.push([c, 3]); else metaBg = metaBg || c; } } }
-  for (const m of text.matchAll(/(--[a-z0-9_-]*(?:primary|accent|brand|main|key|theme)[a-z0-9_-]*)\s*:\s*(#[0-9a-f]{3,8}\b|rgba?\([^)]+\))/gi)) { const nm = m[1]; const pr = /-(?:50|[1-4]00|[7-9]00|950)$/.test(nm) ? 0 : /-(?:500|600)$/.test(nm) ? 2 : /^--(?:color-)?(?:primary|brand)(?:-color)?$/.test(nm) ? 4 : /^--(?:color-)?(?:accent|main)(?:-color)?$/.test(nm) ? 3 : 1; hints.push([parseColor(m[2]), pr]); }
-  const sat = c => { const { s, l } = hsl(c); return s > .3 && l > .2 && l < .75; };
-  const satHint = c => { const { s, l } = hsl(c); return s > .15 && l > .15 && l < .8; }; // 変数名で当たりを付けた色は、くすんだブランド色も許す
-  const byCount = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
-  const bgL = byCount.find(c => hsl(c).l > .9), bgD = byCount.find(c => hsl(c).l < .2);
-  const darkSite = bgD && (counts.get(bgD) || 0) > (counts.get(bgL) || 0) * 3 && !bgL; // ほぼ暗い色しか無いとき
-  const bg = metaBg && hsl(metaBg).l > .85 ? metaBg : (darkSite ? bgD : (bgL || '#ffffff'));
-  const base = hsl(bg).l < .5 ? 'dark' : 'light';
-  const want = base === 'light' ? .42 : .65; // ライトなら少し濃いめ、ダークなら明るめのアクセント
-  const accent = hints.filter(([c]) => c && satHint(c)).sort((a, b) => b[1] - a[1] || Math.abs(hsl(a[0]).l - want) - Math.abs(hsl(b[0]).l - want))[0]?.[0] || byCount.filter(sat).sort((a, b) => (counts.get(b) * (hsl(b).s + .3)) - (counts.get(a) * (hsl(a).s + .3)))[0] || '#3b6cf0';
-  const w = c => (counts.get(c) || 0) * (c === '#000000' || c === '#ffffff' ? .1 : 1); // 真っ黒・真っ白は枠線や影で多く出るので割り引く
-  const fg = base === 'light' ? ([...counts.keys()].filter(c => { const { s, l } = hsl(c); return l < .3 && s < .5; }).sort((a, b) => w(b) - w(a))[0] || '#1d1d1f') : (byCount.find(c => hsl(c).l > .85) || '#ececec');
-  // --- 文字・角丸・影 ---
-  const rules = [...text.matchAll(/([^{}]{1,300})\{([^{}]*)\}/g)].map(m => [m[1].trim(), m[2]]);
-  const GENERIC = /^(sans-serif|serif|system-ui|ui-sans-serif|ui-serif|ui-monospace|monospace|system|-apple-system|blinkmacsystemfont|segoe ui|roboto|helvetica( neue)?|arial|inherit|initial|var\(.*|.*emoji.*|.*symbol.*)$/i;
-  const fontCount = new Map();
-  const addFont = (decl, w) => { for (const m of decl.matchAll(/font(?:-family)?\s*:\s*([^;]+)/gi)) { for (const f of m[1].split(',')) { const name = f.trim().replace(/^["']|["']$/g, '').replace(/^.*\d+(?:px|rem|em)\s*(?:\/\s*[\d.]+)?\s+/, ''); if (name && !GENERIC.test(name) && !/^\d/.test(name) && name.length < 40) { fontCount.set(name, (fontCount.get(name) || 0) + w); break; } } } };
-  for (const [sel, decl] of rules) { if (/^(html|body|:root|\*|\.[a-z0-9_-]+)$/i.test(sel)) addFont(decl, /^(html|body|:root)$/i.test(sel) ? 5 : 1); }
-  for (const m of text.matchAll(/(--(?:font|sans|font-(?:sans|body|base|family|main|primary|jp|ja)))\s*:\s*([^;]+)/gi)) addFont('font-family:' + m[2], 4);
-  const gf = html.match(/href=["']?(https:\/\/fonts\.googleapis\.com\/css2?\?[^"'\s>]+)/i); const fontUrl = gf ? gf[1].replace(/&amp;/g, '&') : '';
-  if (fontUrl) for (const m of fontUrl.matchAll(/family=([^&:]+)/g)) { const name = decodeURIComponent(m[1]).replace(/\+/g, ' '); fontCount.set(name, (fontCount.get(name) || 0) + 3 + (/JP|Japanese|Zen|M PLUS|BIZ|Kosugi|Sawarabi|Shippori|Kaisei|Klee|Yuji|Dela|Murecho|Hachi|Kiwi|Rampart|Reggae|Stick|Train|Yomogi|Zen/i.test(name) ? 3 : 0)); } // 日本語フォントを優先
-  const JP = /JP|Japanese|Zen|M PLUS|BIZ|Kosugi|Sawarabi|Shippori|Kaisei|Klee|Yuji|Dela|Murecho|Hachi|Kiwi|Rampart|Reggae|Stick|Train|Yomogi|Hiragino|Yu Gothic|Meiryo|游ゴシック|ヒラギノ|Noto Sans CJK|Noto Serif JP/i;
-  const sorted = [...fontCount.entries()].sort((a, b) => b[1] - a[1]).map(([n]) => n);
-  let font = sorted[0] || ''; const jp = sorted.find(n => JP.test(n)); if (font && jp && !JP.test(font)) font = font + ', ' + jp; // 欧文フォント＋日本語フォントの順で並べる
-  const radiusOf = (re) => { const c = new Map(); for (const [sel, decl] of rules) { if (!re.test(sel)) continue; const m = decl.match(/border-radius\s*:\s*([\d.]+)(px|rem|em)/i); if (!m) continue; let v = parseFloat(m[1]) * (m[2] === 'px' ? 1 : 16); if (decl.match(/border-radius\s*:\s*(9999px|999px|100px|50%|100vmax)/i)) v = 999; c.set(v, (c.get(v) || 0) + 1); } return [...c.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]; };
-  const pillCount = rules.filter(([sel, decl]) => /btn|button|cta|pill|tag/i.test(sel) && /border-radius\s*:\s*(9999px|999px|100px|50px|100vmax)/i.test(decl)).length;
-  let buttonRadius = radiusOf(/btn|button|cta/i); if (pillCount >= 2 || buttonRadius === 999) buttonRadius = 100; if (buttonRadius == null) buttonRadius = 8; buttonRadius = Math.min(100, Math.round(buttonRadius));
-  let cardRadius = radiusOf(/card|box|panel|tile|section|wrap/i); if (cardRadius == null || cardRadius === 999) cardRadius = 12; cardRadius = Math.min(32, Math.round(cardRadius));
-  const goodShadow = v => !/none|var\(|#0000\b|transparent|inset/i.test(v) && /(\d+(?:\.\d+)?(?:px|rem)\s+){2,}/.test(v) && /rgba?\(|#[0-9a-f]{3,8}\b/i.test(v); // ぼかしがあって色が付いている影だけ
-  const shadows = new Map(); for (const [sel, decl] of rules) { if (!/card|box|panel|tile|btn|button/i.test(sel)) continue; const m = decl.match(/box-shadow\s*:\s*([^;]+)/i); if (!m || !goodShadow(m[1])) continue; shadows.set(m[1].trim(), (shadows.get(m[1].trim()) || 0) + 1); }
-  for (const m of text.matchAll(/(--[a-z0-9_-]*shadow[a-z0-9_-]*)\s*:\s*([^;]+)/gi)) { if (!/^--tw-/.test(m[1]) && goodShadow(m[2])) shadows.set(m[2].trim(), (shadows.get(m[2].trim()) || 0) + 3); }
-  const shadowCss = [...shadows.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || '';
-  const hardShadow = /\b\d+px\s+\d+px\s+0(px)?\s+(#|rgb|var)/i.test(shadowCss); // 「6px 6px 0 #000」のようなずらし影
-  const shadow = !shadowCss ? 'soft' : hardShadow ? 'hard' : 'site';
-  let headingWeight = 800; const hw = new Map(); for (const [sel, decl] of rules) { if (!/(^|[\s,>])h[12](\b|[.:\s,])/i.test(sel)) continue; const m = decl.match(/font-weight\s*:\s*(\d{3}|bold|black|bolder)/i); if (m) { const v = /bold/i.test(m[1]) ? 700 : /black/i.test(m[1]) ? 900 : +m[1]; hw.set(v, (hw.get(v) || 0) + 1); } }
-  if (hw.size) headingWeight = [...hw.entries()].sort((a, b) => b[1] - a[1])[0][0];
-  return { accent, bg, fg, base, card: base === 'light' ? '#ffffff' : null, candidates: byCount.slice(0, 24), font, fontUrl, buttonRadius, cardRadius, shadow, shadowCss, headingWeight };
-}
-async function fetchSite(url) {
-  const gas = setting('gasUrl'), k = setting('gasToken');
-  if (gas && k) { const r = await fetch(gas + (gas.includes('?') ? '&' : '?') + 'site=' + encodeURIComponent(url) + '&k=' + encodeURIComponent(k)); const j = await r.json(); if (!j.ok) throw new Error(j.error || '取得できませんでした'); return j; }
-  try { const r = await fetch(url); const html = await r.text(); return { ok: true, html, css: [] }; } // CORS を許しているサイトだけ
-  catch { throw new Error('このサイトは直接読めませんでした。設定で GAS の URL と合言葉を入れると取れます'); }
-}
-
 // ---- 管理ダイアログ ----
 async function manageThemes() {
   const st = themeStore(); let editing = null; // 編集中の自分の見た目 id
@@ -5367,7 +5194,6 @@ async function manageThemes() {
     <div id="th-list">${rows()}</div>
     <div class="th-new">
       <h4 id="th-new-title">＋ 自分の見た目を追加</h4>
-      <div class="urlrow"><input type="text" id="th-url" placeholder="サイトの URL（例: https://自社サイト/）から色を拾う"><button type="button" id="th-fetch">色を拾う</button></div>
       <div class="cols">
         <label>名前<input type="text" id="th-name" placeholder="例: 自社カラー" style="width:160px"></label>
         <label>ベース<select id="th-base"><option value="light">ライト</option><option value="dark">ダーク</option></select></label>
@@ -5385,7 +5211,7 @@ async function manageThemes() {
         <button type="button" id="th-add">追加</button><button type="button" id="th-cancel-edit" style="display:none">やめる</button>
       </div>
       <div class="th-prev" id="th-cands" style="display:none"></div>
-      <p id="th-note">サイトから拾うのは、色（変数名や theme-color から）、フォント名、ボタンとカードの角丸、影、見出しの太さです。目安なので手で直せます。</p>
+      <p id="th-note"></p>
     </div>`;
   const p = dialog('見た目の管理', body, { okText: '保存', focus: '#th-name' });
   const list = $('#th-list');
@@ -5401,26 +5227,13 @@ async function manageThemes() {
   bindList();
   $('#th-cancel-edit').onclick = () => { editing = null; $('#th-new-title').textContent = '＋ 自分の見た目を追加'; $('#th-add').textContent = '追加'; $('#th-cancel-edit').style.display = 'none'; };
   $('#th-add').onclick = () => {
-    const name = $('#th-name').value.trim() || ($('#th-url').value.trim() ? $('#th-url').value.trim().replace(/^https?:\/\/(www\.)?/, '').split('/')[0] : '') || '自分の見た目';
+    const name = $('#th-name').value.trim() || '自分の見た目';
     const t = { id: editing || ('c_' + Date.now().toString(36)), name, base: $('#th-base').value, accent: $('#th-accent').value, bg: $('#th-bg').value, fg: $('#th-fg').value, card: $('#th-card').value, font: $('#th-font').value.trim(), fontUrl: formExtra.fontUrl, headingWeight: +$('#th-hw').value, buttonRadius: +$('#th-br').value, cardRadius: +$('#th-cr').value, shadow: $('#th-sh').value, shadowCss: formExtra.shadowCss };
     if (editing) { const i = st.themes.findIndex(x => x.id === editing); if (i >= 0) st.themes[i] = t; } else st.themes.push(t);
     editing = null; $('#th-new-title').textContent = '＋ 自分の見た目を追加'; $('#th-add').textContent = '追加'; $('#th-cancel-edit').style.display = 'none'; $('#th-name').value = '';
     list.innerHTML = rows(); bindList();
   };
   $('#th-base').onchange = () => { if ($('#th-base').value === 'dark' && $('#th-bg').value === '#ffffff') { $('#th-bg').value = '#1c1c1e'; $('#th-fg').value = '#ececec'; $('#th-card').value = '#26262a'; } };
-  $('#th-url').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); $('#th-fetch').click(); } };
-  $('#th-fetch').onclick = async () => {
-    let url = $('#th-url').value.trim(); if (!url) return; if (!/^https?:/i.test(url)) url = 'https://' + url; $('#th-url').value = url;
-    const b = $('#th-fetch'); b.disabled = true; b.textContent = '取得中…'; $('#th-note').textContent = '';
-    try {
-      const j = await fetchSite(url); const pal = extractPalette(j.html || '', j.css || []);
-      fill({ name: $('#th-name').value.trim() || url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0], ...pal });
-      const c = $('#th-cands'); c.style.display = ''; c.innerHTML = '<small style="color:var(--fg3);margin-right:4px">見つかった色:</small>' + pal.candidates.map(x => `<span title="${x}" style="background:${x}"></span>`).join('');
-      $$('span', c).forEach(s => { s.onclick = () => { $('#th-accent').value = s.title; }; s.oncontextmenu = e => { e.preventDefault(); $('#th-bg').value = s.title; }; });
-      $('#th-note').textContent = 'クリックでアクセントに、右クリックで背景に入ります。';
-    } catch (e) { $('#th-note').textContent = '取れませんでした: ' + e.message; }
-    b.disabled = false; b.textContent = '色を拾う';
-  };
   const ok = await p; if (!ok) return;
   saveThemeStore(); toast('保存しました');
 }
@@ -5436,21 +5249,9 @@ $('#tree').ondrop = async e => { if (S.dragDir && e.target === $('#tree')) { e.p
 $('#btn-reopen').onclick = () => { const h = S._lastRoot; if (h) openFolder(h); }; // 先に読んでおいた値を使う（スマホはクリック直後でないとログイン画面が開けない）
 $('#btn-gdrive').onclick = () => gdOpenVaultDialog();
 $('#btn-new').onclick = () => newNote();
-$('#btn-inbox').onclick = () => importInbox();
 $('#btn-newdir').onclick = () => { if (S.root) newFolder(S.current ? S.current.dir : S.selectedDir); else toast('先にフォルダを開いてください'); };
 $('#btn-gallery').onclick = () => { if (S.root) showGallery(S.current ? S.current.dir : S.selectedDir); };
-$('#btn-theme').onclick = e => showMenu(e, [{ hd: '見た目' }, ...themeList().map(({ id: k, name: l }) => ({ label: (document.documentElement.dataset.theme === k ? '✓ ' : '　') + l, run: () => applyTheme(k) })), { label: '見た目の管理…（名前・追加・非表示）', run: manageThemes }, { hd: '本文の幅' }, ...[['normal', '標準（720px）'], ['wide', '広い（1080px）'], ['full', '画面いっぱい']].map(([k, l]) => ({ label: (document.documentElement.dataset.width === k ? '✓ ' : '　') + l, run: () => applyWidth(k) })), { hd: '文字サイズ（本文）' }, ...FONT_SIZES.map(([k, l]) => ({ label: ((localStorage.getItem('notes:fs') || '1') === k ? '✓ ' : '　') + l, run: () => applyFontScale(k) })), { hd: 'サイドバー' }, { label: ($('#app').classList.contains('compact') ? '✓ ' : '　') + 'コンパクト（細い幅・アイコンだけ）', run: () => applyCompact(!$('#app').classList.contains('compact')) }, { hd: 'その他' }, { label: '設定…', run: openSettings }, { label: 'ショートカット一覧', run: showHelp }]);
-async function openSettings() {
-  const dlgP = dialog('設定', `
-    <label style="font-size:13px;color:var(--fg2)">リンクカード用の GAS の URL（空なら microlink.io の無料枠を使用）</label>
-    <input type="text" id="dlg-gas" value="${esc(setting('gasUrl'))}" placeholder="https://script.google.com/macros/s/…/exec">
-    <label style="font-size:13px;color:var(--fg2)">合言葉（GAS のスクリプト プロパティ TOKEN と同じもの。スマホからの投げ込みに使う）</label>
-    <input type="text" id="dlg-token" value="${esc(setting('gasToken'))}" placeholder="例: my-notes-2026">
-    <p style="font-size:12px;color:var(--fg3);margin:-6px 0 12px">設定は保管庫の _notes.json に保存されるので、Mac と Windows で共有されます。<br>iPhone では <b>GASのURL?k=合言葉</b> を開いて「ホーム画面に追加」。</p>
-    <div style="border-top:1px solid var(--line);padding-top:10px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><span style="font-size:13px;color:var(--fg2)">見た目</span><button type="button" id="dlg-themes" style="border:1px solid var(--line);font-size:12.5px;padding:4px 10px">見た目の管理…（名前の変更・自分の見た目を追加・非表示）</button></div>`, { focus: '#dlg-gas' });
-  $('#dlg-themes').onclick = () => { $('#dlg-cancel').click(); setTimeout(manageThemes, 50); }; // await の前に付けないと押しても効かない
-  const ok = await dlgP; if (!ok) return; S.vaultData.settings.gasUrl = $('#dlg-gas').value.trim(); S.vaultData.settings.gasToken = $('#dlg-token').value.trim(); localStorage.setItem('notes:gasUrl', S.vaultData.settings.gasUrl); localStorage.setItem('notes:gasToken', S.vaultData.settings.gasToken); saveVaultData(); toast('保存しました'); updateInboxBadge();
-}
+$('#btn-theme').onclick = e => showMenu(e, [{ hd: '見た目' }, ...themeList().map(({ id: k, name: l }) => ({ label: (document.documentElement.dataset.theme === k ? '✓ ' : '　') + l, run: () => applyTheme(k) })), { label: '見た目の管理…（名前・追加・非表示）', run: manageThemes }, { hd: '本文の幅' }, ...[['normal', '標準（720px）'], ['wide', '広い（1080px）'], ['full', '画面いっぱい']].map(([k, l]) => ({ label: (document.documentElement.dataset.width === k ? '✓ ' : '　') + l, run: () => applyWidth(k) })), { hd: '文字サイズ（本文）' }, ...FONT_SIZES.map(([k, l]) => ({ label: ((localStorage.getItem('notes:fs') || '1') === k ? '✓ ' : '　') + l, run: () => applyFontScale(k) })), { hd: 'サイドバー' }, { label: ($('#app').classList.contains('compact') ? '✓ ' : '　') + 'コンパクト（細い幅・アイコンだけ）', run: () => applyCompact(!$('#app').classList.contains('compact')) }, { hd: 'その他' }, { label: 'ショートカット一覧', run: showHelp }]);
 function showHelp() {
   dialog('ショートカット', `<div style="font-size:13px;line-height:2;color:var(--fg2)">
   <b style="color:var(--fg)">全体</b><br>⌘S 保存 ／ ⌘N 新しいノート ／ ⌘F 検索 ／ ⌘\\ サイドバー ／ ⌘⇧P 発表モード<br>
@@ -6106,7 +5907,7 @@ async function importFolder(kind) { // 'obsidian' | 'textbundle' | 'notion'
 }
 function importMenu(e) {
   showMenu(e, [
-    { hd: 'スマホから' }, { label: '✏️ すぐメモ（ここで書いて inbox に保存）', run: () => quickOpen() }, { label: 'GAS に送ったメモを取り込む（旧しくみ）', run: importInbox },
+    { hd: 'スマホから' }, { label: '✏️ すぐメモ（ここで書いて inbox に保存）', run: () => quickOpen() },
     { hd: 'ファイルからインポート（保管庫にコピーされます）' },
     { label: 'Markdown ファイル…（.md / .textpack / Notion の zip）', run: importMarkdownFiles },
     { label: 'フォルダ…（Markdown のフォルダ / Obsidian の保管庫）', run: () => importFolder('obsidian') },
@@ -6312,7 +6113,7 @@ async function quickSend() {
 
 // テスト用に公開
 window.__notes = { S, serialize, openFolder, decorate, decorateColors, marked, td, GD, DriveDir, gdSync, saveCurrent, rescan, MONEY, bk: { bkParseShot, bkParseText, bkNorm } };
-window.__exp = { noteToDocx, renderNoteForExport, fullHTML, articleHTML, exportDialog, importInbox, gasCall };
+window.__exp = { noteToDocx, renderNoteForExport, fullHTML, articleHTML, exportDialog };
 window.__quickTest = { gdReloadAll, quickOpen, gdSync };
 })();
 
