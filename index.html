@@ -525,6 +525,37 @@ dialog:has(#bk){max-width:760px;width:min(760px,calc(100vw - 24px));max-height:c
   #app.side-hidden #side{display:none}
   #doc{padding:24px 18px 40vh}
 }
+/* ---------- すぐメモ ---------- */
+#quick{position:fixed;inset:0;z-index:75;background:var(--bg);color:var(--fg);overflow:auto;-webkit-overflow-scrolling:touch}
+body.quick-on{overflow:hidden}
+.q-top{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--bg);border-bottom:1px solid var(--line);z-index:1}
+.q-top b{font-size:16px}
+.q-close{border:none;background:none;color:var(--accent);font-size:15px;padding:6px 2px;cursor:pointer}
+.q-body{max-width:640px;margin:0 auto;padding:12px 16px calc(40px + env(safe-area-inset-bottom))}
+.q-vault{font-size:12px;color:var(--fg2);margin:2px 0 10px}
+#quick input[type=text],#quick textarea{width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);margin:0 0 10px;font-family:inherit}
+#quick textarea{min-height:34vh;resize:vertical;line-height:1.6}
+.q-row{display:flex;gap:8px;align-items:center;margin:0 0 10px}
+.q-row button,.q-photo{font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:100px;background:var(--card);color:var(--fg);cursor:pointer}
+.q-row .q-sub{border:none;background:none;color:var(--fg2)}
+#q-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.q-thumb{position:relative;width:78px;height:78px;border-radius:10px;background:var(--bg2) center/cover no-repeat;border:1px solid var(--line)}
+.q-thumb button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:none;background:var(--fg);color:var(--bg);font-size:14px;line-height:24px;padding:0;cursor:pointer}
+.q-h{font-size:12px;color:var(--fg2);margin:6px 0 6px;font-weight:600}
+#q-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.q-tag{font-size:13px;padding:5px 10px;border-radius:100px;border:1px solid var(--line);background:var(--card);color:var(--fg2);cursor:pointer}
+.q-tag.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.q-none{font-size:12px;color:var(--fg3)}
+#q-send{display:block;width:100%;font-size:16px;font-weight:600;padding:14px;border:none;border-radius:12px;margin:8px 0 6px;cursor:pointer}
+#q-send:disabled{opacity:.6}
+.q-msg{font-size:13px;color:var(--fg2);min-height:1.4em;margin:4px 0 10px}
+.q-msg.ok{color:#1f8a4c}.q-msg.ng{color:#d33}
+.q-sent-item{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;font-size:13.5px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);margin:0 0 6px;cursor:pointer}
+.q-sent-item small{color:var(--fg3)}
+.q-hint{font-size:11.5px;color:var(--fg3);margin:18px 0 0;line-height:1.6}
+body.quick-on .toast{z-index:90}
+.home-head{position:relative}
+.home-quick{position:absolute;top:2px;right:0;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:100px;background:var(--card);color:var(--fg);cursor:pointer;white-space:nowrap}
 /* ---------- 発表モード ---------- */
 #present{position:fixed;inset:0;z-index:80;background:var(--bg);color:var(--fg);--pr-scale:1;--pr-fs:calc(19px * var(--pr-scale));user-select:text}
 body.presenting #app{visibility:hidden}
@@ -2379,8 +2410,25 @@ async function gdSync(force = false) {
     const st = $('#content').scrollTop;
     await rescan(); $('#content').scrollTop = st;
     toast('他の端末での変更を読み込みました');
-  } catch (e) { console.warn('sync', e); }
+  } catch (e) {
+    console.warn('sync', e);
+    // だまって古いままにしない（ログイン切れは上の帯で知らせるので、それ以外を 5 分に 1 回まで）
+    if (e.name !== 'AuthError' && Date.now() - (gdSync.warnedAt || 0) > 5 * 60e3) { gdSync.warnedAt = Date.now(); toast('他の端末の変更を読み込めませんでした（' + e.message + '）。「開く」→「ドライブから最新を読み込む」で読み直せます', 6000); }
+  }
   finally { gdSyncing = false; }
+}
+// 手元の一覧と控えを使わず、ドライブから全部読み直す（同期がうまくいかないとき用）
+async function gdReloadAll() {
+  if (!S.root || !S.root.isDrive) return;
+  try {
+    if (!GD.token && !gdRestoreToken()) await gdLogin();
+    await flushSave(); toast('ドライブから読み直しています…', 60000);
+    GD.changeToken = ''; GD.listedAt = 0; await gdListAll();
+    if (!GD.files.has(S.root.id)) { toast('ドライブにこの保管庫が見えません。Google のアクセス権が外れた可能性があります。「ドライブの保管庫を開く・作る…」から開き直してください', 8000); return; }
+    await gdPrefetch(S.root.id, (d, t) => toast(`ドライブから読み込み中… ${d} / ${t}`, 60000));
+    await rescan(); await gdSnap.save();
+    toast(`最新を読み込みました（${S.notes.length} ノート）`, 2500);
+  } catch (e) { toast('読み直せませんでした: ' + e.message, 5000); }
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) gdSync(); });
 window.addEventListener('focus', () => gdSync());
@@ -2515,6 +2563,7 @@ async function openFolderInner(handle, opts = {}) {
   if (S.scope && !S.dirs.has(S.scope)) S.scope = '';
   renderTree(); updateInboxBadge();
   showHome(); // 開いたらまずホーム
+  quickOnVault();
   if (handle.isDrive) {
     lap('表示');
     const total = Math.round(performance.now() - T0);
@@ -2541,7 +2590,7 @@ async function rememberRecent(handle) {
 async function openMenu(e) {
   const list = await getRecents(); const items = [{ hd: 'Google ドライブ（PC とスマホで同じ内容）' }, { label: 'ドライブの保管庫を開く・作る…', run: gdOpenVaultDialog }];
   if (window.showDirectoryPicker) items.push({ label: 'PC のフォルダをドライブへコピー…', run: gdCopyLocalDialog });
-  if (S.root && S.root.isDrive) items.push({ label: '重複したファイルを片付ける…', run: gdCleanDupsDialog });
+  if (S.root && S.root.isDrive) items.push({ label: 'ドライブから最新を読み込む', run: gdReloadAll }, { label: '重複したファイルを片付ける…', run: gdCleanDupsDialog });
   if (GD.token) items.push({ label: 'Google からログアウト（この端末の控えも消す）', run: async () => {
     if (!(await confirmDlg('Google からログアウト', 'ログアウトして、この端末に残しているノートの控えも消します。次に開くときは、ドライブから読み直します。'))) return;
     await flushSave().catch(() => {}); await gdLogout();
@@ -2840,7 +2889,7 @@ async function showHome() {
   const tops = [...S.dirs.keys()].filter(d => d && !d.includes('/')).sort((a, b) => a.localeCompare(b, 'ja'));
   const countIn = d => S.notes.filter(n => n.dir === d || n.dir.startsWith(d + '/')).length;
   h.innerHTML = `
-    <div class="home-head"><h1>${esc(S.root.name)}</h1>
+    <div class="home-head"><h1>${esc(S.root.name)}</h1><button class="home-quick" title="すぐメモ（書いて inbox に保存）">✏️ すぐメモ</button>
       <div class="home-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="home-q" type="search" placeholder="${esc(S.root.name)} で検索" value="${esc(HOME.q)}"></div></div>
     <div id="home-results"></div>
     <section class="home-sec"><h2>最近</h2>${recent.length ? '<div class="home-recent"></div>' : '<p class="home-empty">まだノートがありません</p>'}</section>
@@ -2871,6 +2920,7 @@ async function showHome() {
     if (img) urlFor(img).then(u => { if (u) c.querySelector('.thumb').style.backgroundImage = `url("${u}")`; else c.querySelector('.thumb').classList.add('empty'); });
     rw.appendChild(c);
   }
+  h.querySelector('.home-quick').onclick = () => quickOpen();
   h.querySelectorAll('.home-item').forEach(b => {
     if (b.dataset.arc) { b.onclick = () => { HOME.mode = 'archive'; ARC.view = null; showHome(); }; return; }
     if (b.dataset.note !== undefined) { const n = S.byPath.get(b.dataset.note); b.onclick = () => openNote(n); b.oncontextmenu = e => { e.preventDefault(); noteMenu(e, n); }; onLongPress(b, e => noteMenu(e, n)); }
@@ -6056,7 +6106,7 @@ async function importFolder(kind) { // 'obsidian' | 'textbundle' | 'notion'
 }
 function importMenu(e) {
   showMenu(e, [
-    { hd: 'スマホから' }, { label: 'スマホから送ったメモを取り込む（inbox）', run: importInbox },
+    { hd: 'スマホから' }, { label: '✏️ すぐメモ（ここで書いて inbox に保存）', run: () => quickOpen() }, { label: 'GAS に送ったメモを取り込む（旧しくみ）', run: importInbox },
     { hd: 'ファイルからインポート（保管庫にコピーされます）' },
     { label: 'Markdown ファイル…（.md / .textpack / Notion の zip）', run: importMarkdownFiles },
     { label: 'フォルダ…（Markdown のフォルダ / Obsidian の保管庫）', run: () => importFolder('obsidian') },
@@ -6067,10 +6117,203 @@ function importMenu(e) {
 $('#btn-inbox').onclick = e => importMenu(e);
 window.__imp = { entriesFromZip, importEntries, importTextBundles, entriesFromFiles };
 
+// ---------- すぐメモ（スマホから送る） ----------
+// GAS を通さず、いま開いている保管庫の inbox/ にノートとして直接書き込む（ログインと権限は本体と同じ drive.file）。
+// ?quick=1 で開くとこの画面から始まる（ホーム画面に追加しておくと 1 タップ）。
+// ショートカット App 用に ?quick=1&text=…&title=…&tags=a,b で中身を入れた状態で開ける。
+const QUICK = { files: [], tags: new Set(), sending: false, sent: [] };
+const QUICK_DIR = 'inbox';
+const QUICK_DRAFT = 'notes:quickDraft';
+
+function quickRecentTags() {
+  const out = [];
+  const add = t => { if (t && !out.includes(t)) out.push(t); };
+  S.notes.filter(n => n.dir === QUICK_DIR).sort((a, b) => (b.mtime || 0) - (a.mtime || 0)).forEach(n => (n.tags || []).forEach(add));
+  if (out.length < 10) { const cnt = new Map(); for (const n of S.notes) for (const t of n.tags || []) cnt.set(t, (cnt.get(t) || 0) + 1); [...cnt].sort((a, b) => b[1] - a[1]).forEach(([t]) => add(t)); }
+  QUICK.tags.forEach(t => { if (!out.includes(t)) out.unshift(t); });
+  return out.slice(0, 14);
+}
+function quickSaveDraft() {
+  try { localStorage.setItem(QUICK_DRAFT, JSON.stringify({ title: $('#q-title').value, text: $('#q-text').value, tags: [...QUICK.tags] })); } catch {}
+}
+function quickDrawTags() {
+  const w = $('#q-tags'); if (!w) return;
+  w.innerHTML = quickRecentTags().map(t => `<button type="button" class="q-tag ${QUICK.tags.has(t) ? 'on' : ''}" data-t="${esc(t)}">#${esc(t)}</button>`).join('') || '<span class="q-none">まだタグはありません。下で追加できます</span>';
+  w.querySelectorAll('.q-tag').forEach(b => b.onclick = () => { const t = b.dataset.t; QUICK.tags.has(t) ? QUICK.tags.delete(t) : QUICK.tags.add(t); quickDrawTags(); quickSaveDraft(); });
+}
+function quickDrawThumbs() {
+  const w = $('#q-thumbs'); w.innerHTML = '';
+  QUICK.files.forEach((f, i) => {
+    const d = document.createElement('div'); d.className = 'q-thumb';
+    const u = URL.createObjectURL(f); d.style.backgroundImage = `url("${u}")`;
+    const x = document.createElement('button'); x.type = 'button'; x.textContent = '×'; x.title = '外す';
+    x.onclick = () => { URL.revokeObjectURL(u); QUICK.files.splice(i, 1); quickDrawThumbs(); };
+    d.appendChild(x); w.appendChild(d);
+  });
+}
+function quickVaultLabel() {
+  const el = $('#q-vault'); if (!el) return;
+  const h = S.root || S._lastRoot;
+  el.textContent = h ? `送り先: ${h.isDrive ? '☁ ' : ''}${h.name} › ${QUICK_DIR}` : '送り先の保管庫がまだありません';
+}
+// 保管庫が開いたら（起動直後は裏で読み込み中のことがある）タグと送り先を出し直す
+function quickOnVault() { if ($('#quick') && !$('#quick').hidden) { quickDrawTags(); quickVaultLabel(); } }
+
+function quickBuild() {
+  if ($('#quick')) return;
+  const q = document.createElement('div'); q.id = 'quick'; q.hidden = true;
+  q.innerHTML = `
+    <div class="q-top"><button type="button" class="q-close">‹ Fumibako</button><b>すぐメモ</b><span style="flex:1"></span></div>
+    <div class="q-body">
+      <p id="q-vault" class="q-vault"></p>
+      <input id="q-title" type="text" placeholder="タイトル（空なら本文の 1 行目）" autocomplete="off">
+      <textarea id="q-text" placeholder="メモや URL を書く・貼り付ける"></textarea>
+      <div class="q-row">
+        <button type="button" id="q-paste">📋 貼り付け</button>
+        <label class="q-photo">📷 写真<input type="file" id="q-file" accept="image/*" multiple hidden></label>
+        <span style="flex:1"></span><button type="button" id="q-clear" class="q-sub">クリア</button>
+      </div>
+      <div id="q-thumbs"></div>
+      <div class="q-h">タグ</div>
+      <div id="q-tags"></div>
+      <input id="q-tag-new" type="text" placeholder="新しいタグ（入れて Enter）" autocomplete="off" enterkeyhint="done">
+      <button type="button" id="q-send" class="primary">保管庫に送る</button>
+      <p id="q-msg" class="q-msg"></p>
+      <div id="q-sent"></div>
+      <p class="q-hint">この画面で Safari の共有 →「ホーム画面に追加」をすると、次から 1 タップでここが開きます。</p>
+    </div>`;
+  document.body.appendChild(q);
+  $('.q-close', q).onclick = quickClose;
+  $('#q-title').oninput = quickSaveDraft; $('#q-text').oninput = quickSaveDraft;
+  $('#q-paste').onclick = async () => {
+    try {
+      const t = await navigator.clipboard.readText(); if (!t) { toast('クリップボードが空です'); return; }
+      const ta = $('#q-text'); ta.value = ta.value ? ta.value.replace(/\s*$/, '') + '\n' + t : t; quickSaveDraft(); toast('貼り付けました');
+    } catch { toast('貼り付けできませんでした。本文を長押し →「ペースト」でも入れられます', 3500); }
+  };
+  $('#q-file').onchange = e => { QUICK.files.push(...[...e.target.files].filter(f => f.type.startsWith('image/'))); e.target.value = ''; quickDrawThumbs(); };
+  $('#q-clear').onclick = () => { $('#q-title').value = ''; $('#q-text').value = ''; QUICK.files = []; QUICK.tags.clear(); quickDrawThumbs(); quickDrawTags(); quickSaveDraft(); $('#q-msg').textContent = ''; };
+  $('#q-tag-new').onkeydown = e => {
+    if (e.key !== 'Enter' || e.isComposing) return; e.preventDefault();
+    const t = e.target.value.trim().replace(/^#+/, '').trim(); if (!t) return;
+    QUICK.tags.add(t); e.target.value = ''; quickDrawTags(); quickSaveDraft();
+  };
+  $('#q-send').onclick = quickSend;
+}
+
+function quickOpen(prefill) {
+  quickBuild();
+  let dr = {}; try { dr = JSON.parse(localStorage.getItem(QUICK_DRAFT) || '{}') || {}; } catch {}
+  const p = prefill || {};
+  $('#q-title').value = p.title ?? dr.title ?? '';
+  $('#q-text').value = p.text != null ? ((dr.text && dr.text !== p.text) ? dr.text.replace(/\s*$/, '') + '\n' + p.text : p.text) : (dr.text || '');
+  QUICK.tags = new Set([...(dr.tags || []), ...(p.tags || [])]);
+  if (prefill) quickSaveDraft();
+  $('#quick').hidden = false; document.body.classList.add('quick-on');
+  quickDrawTags(); quickDrawThumbs(); quickVaultLabel(); $('#q-msg').textContent = '';
+  // ホーム画面に追加したとき、ここが開くように URL に印を付けておく
+  try { const u = new URL(location.href); if (u.searchParams.get('quick') !== '1') { u.searchParams.set('quick', '1'); history.replaceState(null, '', u); } } catch {}
+  if (!p.text && !$('#q-text').value) setTimeout(() => $('#q-text').focus(), 50);
+}
+function quickClose() {
+  $('#quick').hidden = true; document.body.classList.remove('quick-on');
+  try { const u = new URL(location.href); u.searchParams.delete('quick'); history.replaceState(null, '', u); } catch {}
+  if (S.root) { HOME.mode = 'home'; showHome(); }
+}
+
+// 写真は長い辺 2400px・JPEG に縮めてから送る（スマホの通信量と保存の待ち時間を減らす）
+async function quickShrink(f) {
+  const extOf = () => (f.name.match(/\.[a-z0-9]+$/i) || ['.' + (f.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg')])[0].toLowerCase();
+  if (!/^image\/(jpeg|png|heic|heif|webp)$/i.test(f.type)) return { blob: f, ext: extOf() };
+  try {
+    const bmp = await createImageBitmap(f); const s = Math.min(1, 2400 / Math.max(bmp.width, bmp.height));
+    if (s === 1 && f.size < 1.5e6 && /jpeg|png/.test(f.type)) { bmp.close?.(); return { blob: f, ext: extOf() }; }
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(bmp, 0, 0, c.width, c.height); bmp.close?.();
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    return blob ? { blob, ext: '.jpg' } : { blob: f, ext: extOf() };
+  } catch { return { blob: f, ext: extOf() }; }
+}
+
+async function quickSend() {
+  if (QUICK.sending) return;
+  const title0 = $('#q-title').value.trim(); const text = $('#q-text').value.replace(/\r\n/g, '\n').trim();
+  if (!text && !QUICK.files.length) { toast('メモか写真を入れてください'); $('#q-text').focus(); return; }
+  const msg = $('#q-msg');
+  // ログインはボタンを押した流れの中で始める（スマホのブラウザは、後から開く小窓を止めるため）
+  let login = null;
+  const h0 = S.root || S._lastRoot;
+  if (h0 && h0.isDrive && (!GD.token || Date.now() > GD.exp - 60e3) && !gdRestoreToken()) login = gdLogin();
+  QUICK.sending = true; const btn = $('#q-send'); btn.disabled = true; btn.textContent = '送っています…'; msg.textContent = ''; msg.className = 'q-msg';
+  try {
+    if (login) { msg.textContent = 'Google にログインしています…'; await login; }
+    if (S.opening) { msg.textContent = '保管庫を読み込んでいます…'; await S.opening.catch(() => {}); }
+    if (!S.root && S._lastRoot) { msg.textContent = '保管庫を読み込んでいます…'; await openFolder(S._lastRoot); $('#quick').hidden = false; }
+    if (!S.root) throw new Error('送り先の保管庫が開けませんでした。一度「‹ Fumibako」から保管庫を開いてから、もう一度送ってください');
+    msg.textContent = QUICK.files.length ? `写真を送っています… 0 / ${QUICK.files.length}` : '保存しています…';
+    const d = new Date(); const p2 = n => String(n).padStart(2, '0');
+    const stamp = `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}_${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}`;
+    const dh = await getDirByPath(QUICK_DIR, true); if (!dh) throw new Error('inbox フォルダを作れませんでした');
+    // 画像
+    const imgLines = []; let att = null; let i = 0;
+    for (const f of QUICK.files) {
+      i++; msg.textContent = `写真を送っています… ${i} / ${QUICK.files.length}`;
+      const { blob, ext } = await quickShrink(f);
+      att = att || await getDirByPath(join(QUICK_DIR, 'attachments'), true);
+      let fname = `${stamp}_${i}${ext}`, j = 2;
+      while (await att.getFileHandle(fname).then(() => true, () => false)) fname = `${stamp}_${i}_${j++}${ext}`;
+      const fh = await att.getFileHandle(fname, { create: true }); const w = await fh.createWritable(); await w.write(blob); await w.close();
+      imgLines.push(`![${fname}](attachments/${encodeURIComponent(fname)})`);
+    }
+    // 本文（URL は 1 行ずつにしてリンクカードにする。取り込み（inbox）と同じ形）
+    const firstLine = text.replace(/https?:\/\/\S+/g, ' ').split('\n').map(l => l.replace(/\s+/g, ' ').trim()).find(l => l) || '';
+    const title = (title0 || firstLine.slice(0, 40) || (/https?:\/\//.test(text) ? 'リンク' : (imgLines.length ? '写真' : 'メモ'))).trim();
+    const body = text.replace(/(https?:\/\/\S+)/g, '\n\n$1\n\n').split('\n').map(l => l.trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    const tags = [...QUICK.tags].map(t => String(t).trim().replace(/^#+/, '')).filter(Boolean);
+    const tagFm = tags.length ? `tags: [${tags.map(t => `"${t.replace(/"/g, '\\"')}"`).join(', ')}]\n` : '';
+    const tagLine = tags.length ? 'タグ: ' + tags.map(t => '#' + t.replace(/\s+/g, '_')).join(' ') : '';
+    const full = `---\ntitle: "${title.replace(/"/g, '\\"')}"\nsource: "スマホ"\ncreated: ${d.toISOString()}\n${tagFm}---\n\n${[body, imgLines.join('\n\n'), tagLine].filter(Boolean).join('\n\n')}\n`;
+    const base = safeName(title); let name = `${base}.md`, k = 2;
+    while (await dh.getFileHandle(name).then(() => true, () => false)) name = `${base} (${k++}).md`;
+    const fh = await dh.getFileHandle(name, { create: true }); const w = await fh.createWritable(); await w.write(full); await w.close();
+    const note = { path: join(QUICK_DIR, name), dir: QUICK_DIR, name, handle: fh, mtime: Date.now(), order: 9999, title: name.replace(/\.md$/i, ''), text: full, fm: '', body: '' };
+    parseFrontmatter(note); S.notes.push(note); S.byPath.set(note.path, note);
+    S.notes.sort((a, b) => a.dir.localeCompare(b.dir, 'ja') || (a.order - b.order) || a.title.localeCompare(b.title, 'ja'));
+    $('#vault-count').textContent = `${S.notes.length} ノート`; renderTree($('#search').value);
+    // 送れたら入力を空にする（タグは続けて同じものを使うことが多いので残す）
+    $('#q-title').value = ''; $('#q-text').value = ''; QUICK.files = []; quickDrawThumbs(); quickSaveDraft(); quickDrawTags();
+    QUICK.sent.unshift({ path: note.path, title, at: d });
+    $('#q-sent').innerHTML = '<div class="q-h">さっき送ったもの</div>' + QUICK.sent.slice(0, 5).map(s => `<button type="button" class="q-sent-item" data-p="${esc(s.path)}"><span>✓ ${esc(s.title)}</span><small>${p2(s.at.getHours())}:${p2(s.at.getMinutes())}</small></button>`).join('');
+    $$('#q-sent .q-sent-item').forEach(b => b.onclick = () => { const n = S.byPath.get(b.dataset.p); if (!n) return; quickClose(); openNote(n); });
+    msg.textContent = `「${title}」を ${QUICK_DIR} に保存しました`; msg.className = 'q-msg ok';
+    toast('保存しました');
+  } catch (e) {
+    console.error(e);
+    msg.textContent = '送れませんでした: ' + e.message + '（入力した文字はこの端末に残っています。写真は選び直してください）'; msg.className = 'q-msg ng';
+  } finally {
+    QUICK.sending = false; btn.disabled = false; btn.textContent = '保管庫に送る';
+    if (login) setTimeout(() => gdSync(true), 500); // ログインし直したので、他の端末の変更も読み込む
+  }
+}
+
+// 起動時: ?quick=1 ならこの画面から始める
+(() => {
+  const sp = new URLSearchParams(location.search);
+  if (sp.get('quick') !== '1') return;
+  const pre = {};
+  if (sp.has('text')) pre.text = sp.get('text');
+  if (sp.has('title')) pre.title = sp.get('title');
+  if (sp.has('tags')) pre.tags = sp.get('tags').split(',').map(t => t.trim().replace(/^#+/, '')).filter(Boolean);
+  // 中身を受け取ったら URL から消す（開き直したときに同じものが二重に入らないように）
+  if (sp.has('text') || sp.has('title') || sp.has('tags')) { try { const u = new URL(location.href); ['text', 'title', 'tags'].forEach(k => u.searchParams.delete(k)); history.replaceState(null, '', u); } catch {} }
+  quickOpen(Object.keys(pre).length ? pre : null);
+})();
+
 
 // テスト用に公開
 window.__notes = { S, serialize, openFolder, decorate, decorateColors, marked, td, GD, DriveDir, gdSync, saveCurrent, rescan, MONEY, bk: { bkParseShot, bkParseText, bkNorm } };
 window.__exp = { noteToDocx, renderNoteForExport, fullHTML, articleHTML, exportDialog, importInbox, gasCall };
+window.__quickTest = { gdReloadAll, quickOpen, gdSync };
 })();
 
 </script>
